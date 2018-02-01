@@ -16,11 +16,14 @@ This is a sub bullet
 * item
   * tab plus * and space
 
+This is bold
+ Going to **bold** bold. 
+
 This is heading-1 
 
 This is heading-2
 
-This is bold
+
 
 This is sub-bullet
 
