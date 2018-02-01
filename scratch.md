@@ -13,7 +13,8 @@ This is bullet - use * space for bullet
 
 This is a sub bullet
 
-  * tab plus * and space
+* item 1
+ * tab plus * and space
 
 This is heading-1 
 
