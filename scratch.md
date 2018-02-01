@@ -17,9 +17,12 @@ This is a sub bullet
   * tab plus * and space
 
 This is bold
+
  Going to **bold** bold. 
 
-This is heading-1 
+This is heading-1 : hash and space
+
+# Introduction
 
 This is heading-2
 
