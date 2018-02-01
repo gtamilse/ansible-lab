@@ -6,10 +6,14 @@ para begin
 para cont
 para end
 ```
-This is bullet -
+This is bullet - use * space for bullet
 
 * item 1
 * item 2
+
+This is a sub bullet
+
+  * tab plus * and space
 
 This is heading-1 
 
