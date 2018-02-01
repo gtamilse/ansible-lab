@@ -35,7 +35,7 @@ This is image - when image is not accessible by the reader the test image will b
 
 This is html link insert - same as image insert except no ! 
 
-[(https://upload.wikimedia.org/wikipedia/commons/6/64/Cisco_logo.svg]
+https://upload.wikimedia.org/wikipedia/commons/6/64/Cisco_logo.svg
 
 
 This is table
