@@ -40,6 +40,7 @@ This is html link insert - same as image insert except no !
 This is table with 2 columns
 
 |heading1|heading2|
+|user1|user2|
 |--------|--------|
 
 
