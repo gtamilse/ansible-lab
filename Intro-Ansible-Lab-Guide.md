@@ -11,8 +11,7 @@
 # Ansible Concepts
 # Basic Playbooks
 # Automating Network Operations
-# Acknowledgements
-# Reference
+
 
 ---
 # Introduction
@@ -610,6 +609,7 @@ cisco@ansible-controller:~$ vi ios_sh_ip_route_sum.yml
 ### Examples-1
 
 ```
+cisco@ansible-controller:~$ vi ios-rtr-cfg.yml
 ---
 - name: IOS Module Router Config
   hosts: IOS
@@ -630,6 +630,7 @@ cisco@ansible-controller:~$ vi ios_sh_ip_route_sum.yml
 ```
 ### Examples-2
 ```
+cisco@ansible-controller:~$ vi xr-rtr-cfg.yml
 ---
 - name: XR Module Router Config
   hosts: XR
@@ -680,9 +681,7 @@ cisco@ansible-controller:~$ vi ios_sh_ip_route_sum.yml
 > Notes:
 > http://docs.ansible.com/ansible/latest/playbooks_conditionals.html
 
-
 ### Examples
-
 ```
 ---
 - name: Verify Router is running IOS-XE
@@ -708,12 +707,11 @@ cisco@ansible-controller:~$ vi ios_sh_ip_route_sum.yml
 
 ## Loops
 - Loop is used when a lot of actions are to be executed repeatedly. 
-
-
 ```
+cisco@ansible-controller:~$ vi ios-rtr-cfg-1.yml
 ---
 - name: Backup IOS-XE Config
-  hosts: csr
+  hosts: IOS
   gather_facts: false
   connection: local
 
@@ -730,7 +728,6 @@ cisco@ansible-controller:~$ vi ios_sh_ip_route_sum.yml
            - show run
 
     - debug: var=value
-
 ```
 
 ## Config module (IOS and IOS XR)
@@ -738,7 +735,6 @@ cisco@ansible-controller:~$ vi ios_sh_ip_route_sum.yml
 - ios/xr_command modules are similar to ios/xr_config modules but are used to configure the router
 - Config module uses parent and line options to structure the configuration in a heirarchical way
 > - Refer: http://docs.ansible.com/ansible/latest/iosxr_config_module.html
-
 
 ### Examples
 
@@ -754,32 +750,6 @@ cisco@ansible-controller:~$ vi ios_sh_ip_route_sum.yml
 ```
 Note: The same structure can be used for both ios_config.
 
-## Interface module
-- Interface module is to manage interface related tasks (provisioning based)
-
-> Notes:
-> - Refer: https://docs.ansible.com/ansible/2.4/ios_interface_module.html
-
-### Examples
-
-```
----
-- name: interface provisioning with iosxr_interface module
-  hosts: XR
-  gather_facts: false
-  connection: local
-
-  tasks:
-  - name: create and configure gig0/0/0/1
-    iosxr_interface:
-      name: GigabitEthernet0/0/0/1
-      description: test
-      speed: 100
-      duplex: half
-      mtu: 1500
-      enabled: True
-
-```
 ---
 
 # Automating Network Operations tasks
@@ -1251,7 +1221,7 @@ cisco@Ansible-Controller:~/project1$ ansible-vault edit encrypt-inventory.txt
 ```
 STEP 3: Try to execute a playbook with the new encrypted inventory file. You have to specify the inventory file manually since this is not the default file listed inside ansible.cfg file.
 ```
-cisco@Ansible-Controller:~/project1$ ansible-playbook -i encrypt-inventory.txt rtr-cfg-bkup-1.yml
+cisco@Ansible-Controller:~/project1$ ansible-playbook -i encrypt-inventory.txt ios-rtr-cfg-1.yml
  [WARNING]:  * Failed to parse /home/cisco/project1/encrypt-inventory.txt with ini plugin: Attempting to decrypt but no vault secrets
 found
 
@@ -1277,7 +1247,7 @@ In order to execute the playbook using an encyrpted inventory file you must enab
 
 STEP 4: Execute the playbook again using the —ask-vault-pass option and providing the vault password {cisco123}  
 ```
-cisco@Ansible-Controller:~/project1$ ansible-playbook -i encrypt-inventory.txt rtr-cfg-bkup-1.yml --ask-vault-pass
+cisco@Ansible-Controller:~/project1$ ansible-playbook -i encrypt-inventory.txt ios-rtr-cfg-1.yml --ask-vault-pass
 
 ```
 STEP 5: Ansible can also encrypt or decrypt an existing file by using the "ansible-vault encrypt/decrypt <file>" opiton. Decrypt the "encrypt-inventory.txt" file you created in step 1.
