@@ -429,7 +429,7 @@ Pre_checks:
 - Playbooks are written in YAML format.
 - A "playbook" is a collection of plays.
 - A playbook can have variables, parameters, loops, conditionals etc. to handle complex tasks.
-- Playbook should have exetension .yml or .yaml (**??? check it out**)
+- Playbook should have exetension .yml or .yaml 
 - Playbook structure:
   - Playbook contains a list of plays.
   - Each "play", mainly has 2 sections: 1) play-level parameters and 2) one or more "tasks"
@@ -553,7 +553,7 @@ Playbook level parameters
 ---
 
 # Basic Playbooks
-- Expected time to complete:
+- Expected time to complete: 45mins
 - This section has the following subsections:
   - Raw module
   - Variables (vars file)
@@ -576,91 +576,21 @@ Playbook level parameters
   - ansible-playbook raw-ios-route-summ.yml -u cisco -k
 
 ```
+cisco@ansible-controller:~$ vi ios_sh_ip_route_sum.yml
 ---
-- name: ip route summary from IOS devices
+- name: show ip route summary from IOS devices
   hosts: IOS
   gather_facts: false
-  connection: local
 
   tasks:
     - name: exec CLI using raw module
       raw:
         sho ip route summary
 
-      register:
-        IOS-output
+      register: ios_output
 
     - debug:
-        var: IOS-output
-```
-
-- Display route summary from all routers
-  - IOS CLI: show ip route summ
-  - XR CLI: show route summ
-- Create a playbook file with the below contents and name it, raw-all-route-summ.yml
-- Execute the playbook with below CLI:
-  - ansible-playbook raw-all-route-summ.yml --syntax-check
-  - ansible-playbook raw-all-route-summ.yml -u cisco -k
-
-```
----
-- name: play-1-output from IOS routers
-  hosts: IOS
-  gather_facts: no
-
-  tasks:
-    - raw:
-        show ip route summary
-
-      register: IOS_output
-
-    - debug:
-        var: IOS_output
-
-- name: play-2-output from XR routers
-  hosts: XR
-  gather_facts: no
-
-  tasks:
-    - raw:
-        show route summary
-
-      register: XR_output
-
-    - debug:
-        var: XR_output
-```
-
-## Variables
-- Variables are variables, to which we can assign values.
-- Variables make playbooks flexible
-- Variable names should be letters, numbers, and underscores. Variables should always start with a letter.
-  - Valid: `foo_port` or `foo5`
-  - Invalid: `foo port` (no space) or `5foo` (no start with number) or `foo.port` (no dot) or `foo-port` (no dash)
-- This is some most basic info. As you work through, you will learn more info.
-- vars file ???
-
-### Examples
-
-```
----
-vars:
-  gather_facts: no
-  remote_user: cisco
-
-- name: play-1-output from IOS routers
-  hosts: IOS
-  tasks:
-    - raw: show ip route summary
-      register: IOS_output
-    - debug: var=IOS_output
-
-- name: play-2-output from XR routers
-  hosts: XR
-  tasks:
-    - raw: show route summary
-      register: XR_output
-    - debug: var=XR_output
+        var: ios_output
 ```
 
 ## IOS and IOS_XR Commands modules
@@ -675,41 +605,76 @@ vars:
 - Don't forget to refer to documentation for your specific version
 - `ansible-doc ios_command` Ansible inbuilt documentation
 - IOS requires "enable" password to execute higher privilage commands. The following parameters can be used for enable privilege.
-  - `ansible_become: yes`
-  - `ansible_become_method: enable`
-  - `ansible_become_pass:xxxx`
+  - `authorize: yes`
+
+### Examples-1
+
+```
+---
+- name: IOS Module Router Config
+  hosts: IOS
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Collect Router Version and Config
+      ios_command:   ##Using the ios_command module
+         authorize: yes   ##authorize command instructs ansible to go to the privileged mode
+         commands:
+            - show version
+            - show run
+
+      register: value
+
+    - debug: var=value.stdout_lines
+```
+### Examples-2
+```
+---
+- name: XR Module Router Config
+  hosts: XR
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Collect Router Version and Config
+      xr_command:   ##Using the ios_command module
+         commands:
+            - show version
+            - show ip int bri
+
+      register: xr_output
+
+    - debug: var=xr_output.stdout_lines
+```
+
+## Variables
+- Variables are variables, to which we can assign values.
+- Variables are defined in playbooks use "{{ }}" single/double quotes around double curly brackets
+- Variable names should be letters, numbers, and underscores. Variables should always start with a letter.
+  - Valid: `foo_port` or `foo5`
+  - Invalid: `foo port` (no space) or `5foo` (no start with number) or `foo.port` (no dot) or `foo-port` (no dash)
+- This is some most basic info. As you work through, you will learn more info.
 
 ### Examples
 
 ```
 ---
-vars:
-  gather_facts: no
-  remote_user: cisco
-  connection: local
-
 - name: play-1-output from IOS routers
   hosts: IOS
-  tasks:
-    - ios_command:
-        commands:
-          - show ip route summary
-      register: IOS_output
-    - debug: var=IOS_output
+  gather_facts: false
+  connection: local
 
-- name: play-2-output from XR routers
-  hosts: XR
-  tasks:
-    - iosxr_command:
-        commands:
-          - show route summary
-      register: XR_output
-    - debug: var=XR_output
+  vars:
+      host: "{{ ansible_host }}"
+      username: "{{ ansible_user }}"
+      password: "{{ ansible_ssh_pass }}"
+
 ```
 
 ## Conditionals
 - We are going to cover "when" condition at basic level in this section.
-- It is possible to tie a **when** condition to a task and have it executed (or not) based on meeting (or not meeting) the condition.
+- It is possible to tie a **when** condition to a task and have it executed (or not) based on meeting a condition.
 - It is possible to do complex tasks but here, let us stick to basic level.
 
 > Notes:
@@ -720,34 +685,74 @@ vars:
 
 ```
 ---
-Example playbook here
+- name: Verify Router is running IOS-XE
+  hosts: IOS
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Collect Router Version
+      ios_command:
+         authorize: yes
+         commands:
+           - show version
+
+      register: value
+
+    - name: conditional task to verify if router is an IOS XE router
+      debug:
+        msg: " {{ inventory_hostname }} is an IOS XE Router."   #inventory_hostname is a global variable
+      when: value.stdout | join('') | search('IOS XE')  
+
+```
+
+## Loops
+- Loop is used when a lot of actions are to be executed repeatedly. 
+
+
+```
+---
+- name: Backup IOS-XE Config
+  hosts: csr
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Collect Router Version and Config
+      ios_command:
+         authorize: yes
+         commands: "{{ item }}"
+
+      register: value
+
+      with_items:
+           - show version
+           - show run
+
+    - debug: var=value
 
 ```
 
 ## Config module (IOS and IOS XR)
-- Config module provides an implementation for working with IOS/IOS XR configuration sections in a deterministic way
-- Study the playbooks below for an example global config and a sectional config with a parent.
+- So far we have used raw and ios/xr_command modules to retrieve information from the router
+- ios/xr_command modules are similar to ios/xr_config modules but are used to configure the router
+- Config module uses parent and line options to structure the configuration in a heirarchical way
+> - Refer: http://docs.ansible.com/ansible/latest/iosxr_config_module.html
+
 
 ### Examples
 
 ```
-Example config playbook with when condition
-```
+ tasks:
+    - name: Configure Interface Setting
+      iosxr_config:
+        parents: "interface GigabitEthernet0/0/0/0"
+        lines:
+          - "description test"
+          - "ip address 172.31.1.1 255.255.255.0"
 
-## Loops
-- Loop is used when a lot of actions are to be executed repeatedly.
-
-
 ```
-- name: add several users
-  user:
-    name: "{{ item }}"
-    state: present
-    groups: "wheel"
-  loop:
-     - testuser1
-     - testuser2
-```
+Note: The same structure can be used for both ios_config.
 
 ## Interface module
 - Interface module is to manage interface related tasks (provisioning based)
@@ -756,11 +761,9 @@ Example config playbook with when condition
 > - Refer: https://docs.ansible.com/ansible/2.4/ios_interface_module.html
 
 ### Examples
-- include loops
 
 ```
 ---
-
 - name: interface provisioning with iosxr_interface module
   hosts: XR
   gather_facts: false
@@ -777,7 +780,6 @@ Example config playbook with when condition
       enabled: True
 
 ```
-
 ---
 
 # Automating Network Operations tasks
@@ -824,8 +826,8 @@ router ospf 1
 **Step 1 -** Create a single YAML playbook to configure OSPF on both routers.
  
 This playbook will contain multiple plays: 
-   * First play will configure OSPF on the IOSXE router
-   * Second play will configure OSPF on the IOSXRv router
+   * First play will configure OSPF on the IOS router
+   * Second play will configure OSPF on the XR router
    * Third play will check if OSPF is working properly on both routers
 
 In this step, setup 3 plays to be run on the respective hosts.
@@ -834,15 +836,15 @@ In this step, setup 3 plays to be run on the respective hosts.
 cisco@Ansible-Controller:~/project1$ vi multi-host-ospf-config.yml
 
 ---
-- name: IOS XE OSPF CONFIG
-  hosts: csr
+- name: IOS OSPF CONFIG
+  hosts: IOS
   gather_facts: false
   connection: local
 
   tasks:
 
-- name: XRv OSPF Config
-  hosts: xrv
+- name: XR OSPF Config
+  hosts: XR
   gather_facts: false
   connection: local
 
@@ -862,7 +864,7 @@ cisco@Ansible-Controller:~/project1$ vi multi-host-ospf-config.yml
 cisco@Ansible-Controller:~/project1$ vi multi-host-ospf-config.yml
 
 ---
-- name: IOS XE OSPF CONFIG
+- name: IOS OSPF CONFIG
 
   tasks:
     - name: configure ospf in CSR1Kv
@@ -879,7 +881,7 @@ cisco@Ansible-Controller:~/project1$ vi multi-host-ospf-config.yml
 
     - debug: var=iosxe_ospf_cfg
 
-- name: XRv OSPF Config
+- name: XR OSPF Config
 
   tasks:
     - name: configure ospf in XRv
@@ -928,8 +930,8 @@ cisco@Ansible-Controller:~/project1$ vi multi-host-ospf-config.yml
 
       - name: configure ospf in CSR1Kv
 
-- name: XRv OSPF Config
-  hosts: xrv
+- name: XR OSPF Config
+  hosts: XR
   gather_facts: false
   connection: local
 
@@ -1043,7 +1045,7 @@ cisco@Ansible-Controller:~/project1$ sudo vi /etc/crontab
 
 #Run Ansible Playbook rtr-cfg-bkup everyday at 5:15 am UTC to backup router configs
 
-15 5 * * * cisco /usr/bin/ansible-playbook -i /home/cisco/project1/inventory.txt  /home/cisco/project1/rtr-cfg-bkup-1.yml
+15 5 * * * cisco /usr/bin/ansible-playbook -i /etc/ansible/hosts  /home/cisco/rtr-cfg-bkup-1.yml
 
 ```
 ---
@@ -1073,7 +1075,7 @@ cisco@Ansible-Controller:~/project1$ vi iosxe-snapshot-tool.yml
 
 ---
 - name: IOS XE Pre-Check Captures
-  hosts: csr
+  hosts: IOS
   gather_facts: false
   connection: local
   tags: pre_play
@@ -1108,7 +1110,7 @@ Ex: ansible-playbook iosxe-snapshot-tool.yml --tags=pre_check
 cisco@Ansible-Controller:~/project1$ vi iosxe-snapshot-tool.yml
 
 - name: IOS XE Post-Check Captures
-  hosts: csr
+  hosts: IOS
   gather_facts: false
   connection: local
   tags: post_play
@@ -1192,10 +1194,17 @@ Ansible Vault is an ansible feature that can be used to encrypt sensitive data s
 
 STEP1: Create an encrypted inventory file, using the ansible-vault create option.
 ```
-cisco@Ansible-Controller:~/project1$ cat inventory.txt
-csr ansible_host=172.16.21.27 ansible_user=cisco ansible_ssh_pass=cisco
-xrv ansible_host=172.16.21.28 ansible_user=cisco ansible_ssh_pass=cisco
-nxos ansible_host=172.16.21.29 ansible_user=cisco ansible_ssh_pass=cisco
+cisco@Ansible-Controller:~/project1$ cat /etc/ansible/hosts | egrep -v ^#
+cisco@ansible-controller:~$ cat /etc/ansible/hosts | egrep -v ^#
+[IOS]
+172.16.101.88 ansible_user=cisco ansible_ssh_pass=cisco
+
+[XR]
+172.16.101.89 ansible_user=cisco ansible_ssh_pass=cisco
+
+[ALL:children]
+IOS
+XR
 
 cisco@Ansible-Controller:~/project1$ ansible-vault create encrypt-inventory.txt {vault password - cisco123}
 New Vault password:
@@ -1227,9 +1236,15 @@ Use the Ansible-vault view option and provide the encrytpion password inorder to
 ```
 cisco@Ansible-Controller:~/project1$ ansible-vault view encrypt-inventory.txt
 Vault password: cisco123
-csr ansible_host=172.16.21.27 ansible_user=cisco ansible_ssh_pass=cisco
-xrv ansible_host=172.16.21.28 ansible_user=cisco ansible_ssh_pass=cisco
-nxos ansible_host=172.16.21.29 ansible_user=cisco ansible_ssh_pass=cisco
+[IOS]
+172.16.101.88 ansible_user=cisco ansible_ssh_pass=cisco
+
+[XR]
+172.16.101.89 ansible_user=cisco ansible_ssh_pass=cisco
+
+[ALL:children]
+IOS
+XR
 
 cisco@Ansible-Controller:~/project1$ ansible-vault edit encrypt-inventory.txt
 
