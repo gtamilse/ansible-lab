@@ -1097,7 +1097,7 @@ cisco@Ansible-Controller:~/project1$ vi iosxe-snapshot-tool.yml
    - name: Save Pre Check output to a file
      copy:
       content="\n ===Pre-Show-Version=== \n\n {{ precheck.stdout[0] }} \n\n ===Pre-Show-Ip-Int-Brief==== \n\n {{ precheck.stdout[1] }} \n\n ===Pre-Show-Ip-Route=== \n\n {{ precheck.stdout[2] }} \n\n ===Pre-Show-Run=== \n\n {{ precheck.stdout[3] }} "
-      dest="./Pre_check_{{ inventory_hostname }}.txt"
+      dest="./Pre_check_ios.txt"
 ```
 
 In this play you are setting a tag value "pre_play" as part of the pre-check play. Ansible allows tags to be added at the play or task level. When executing a playbook, you can select which plays or tasks to perform by listing the tag id as part of the --tags= syntax.
@@ -1132,7 +1132,7 @@ cisco@Ansible-Controller:~/project1$ vi iosxe-snapshot-tool.yml
    - name: Save Post Check output to a file
      copy:
       content="\n ===Post-Show-Version=== \n\n {{ postcheck.stdout[0] }} \n\n ===Post-Show-Ip-Int-Brief==== \n\n {{ postcheck.stdout[1] }} \n\n ===Post-Show-Ip-Route=== \n\n {{ postcheck.stdout[2] }} \n\n ===Post-Show-Run=== \n\n {{ postcheck.stdout[3] }} "
-      dest="./Post_check_{{ inventory_hostname }}.txt"
+      dest="./Post_check_ios.txt"
 ```
 
 **Step 3 -** Execute the snapshot tool playbook with just the 2nd play (post-check) to create the Post_check_CSR.txt output file. 
@@ -1154,11 +1154,11 @@ cisco@Ansible-Controller:~/project1$ vi iosxe-snapshot-tool.yml
 
   tasks:
    - name: Read Pre Capture File
-     shell: cat ./Pre_check_csr.txt
+     shell: cat ./Pre_check_ios.txt
      register: precheck
 
    - name: Read Post Capture File
-     shell: cat ./Post_check_csr.txt
+     shell: cat ./Post_check_ios.txt
      register: postcheck
 
    - debug:
@@ -1171,11 +1171,11 @@ cisco@Ansible-Controller:~/project1$ vi iosxe-snapshot-tool.yml
 
    - name: Compare files
      command: >
-        diff ./Pre_check_csr.txt ./Post_check_csr.txt
+        diff ./Pre_check_ios.txt ./Post_check_ios.txt
      register: difference
-     failed_when: difference.rc > 1   
+     failed_when: difference.rc > 1
 
-   - debug: var=difference.stdout_lines   
+   - debug: var=difference.stdout_lines 
 
 ```
 
