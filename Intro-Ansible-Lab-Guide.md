@@ -1,9 +1,8 @@
 
 # **<p align="center">NETWORK AUTOMATION WITH ANSIBLE</p>**
-<p align="center">Hands-on Part</p>
+<p align="center">Hands-on Lab</p>
 
 ---
-
 # Introduction
 # Lab Setup
 # What is Ansible
@@ -11,7 +10,6 @@
 # Ansible Concepts
 # Basic Playbooks
 # Automating Network Operations
-
 
 ---
 # Introduction
@@ -29,7 +27,6 @@
 
 ---
 # Lab Setup
-- Estimated time to complete: 10 mins
 
 The network topology used in this lab consists of the two Cisco routers and to a Ubuntu Server. The Ubuntu server will act as the Ansible Controller Machine and the Cisco Routers (IOSXE and IOS-XR) will be the network devices subjected to automation.
 ## Topology
@@ -64,7 +61,6 @@ The network topology used in this lab consists of the two Cisco routers and to a
 ---
 
 ## What is Ansible
-- Estimated time to complete: 10mins
 - Topology
 
 ![Ansible topology](./ansible-topology.png)
@@ -83,7 +79,6 @@ The network topology used in this lab consists of the two Cisco routers and to a
 ---
 
 # Installation
-- Estimated time to complete: 5mins
 - **DO NOT EXECUTE THE INSTALLATION STEPS, FOR REFERENCE ONLY**
 - Ansible Installation steps listed below, simple and easy steps similar to any linux package installation.
 ```
