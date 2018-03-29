@@ -34,9 +34,9 @@
 
 The network topology used in this lab consists of the tow Cisco routers and to a Ubuntu Server. The Ubuntu server will act as the Ansible Control Machine and the Cisco (IOSXE and IOS-XR) will be the network devices subjected to automation.
 ## Topology
-![topology](./images/ansible-lab-topo.png)
+![topology](./ansible-lab-topo.png)
 
-## ![hands-on](./images/handson.png) Lab access
+## ![hands-on](./handson.png) Lab access
 - This is a hands-on section
 
 ### Connect to DMZ VPN using Cisco Anyconnect.
@@ -44,21 +44,20 @@ The network topology used in this lab consists of the tow Cisco routers and to a
 - Un-select "block connections to untrusted servers" in Anyconnect preferences
 - Use the below details for VPN connection.
   - IP: `152.22.242.56`
-  - Username: `cisco`
-  - Password: `cisco.123`
+  - Username: `cisco-ansible`
+  - Password: `Cisco.123`
   - Accept any security warnings.
 - `ping 172.31.56.251` to very that VPN connection is successful
 
 
 ### SSH into Ubuntu server
 - Use *putty* or someother ssh client
-  - IP: `172.31.56.23X`
-  - User: `labuser`
-  - Password: `???`
-  - Or, `ssh -l labuser 172.31.56.23X`
-- From Ubuntu $ prompt, `ping r1`
-- `ping r2`
-- You should be able to **ssh into Ubuntu server and ping R1 and R2** to advance to the next section.
+  - IP: `172.16.101.x`
+  - User: `cisco`
+  - Password: `cisco`
+   Or 
+- From Ubuntu/MAC terminal : `ssh -l cisco 172.16.101.x`
+- You should be able to **ssh into Ansible-Controller Ubuntu server and ping R1 and R2** to advance to the next section.
 - Review the section and discuss if you have any questions.
 
 ---
@@ -67,7 +66,7 @@ The network topology used in this lab consists of the tow Cisco routers and to a
 - Estimated time to complete:
 - Topology
 
-![Ansible topology](./images/ansible-topology.png)
+![Ansible topology](./ansible-topology.png)
 - Ansible is a automation application software that can automate software provisioning, configuration management, and application deployment.
 - 2 components:
   -  Ansible Controll Machine or server: Ansible SW resides here.
