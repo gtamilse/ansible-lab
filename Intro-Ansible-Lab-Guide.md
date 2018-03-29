@@ -634,7 +634,7 @@ cisco@ansible-controller:~$ vi xr-rtr-cfg.yml
 
   tasks:
     - name: Collect Router Version and Config
-      xr_command:   ##Using the ios_command module
+      iosxr_command:   ##Using the ios_command module
          commands:
             - show version
             - show ip int bri
