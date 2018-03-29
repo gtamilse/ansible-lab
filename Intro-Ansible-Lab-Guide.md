@@ -25,14 +25,14 @@
 
 ## Logistics
 - This session is 2 hour long
-- Lab will be available for you to use until **weekend. put date here**
+- Lab will be available for you to use until **Monday April 9th, 2018**
 - Best practice: have a partner to consult
 
 ---
 # Lab Setup
-- Estimated time to complete:
+- Estimated time to complete: 10 mins
 
-The network topology used in this lab consists of the tow Cisco routers and to a Ubuntu Server. The Ubuntu server will act as the Ansible Control Machine and the Cisco (IOSXE and IOS-XR) will be the network devices subjected to automation.
+The network topology used in this lab consists of the two Cisco routers and to a Ubuntu Server. The Ubuntu server will act as the Ansible Controller Machine and the Cisco Routers (IOSXE and IOS-XR) will be the network devices subjected to automation.
 ## Topology
 ![topology](./ansible-lab-topo.png)
 
@@ -55,7 +55,9 @@ The network topology used in this lab consists of the tow Cisco routers and to a
   - IP: `172.16.101.x`
   - User: `cisco`
   - Password: `cisco`
-   Or 
+  
+   Or
+   
 - From Ubuntu/MAC terminal : `ssh -l cisco 172.16.101.x`
 - You should be able to **ssh into Ansible-Controller Ubuntu server and ping R1 and R2** to advance to the next section.
 - Review the section and discuss if you have any questions.
@@ -63,7 +65,7 @@ The network topology used in this lab consists of the tow Cisco routers and to a
 ---
 
 ## What is Ansible
-- Estimated time to complete:
+- Estimated time to complete: 10mins
 - Topology
 
 ![Ansible topology](./ansible-topology.png)
@@ -82,10 +84,9 @@ The network topology used in this lab consists of the tow Cisco routers and to a
 ---
 
 # Installation
-- Estimated time to complete:
-- This step is to be executed from your Ansible server. Make sure that you are on the right server. Below commands may help.
-  - `ifconfig eth0`
-- Install Ansible by executing the below commands on Ubuntu server, in sequence.
+- Estimated time to complete: 5mins
+- **DO NOT EXECUTE THE INSTALLATION STEPS, FOR REFERENCE ONLY**
+- Ansible Installation steps listed below, simple and easy steps similar to any linux package installation.
 ```
 sudo apt-get update -y
 sudo apt-get install software-properties-common -y
@@ -159,7 +160,7 @@ cisco@server-1:~$
 - Many features can be imbibed in the config file: we can group the devices, we can specify device-specific parameters etc.
 - In the next steps, we will edit the default invenotry file.
 
-### Edit configuration file
+### Configuration file
 - Find Ansible config file
   - `ansible --version`
 - Read the config file and find the inventory file path
