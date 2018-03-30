@@ -461,7 +461,6 @@ cisco@Ansible-Controller:~$ ansible-doc raw
 
 ### Examples
 - Execute a command on your routers
--
 
 ```
 ansible 172.16.101.91 -m raw -a "sho ip interface brief" -u cisco -k
@@ -491,10 +490,10 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
 - There are more than one way of writing a given data. This can be a confusing factor.
 
 > For more info, refer:
-  - http://docs.ansible.com/ansible/latest/YAMLSyntax.html
-  - http://www.yaml.org
-  - https://www.youtube.com/watch?v=cdLNKUoMc6c
-  - https://www.youtube.com/watch?v=U9_gfT0n_5Q
+>  - http://docs.ansible.com/ansible/latest/YAMLSyntax.html
+>  - http://www.yaml.org
+>  - https://www.youtube.com/watch?v=cdLNKUoMc6c
+>  - https://www.youtube.com/watch?v=U9_gfT0n_5Q
 
 ## YAML format
 - Below are some content representations.
@@ -569,14 +568,13 @@ Pre_checks:
     sho interface accounting
 ```
 > Notes:
-- It is not super critical to remember all this. Most of this is obvious; so, don't sweat it.
-- Lists have dashes and operation occurs in sequence.
-- It is possible to represent same data is multiple ways. This can be a confusing factor.
-- Syntax check tools are available.
-  - `ansible-playbook play-1.yml --syntax-check`
-  - https://codebeautify.org/yaml-validator
-  - http://www.yamllint.com
-
+> - It is not super critical to remember all this. Most of this is obvious; so, don't sweat it.
+> - Lists have dashes and operation occurs in sequence.
+> - It is possible to represent same data is multiple ways. This can be a confusing factor.
+> - Syntax check tools are available.
+>   - `ansible-playbook play-1.yml --syntax-check`
+>   - https://codebeautify.org/yaml-validator
+>   - http://www.yamllint.com
 
 - Review the subsection and discuss if you have any questions.
 
