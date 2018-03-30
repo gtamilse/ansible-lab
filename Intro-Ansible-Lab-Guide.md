@@ -21,7 +21,7 @@
 - To provide hands-on exposure to automating simple network operational tasks using basic Ansible features.
 
 ## Logistics
-- This session is 2 hour long
+- This session is 2 hours long
 - Lab will be available for you to use until Monday April 9th, 2018
 - Use Spark room setup by Manish Sehgal for any questions.
 - Most important: Note down your IP addresses **correctly**
@@ -41,7 +41,7 @@ The network topology used in this lab consists of the two Cisco routers and to a
 - VPN access instructions are documented in the email that Manish Sehgal sent
 
 ### SSH into "your" Ansible server
-- Use *putty* or someother ssh client
+- Use *putty* or some other ssh client
   - IP: `172.16.101.x`
   - User: `cisco`
   - Password: `cisco`
@@ -60,7 +60,7 @@ The network topology used in this lab consists of the two Cisco routers and to a
 ![Ansible topology](./ansible-topology.png)
 - Ansible is a automation application software that can automate software provisioning, configuration management, and application deployment.
 - 2 components:
-  -  Ansible Controll Machine or server: Ansible SW resides here.
+  -  Ansible Control Machine or server: Ansible SW resides here.
   -  Network or server nodes: Devices that are being automated by Ansible.
 - Ansible control machine communicates with nodes over ssh.
 - Devices must be enabled for ssh access.
@@ -422,7 +422,7 @@ cisco@ansible-controller:~$
 
 - Modules are the nuts and bolts of Ansible automation tasks. Main operations on the devices are executed through modules.
 - Ansible ships with a number of modules. Users can also write their own modules.
-- Modules are Operating system specific. Target device should support the given Ansible module to carryout the operation.
+- Modules are Operating system specific. Target device should support the given Ansible module to carry out the operation.
 
 > For future reference
 > - Modules are also referred to as “task plugins” or “library plugins”
@@ -437,7 +437,7 @@ ansible-doc –l
 ansible-doc -l | grep ios
 ansible-doc -l | grep xr
 ```
-- To satisfy your curiousity, let us play with a module in this subsection. We will use more modules later.
+- To satisfy your curiosity, let us play with a module in this subsection. We will use more modules later.
 
 ### Using "raw" module
 - What is raw module: Executes a low-down and dirty SSH command, not going through the module subsystem
@@ -487,7 +487,7 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
 - Why are we talking about YAML: Ansible playbooks are written in YAML (YAML Ain't Markup Language), a data serialization language.
 - YAML is meant to be human readable and intutive, making the playbooks easy to read and write.
 - This section gives basic intro to YAML, good enough to do excericses in this session.
-- There are more than one way of writing a given data. This can be a confusing factor.
+- There is more than one way of writing a given data. This can be a confusing factor.
 
 > For more info, refer:
 >  - http://docs.ansible.com/ansible/latest/YAMLSyntax.html
@@ -542,7 +542,7 @@ POP_locations:
   San Francisco
   San Jose
   Los Angeles
-  Sacremento
+  Sacramento
   San Deigo
 ```
 ```
@@ -591,7 +591,7 @@ Pre_checks:
   - Playbook contains a list of plays.
   - Each "play", mainly has 2 sections: 1) play-level parameters and 2) one or more "tasks"
   - Each "tasks" section contains a list of modules.
-  - Each "module" consits a list of actions (~commands).
+  - Each "module" consists a list of actions (~commands).
   - All this is written in YAML format.
 - Here is a typical structure:
 
@@ -628,7 +628,7 @@ Playbook level parameters
 ```
 
 - Copy the below contents into a file called p1.yml
-- Use your favorite method to do this or use "sudo tee" as in the invenotry section.
+- Use your favorite method to do this or use "sudo tee" as in the inventory section.
 
 ```
 ---
@@ -659,7 +659,7 @@ Playbook level parameters
         var: XR_output
 ```
 
-- The above playbook is same as the below in funtionality; just another YAML representation.
+- The above playbook is same as the below in functionality; just another YAML representation.
 - copy the below contents into a file and name it p2.yml
 
 ```
@@ -757,7 +757,7 @@ cisco@ansible-controller:~$ vi ios_sh_ip_route_sum.yml
 > - Refer to http://docs.ansible.com/ansible/latest/modules/ios_command_module.html
 - Don't forget to refer to documentation for your specific version
 - `ansible-doc ios_command` Ansible inbuilt documentation
-- IOS requires "enable" password to execute higher privilage commands. The following parameters can be used for enable privilege.
+- IOS requires "enable" password to execute higher privilege privilage commands. The following parameters can be used for enable privilege.
   - `authorize: yes`
 
 ### Examples-1
