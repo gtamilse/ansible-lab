@@ -3,6 +3,7 @@
 <p align="center">Hands-on Lab</p>
 
 ---
+# TABLE OF CONTENTS:
 # Introduction
 # Lab Setup
 # What is Ansible
@@ -10,15 +11,15 @@
 # Ansible Concepts
 # Basic Playbooks
 # Automating Network Operations
+# Acknowledgements
+# Reference
 
 ---
 # Introduction
+No hands-on
+
 ## Objective
 - To provide hands-on exposure to automating simple network operational tasks using basic Ansible features.
-
-## Participants' top-of-the-mind
-- Participants' expectations from this session
-- Any other top of the mind questions, comments, or prblems before we start the session
 
 ## Logistics
 - This session is 2 hour long
@@ -46,7 +47,7 @@ The network topology used in this lab consists of the two Cisco routers and to a
 - `ping 172.31.56.251` to very that VPN connection is successful
 
 
-### SSH into Ubuntu server
+### SSH into Ansible server from your laptop
 - Use *putty* or someother ssh client
   - IP: `172.16.101.x`
   - User: `cisco`
@@ -55,9 +56,12 @@ The network topology used in this lab consists of the two Cisco routers and to a
    Or
    
 - From Ubuntu/MAC terminal : `ssh -l cisco 172.16.101.x`
-- You should be able to **ssh into Ansible-Controller Ubuntu server and ping R1 and R2** to advance to the next section.
-- Review the section and discuss if you have any questions.
 
+### Ping your routers from Ansible server
+- From Ubuntu $ prompt, `ping <IOS router IP>`
+- And, `ping <XR router IP>`
+- You should be able to **ssh into Ubuntu server and ping R1 and R2** to advance to the next section.
+- Review the section and discuss if you have any questions.
 ---
 
 ## What is Ansible
@@ -69,12 +73,6 @@ The network topology used in this lab consists of the two Cisco routers and to a
   -  Ansible Controll Machine or server: Ansible SW resides here.
   -  Network or server nodes: Devices that are being automated by Ansible.
 - Ansible control machine communicates with nodes over ssh. Hence, devices must be enabled for ssh access. Other than SSH, there is no other requirement on network devices.
-- Ansible has several components, which we are going touch soon. Review the topology diagram above.
-- Review the section and discuss if you have any questions
-
-> Notes:
-> - For future reference, refer to [**Slides**](https://wwwin-github.cisco.com/gtamilse/ansible-lab/blob/master/Ansible-Overview-v1.pdf)
-> - These slides cover Ansible Introduction and syntax.
 
 ---
 
@@ -147,77 +145,181 @@ cisco@server-1:~$
 - Review the section and discuss if you have any questions.
 
 ---
-# Ansible Concepts
+
+# ![hands-on](./images/handson.png) Ansible Concepts
+- The following concepts are covered in this section:
+  - Ansible configuration file
+  - inventory file
+  - Ansible modules
+  - YAML
+  - Playbooks
+
+
+  ## Configuration file
+
+  ### Edit configuration file
+  - Find Ansible config file
+    - `ansible --version`
+  - Browse the config file and quickly go over different sections, denoted by [XXX]
+  - In this section, we will edit 4 settings:
+    - inventory file name: (points to config file path)
+    - retry file creation: (do not create retry file if playbook execution fails)
+    - ssh host-key check: (do not check for ssh keys authentication)
+    - ssh time-out: (set ssh timeout to 10 sec.)
+  - Read the config file and find the default settings for the above parameters
+    - `grep inventory /etc/ansible/ansible.cfg`
+    - `grep host_key /etc/ansible/ansible.cfg`
+    - `grep timeout /etc/ansible/ansible.cfg`
+    - `grep retry_files_enabled /etc/ansible/ansible.cfg`
+  - After editing the config file will look like below. The following output is for observation only; **do not copy/paste**.
+
+  ```
+  [defaults]
+  inventory = ./inventory.txt
+
+  #Turn off ssh key checking so we are not prompted to accept the public key when logging in. In production environment, you should leave this enabled.
+  host_key_checking = False
+
+  #Turn set SSH Timeout to 10 Seconds
+  timeout = 10
+
+  #When Ansible has problems running plays against a host, it will output the name of the host into a file in the user’s home directory ending in ‘.retry’ but this file isn’t useful for us since we only have 3 hosts to work within this lab.
+  retry_files_enabled = False
+  ```
+
+  - Config line for our parameters is commented. We will uncomment.
+    - Delete # at the beginning of the line: you may either edit the file **or** copy/paste the below command at $ prompt.
+    - You can edit the file in many ways. Do it in your favorite method. Below, it is done through "sed" command; simply copy/paste from Ubuntu $ prompt, on Ansible server.
+
+  ```
+  sudo sed -i s/"#inventory      = \/etc\/ansible\/hosts"/"inventory      = \/etc\/ansible\/hosts"/g /etc/ansible/ansible.cfg
+  ```
+
+  ```
+  sudo sed -i s/"#host_key_checking = False"/"host_key_checking = False"/g /etc/ansible/ansible.cfg
+  ```
+
+  ```
+  sudo sed -i s/"#timeout = 10"/"timeout = 10"/g /etc/ansible/ansible.cfg
+  ```
+
+  ```
+  sudo sed -i s/"#retry_files_enabled = False"/"retry_files_enabled = False"/g /etc/ansible/ansible.cfg
+  ```
+
+  - Verify that the lines is uncommented
+    - `grep inventory /etc/ansible/ansible.cfg`
+    - `grep host_key /etc/ansible/ansible.cfg`
+    - `grep timeout /etc/ansible/ansible.cfg`
+    - `grep retry_files_enabled /etc/ansible/ansible.cfg`
+
+  ### Sample output
+  - If the above edits go smooth, you dont need to browse the below output.
+
+  ```
+  cisco@Ansible-Controller:~$ ansible --version
+  ansible 2.4.2.0
+    config file = /etc/ansible/ansible.cfg  <<<
+    configured module search path = [u'/home/cisco/.ansible/plugins/modules', u'/usr/share/ansible/plugins/modules']
+    ansible python module location = /usr/lib/python2.7/dist-packages/ansible
+    executable location = /usr/bin/ansible
+    python version = 2.7.6 (default, Oct 26 2016, 20:30:19) [GCC 4.8.4]
+  .
+  cisco@Ansible-Controller:~$ grep inventory /etc/ansible/ansible.cfg
+  #inventory      = /etc/ansible/hosts  <<<
+  # if inventory variables overlap, does the higher precedence one win
+  :
+  # If 'true' unparsed inventory sources become fatal errors, they are warnings otherwise.
+  .
+  cisco@Ansible-Controller:~$ sudo sed -i s/"#inventory      = \/etc\/ansible\/hosts"/"inventory      = \/etc\/ansible\/hosts"/g /etc/ansible/ansible.cfg
+  .
+  cisco@ansible-controller:~$ sudo sed -i s/"#retry_files_enabled = False"/"retry_files_enabled = False"/g /etc/ansible/ansible.cfg
+  .
+  cisco@ansible-controller:~$ sudo sed -i s/"#timeout = 10"/"timeout = 10"/g /etc/ansible/ansible.cfg
+  .
+  cisco@ansible-controller:~$ sudo sed -i s/"#host_key_checking = False"/"host_key_checking = False"/g /etc/ansible/ansible.cfg
+  .
+
+  cisco@Ansible-Controller:~$ grep inventory /etc/ansible/ansible.cfg
+  inventory      = /etc/ansible/hosts <<<
+  # if inventory variables overlap, does the higher precedence one win
+  :
+  # If 'true' unparsed inventory sources become fatal errors, they are warnings otherwise.
+  cisco@Ansible-Controller:~$
+  .
+  cisco@ansible-controller:~$ grep "retry_files_enabled = False" /etc/ansible/ansible.cfg
+  retry_files_enabled = False
+  .
+  cisco@ansible-controller:~$ grep "timeout = 10" /etc/ansible/ansible.cfg
+  # gather_timeout = 10
+  timeout = 10  <<<
+  #command_timeout = 10
+  .
+  cisco@ansible-controller:~$ grep host_key /etc/ansible/ansible.cfg
+  host_key_checking = False <<<
+  #record_host_keys=False
+  #host_key_auto_add = True
+  ```
+
+- Review the config file subsection and discuss if you have any questions.
+
+
 ## Inventory file
-- Ansible can work on multiple devices at the same time.
-- It reads the device IP addresses from inventory file.
-- Many features can be imbibed in the config file: we can group the devices, we can specify device-specific parameters etc.
-- In the next steps, we will edit the default invenotry file.
-
-### Configuration file
-- Find Ansible config file
-  - `ansible --version`
-- Read the config file and find the inventory file path
-  - `grep inventory /etc/ansible/ansible.cfg`
-- If the config line for inventory is commented, uncomment it.
-  - Delete # at the beginning of the line: you may either edit the file or copy/paste the below command at $ prompt.
-  - `sudo sed -i s/"#inventory      = \/etc\/ansible\/hosts"/"inventory      = \/etc\/ansible\/hosts"/g /etc/ansible/ansible.cfg`
-- Verify that the line is uncommented
-  - `grep inventory /etc/ansible/ansible.cfg`
-
-### Example output
-```
-cisco@Ansible-Controller:~$ ansible --version
-ansible 2.4.2.0
-  config file = /etc/ansible/ansible.cfg
-  configured module search path = [u'/home/cisco/.ansible/plugins/modules', u'/usr/share/ansible/plugins/modules']
-  ansible python module location = /usr/lib/python2.7/dist-packages/ansible
-  executable location = /usr/bin/ansible
-  python version = 2.7.6 (default, Oct 26 2016, 20:30:19) [GCC 4.8.4]
-.
-cisco@Ansible-Controller:~$ grep inventory /etc/ansible/ansible.cfg
-#inventory      = /etc/ansible/hosts
-# if inventory variables overlap, does the higher precedence one win
-#inventory_plugins  = /usr/share/ansible/plugins/inventory
-# These values may be set per host via the ansible_module_compression inventory
-# Controls which files to ignore when using a directory as inventory with
-#inventory_ignore_extensions = ~, .orig, .bak, .ini, .cfg, .retry, .pyc, .pyo
-[inventory]
-# enable inventory plugins, default: 'host_list', 'script', 'yaml', 'ini'
-# ignore these extensions when parsing a directory as inventory source
-# ignore files matching these patterns when parsing a directory as inventory source
-# If 'true' unparsed inventory sources become fatal errors, they are warnings otherwise.
-.
-cisco@Ansible-Controller:~$ sudo sed -i s/"#inventory      = \/etc\/ansible\/hosts"/"inventory      = \/etc\/ansible\/hosts"/g /etc/ansible/ansible.cfg
-.
-cisco@Ansible-Controller:~$ grep inventory /etc/ansible/ansible.cfg
-inventory      = /etc/ansible/hosts
-# if inventory variables overlap, does the higher precedence one win
-#inventory_plugins  = /usr/share/ansible/plugins/inventory
-# These values may be set per host via the ansible_module_compression inventory
-# Controls which files to ignore when using a directory as inventory with
-#inventory_ignore_extensions = ~, .orig, .bak, .ini, .cfg, .retry, .pyc, .pyo
-[inventory]
-# enable inventory plugins, default: 'host_list', 'script', 'yaml', 'ini'
-# ignore these extensions when parsing a directory as inventory source
-# ignore files matching these patterns when parsing a directory as inventory source
-# If 'true' unparsed inventory sources become fatal errors, they are warnings otherwise.
-cisco@Ansible-Controller:~$
-```
-
 ### Edit inventory file
-- As an example, let us have two groups: IOS and XR
-- Find out your IOS and XR router mgmt IP addresses
-- Edit your default inventory file as follows:
+- Edit your default inventory file: /etc/ansible/hosts
+- Structure:
+
+```
+[device-group-1]
+IP-1
+IP-n
+
+[device-group-n]
+IP-1
+IP-n
+
+[superset-group-1:children]
+[device-group-1]
+[device-group-2]
+
+[superset-group-2:children]
+[device-group-3]
+[device-group-n]
+
+```
+- You can add parameters in the inventory files, as follows
+
+```
+[device-group-1]
+IP-1 ansible_user=cisco ansible_ssh_pass=cisco
+IP-n
+
+[device-group-n]
+IP-1
+IP-n ansible_user=cisco ansible_ssh_pass=cisco
+
+[superset-group-1:children]
+[device-group-1]
+[device-group-2]
+
+[superset-group-2:children]
+[device-group-3]
+[device-group-n]
+
+```
+
+- Find out your IOS and XR router mgmt IP addresses. Plug them in the file below.
+- For editing, you may use your favorite method. Below one is just an example.
+- Edit below text with correct IP addresses and copy/paste the text at Ubuntu $ prompt, to append to /etc/ansible/hosts file.
 
 ```
 sudo tee -a /etc/ansible/hosts << EOF
 
 [IOS]
-10.10.10.4
+<plug in your IOS mgmt eth IP address> ansible_user=cisco ansible_ssh_pass=cisco
 
 [XR]
-10.10.10.3
+<172.16.101.X your XR IP> ansible_user=cisco ansible_ssh_pass=cisco
 
 [ALL:children]
 IOS
@@ -225,9 +327,6 @@ XR
 
 EOF
 ```
-- The group names used-IOS, XR, ALL- are just name tags.
-- In this example, we have just one router in each group. We can have multiple routers in a group.
-- The group, "ALL" is a mother group, that its constituents are other groups.
 
 ### Verification
 - Read the contents of inventory file and verify acuracy: `cat /etc/ansible/hosts`
@@ -242,18 +341,54 @@ ansible --list-hosts ALL
 ### Example output:
 
 ```
-cisco@server-1:~$ ansible --list-hosts edge
+cisco@ansible-controller:~$ sudo tee -a /etc/ansible/hosts << EOF
+>
+> [IOS]
+> 172.16.101.91 ansible_user=cisco ansible_ssh_pass=cisco
+>
+> [XR]
+> 172.16.101.92 ansible_user=cisco ansible_ssh_pass=cisco
+>
+> [ALL:children]
+> IOS
+> XR
+>
+> EOF
+
+[IOS]
+172.16.101.91 ansible_user=cisco ansible_ssh_pass=cisco
+
+[XR]
+172.16.101.92 ansible_user=cisco ansible_ssh_pass=cisco
+
+[ALL:children]
+IOS
+XR
+
+cisco@ansible-controller:~$ tail -n 10 /etc/ansible/hosts
+[IOS]
+172.16.101.91 ansible_user=cisco ansible_ssh_pass=cisco
+
+[XR]
+172.16.101.92 ansible_user=cisco ansible_ssh_pass=cisco
+
+[ALL:children]
+IOS
+XR
+
+cisco@ansible-controller:~$ ansible --list-hosts IOS
   hosts (1):
-    10.10.10.4
-cisco@server-1:~$ ansible --list-hosts core
+    172.16.101.91
+cisco@ansible-controller:~$ ansible --list-hosts XR
   hosts (1):
-    10.10.10.3
-cisco@server-1:~$ ansible --list-hosts all
+    172.16.101.92
+cisco@ansible-controller:~$ ansible --list-hosts ALL
   hosts (2):
-    10.10.10.3
-    10.10.10.4
-cisco@server-1:~$
+    172.16.101.91
+    172.16.101.92
+cisco@ansible-controller:~$
 ```
+
 - Review the inventory subsection and discuss if you have any questions.
 
 ---
@@ -282,6 +417,9 @@ ansible-doc -l | grep xr
 ### Using "raw" module
 - What is raw module: Executes a low-down and dirty SSH command, not going through the module subsystem
 - We can execute commands on remote devices, using Ansible Raw module.
+- Ensure your server has Raw module: `ansible-doc -l | grep raw`
+- Detailed documentations: `ansible-doc raw`
+- Sample output:
 
 ```
 cisco@server-1:~$ ansible-doc -l | grep raw
@@ -297,17 +435,18 @@ cisco@Ansible-Controller:~$ ansible-doc raw
   - -k = prompt for password. Do not use ssh keys for authentication
 
 ### Examples
-- Execute a command on 172.16.101.32
+- Execute a command on your routers
+-
 
 ```
-ansible 172.16.101.32 -m raw -a "sho ip interface brief" -u cisco -k
+ansible 172.16.101.91 -m raw -a "sho ip interface brief" -u cisco -k
 ```
 
 - Execute a command on all routers in XR group
   - Remember that you created XR group in "inventory" subsection.
 
 ```
-ansible XR -m raw -a "sho ip interface brief" -u cisco -k
+ansible XR -m raw -a "sho ip interface brief"
 ```
 - Execute "show ip int br" on all routers
 
@@ -321,155 +460,12 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
 ---
 
 # YAML (rhymes with camel)
-- Estimated time to complete this section:
+Refer to PPT, no hands-on in this section.
 
-
-## Overview
-- Why are we talking about YAML: Ansible playbooks are written in YAML (YAML Ain't Markup Language), a data serialization language.
-- YAML is meant to be human readable and intutive, making the playbooks easy to read and write.
-- This section gives basic intro to YAML, good enough to do excericses in this session.
-- There are more than one way of writing a given data. This can be a confusing factor.
-
-> For more info, refer:
-  - http://docs.ansible.com/ansible/latest/YAMLSyntax.html
-  - http://www.yaml.org
-  - https://www.youtube.com/watch?v=cdLNKUoMc6c
-  - https://www.youtube.com/watch?v=U9_gfT0n_5Q
-
-## YAML format
-- Below are some content representations.
-- Space: Empty space is to be typed with "space-bar". Space with "Tab" key is invalid: `space` but `not tab`
-  - Use "space bar key"
-  - "tab key" indentation **won't work**
-- String: wrapped in *single* or *double* quotes.
-  - Example: `"sample string"` `'another sample string'`
-- Key value pair:
-  - Structure: (`key` `colon` `space` `value`)
-  - key:` ` value
-  - Examples:
-
-```
-mountain: Everest
-river: "Colorado River"
-XR_Platform: CRS
-```
--  Lists or arrays:
-  - Lists are **ordered** data.
-  - The list will have a different effect if the order is changed
-  - Lists start with a - (dash).
-  - Observe `dash` and `space hierarchy` in the below examples:
-
-```
-  - eagle
-  - rattlesnake
-  - frog
-  - ladybug
-  - rose_plant
-```
-```
-  - permit tftp
-  - permit dns
-  - deny udp
-
-```
-- Dictionary:
-  - Dictionaries are collections of `key: value` pairs.
-  - Set of properties of some data
-  - Space-hierarchy is important. See the below examples:
-
-```
-POP_locations:
-  San Francisco
-  San Jose
-  Los Angeles
-  Sacremento
-  San Deigo
-```
-```
-Pre_checks:
-  show route summary
-  sho ip int br
-  sho interface accounting
-```
-
-- You can have lists in a dictionary. And, dictionaries in a list. And, lists inside lists and dictionaries inside dictionaries. And, any other possible combinations.
-- Pay attention to `spaces` and `dashes` in the below examples:
-  - List of 2 dictionaries (first pre_checks. Second, post_checks)
-
-```
-- pre_checks:
-    show route summary
-    sho ip int br
-    sho interface accounting
-
-- post_checks:
-    show route summary
-    sho ip int br
-    sho interface accounting
-```
-## Other
-- It is not super critical to remember all this. Most of this is obvious; so, don't sweat it.
-- Lists have dashes and operation occurs in sequence.
-- It is possible to represent same data is multiple ways. This can be a confusing factor.
-- Syntax check tools are available.
-  - `ansible-playbook play-1.yml --syntax-check`
-  - https://codebeautify.org/yaml-validator
-  - http://www.yamllint.com
-- You just completed YAML subsection in "Ansible Concepts" section. Review and discuss if you have any questions.
----
 
 ## Playbooks
-- Playbook is a method to execute multiple tasks on multiple groups of devices, intelligently, with one user-initiated command.
-- Playbooks are written in YAML format.
-- A "playbook" is a collection of plays.
-- A playbook can have variables, parameters, loops, conditionals etc. to handle complex tasks.
-- Playbook should have exetension .yml or .yaml 
-- Playbook structure:
-  - Playbook contains a list of plays.
-  - Each "play", mainly has 2 sections: 1) play-level parameters and 2) one or more "tasks"
-  - Each "tasks" section contains a list of modules.
-  - Each "module" consits a list of actions (~commands).
-  - All this is written in YAML format.
-- Here is a typical structure:
-
-```
----
-Playbook level parameters
-
-- name: play-1 description
-  play-1-level parameters
-
-  tasks:
-    - name: task-1 description
-      module-1
-        action-1
-        action-n
-
-    - name: task-n description
-      module-n
-        action-1
-        action-n
-
-- name: play-n description
-  play-n-level parameters
-  tasks:
-    - name: task-1 description
-      module-1
-        action-1
-        action-n
-
-    - name: task-n description
-      module-n
-        action-1
-        action-n
-```
-
-### Examples
-- This example is for not for hands-on. It is for a careful reading
-- Goal: Create a playbook to collect IPv4 route summary from all routers
-  - CLI in IOS: `sho ip route summary`
-  - CLI in XR: `sho route summary`
-- Observe the two plays and the usage of raw module in this playbook
+- Copy the below contents into a file called p1.yml
+- Use your favorite method to do this or use "sudo tee" as in the invenotry section.
 
 ```
 ---
@@ -501,6 +497,7 @@ Playbook level parameters
 ```
 
 - The above playbook is same as the below in funtionality; just another YAML representation.
+- copy the below contents into a file and name it p2.yml
 
 ```
 ---
@@ -523,13 +520,12 @@ Playbook level parameters
 
 ### Executing playbooks
 - After creating the playbook, it can be executed using "`ansible-playbook`" command
-- Examples:
-  - ansible-playbook p1.yml -u cisco -k
-  - ansible-playbook p2.yml
-- Other useful commands:
-  - ansible-playbook p1.yml --syntax-check
-  - ansible-playbook p1.yml --check
-  - ansible-playbook p1.yml --step
+- Execute the below:
+  - `ansible-playbook p1.yml -u cisco -k`
+  - `ansible-playbook p2.yml`
+  - `ansible-playbook p1.yml --syntax-check`
+  - `ansible-playbook p1.yml --check`
+  - `ansible-playbook p1.yml --step`
 
 > Quick read now, research later:
 >
@@ -678,6 +674,7 @@ cisco@ansible-controller:~$ vi xr-rtr-cfg.yml
 
 ### Examples
 ```
+cisco@ansible-controller:~$ vi ios-conditional-check.yml
 ---
 - name: Verify Router is running IOS-XE
   hosts: IOS
@@ -711,7 +708,7 @@ cisco@ansible-controller:~$ vi ios-rtr-cfg-1.yml
   connection: local
 
   tasks:
-    - name: Collect Router Version and Config
+    - name: Collect Router Version and interface brief
       ios_command:
          authorize: yes
          commands: "{{ item }}"
@@ -720,7 +717,7 @@ cisco@ansible-controller:~$ vi ios-rtr-cfg-1.yml
 
       with_items:
            - show version
-           - show run
+           - show ip int bri
 
     - debug: var=value
 ```
