@@ -727,7 +727,7 @@ Playbook level parameters
   - `ansible XR -m raw -a "sho ip int br" -u gnaganab -k` (FYI only. need not execute)
   - In the below example, raw module is used in a playbook
 
-### Example
+### ![hands-on](./images/handson.png)Example
 - Display output of "show ip route summ" from all IOS routers
 - Create a playbook file with the below contents and name it, raw-ios-route-summ.yml
 - Execute the playbook with below CLI:
@@ -766,7 +766,7 @@ cisco@ansible-controller:~$ vi ios_sh_ip_route_sum.yml
 - IOS requires "enable" password to execute higher privilege privilage commands. The following parameters can be used for enable privilege.
   - `authorize: yes`
 
-### Examples-1
+### ![hands-on](./images/handson.png)Examples-1
 
 ```
 cisco@ansible-controller:~$ vi ios-rtr-cfg.yml
@@ -788,7 +788,7 @@ cisco@ansible-controller:~$ vi ios-rtr-cfg.yml
 
     - debug: var=value.stdout_lines
 ```
-### Examples-2
+### ![hands-on](./images/handson.png)Examples-2
 ```
 cisco@ansible-controller:~$ vi xr-rtr-cfg.yml
 ---
@@ -868,6 +868,8 @@ cisco@ansible-controller:~$ vi ios-conditional-check.yml
 
 ## Loops
 - Loop is used when a lot of actions are to be executed repeatedly.
+
+
 ```
 cisco@ansible-controller:~$ vi ios-rtr-cfg-1.yml
 ---
@@ -922,7 +924,7 @@ This section contains 4 exercises; in each exercise you will create Ansible play
    3. Create snapshot tool
    4. Utilize Ansible-vault to encrypt sensitive files
 ---
-## Exercise 1 - Configure OSPF on all routers
+## ![hands-on](./images/handson.png)Exercise 1 - Configure OSPF on all routers
 
 In the previous exercises you learned how to utilize ansible variables, conditionals, and loops to create a simple playbook. In this exercise you will take it a step further and create one playbook with multiple plays running against multiple hosts.
    * You will create a playbook to configure OSPF on both IOS and XR router
@@ -1118,7 +1120,7 @@ Check the playbook execution to verify OSPF configuration was successful. Observ
 
 ---
 
-## Exercise 2 - Automate router running-config backups
+## ![hands-on](./images/handson.png)Exercise 2 - Automate router running-config backups
 
 In this exercise, you will create a playbook to capture the running config from all nodes. Then you will setup a cron job to execute the playbook once a day and backup the router running-config files.
 
@@ -1180,7 +1182,7 @@ cisco@Ansible-Controller:~/project1$ sudo vi /etc/crontab
 
 ```
 ---
-## Exercise 3 -  Create snapshot tool
+## ![hands-on](./images/handson.png)Exercise 3 -  Create snapshot tool
 
 In this exercise, you will create a snapshot tool (playbook) which will take two sets of captures, a pre and post capture, and compare the two files to find the differences. Commonly done during network maintenance windows.
 
@@ -1319,7 +1321,7 @@ cisco@Ansible-Controller:~/project1$ ansible-playbook iosxe-snapshot-tool.yml --
 ```
 
 ---
-## Exercise 4 - Ansible Vault
+## ![hands-on](./images/handson.png)Exercise 4 - Ansible Vault
 
 Ansible Vault is an ansible feature that can be used to encrypt sensitive data such as passwords and keys. The command line tool "ansible-vault" can encrypt any structure data file used in Ansible, for example the inventory or variable files.
 
