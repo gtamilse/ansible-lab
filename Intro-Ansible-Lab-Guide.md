@@ -1,6 +1,7 @@
 
-# **<p align="center">NETWORK AUTOMATION WITH ANSIBLE</p>**
-<p align="center">Hands-on Lab</p>
+# **<p align="center">NETWORK AUTOMATION</p>**
+# *<p align="center">with</p>*
+# **<p align="center">ANSIBLE</p>**
 
 ---
 # TABLE OF CONTENTS:
@@ -16,15 +17,18 @@
 
 ---
 # Introduction
-No hands-on
-
 ## Objective
 - To provide hands-on exposure to automating simple network operational tasks using basic Ansible features.
 
 ## Logistics
 - This session is 2 hour long
-- Lab will be available for you to use until **Monday April 9th, 2018**
-- Best practice: have a partner to consult
+- Lab will be available for you to use until Monday April 9th, 2018
+- Use Spark room setup by Manish Sehgal for any questions.
+- Most important: Note down your IP addresses **correctly**
+  - Your Ansible server
+  - IOS router mgmt IP
+  - XR router mgmt IP
+- Credentials are same across pods. If you use wrong IP addresses, you will end up working on others' pod.
 
 ---
 # Lab Setup
@@ -33,29 +37,15 @@ The network topology used in this lab consists of the two Cisco routers and to a
 ## Topology
 ![topology](./ansible-lab-topo.png)
 
-## ![hands-on](./handson.png) Lab access
-- This is a hands-on section
+## Lab access
+- VPN access instructions are documented in the email that Manish Sehgal sent
 
-### Connect to DMZ VPN using Cisco Anyconnect.
-- Open Cisco Anyconnect app in your laptop
-- Un-select "block connections to untrusted servers" in Anyconnect preferences
-- Use the below details for VPN connection.
-  - IP: `152.22.242.56`
-  - Username: `cisco-ansible`
-  - Password: `Cisco.123`
-  - Accept any security warnings.
-- `ping 172.31.56.251` to very that VPN connection is successful
-
-
-### SSH into Ansible server from your laptop
+### SSH into "your" Ansible server
 - Use *putty* or someother ssh client
   - IP: `172.16.101.x`
   - User: `cisco`
   - Password: `cisco`
-  
-   Or
-   
-- From Ubuntu/MAC terminal : `ssh -l cisco 172.16.101.x`
+- Or, from Ubuntu/MAC terminal: `ssh -l cisco 172.16.101.x`
 
 ### Ping your routers from Ansible server
 - From Ubuntu $ prompt, `ping <IOS router IP>`
@@ -72,7 +62,9 @@ The network topology used in this lab consists of the two Cisco routers and to a
 - 2 components:
   -  Ansible Controll Machine or server: Ansible SW resides here.
   -  Network or server nodes: Devices that are being automated by Ansible.
-- Ansible control machine communicates with nodes over ssh. Hence, devices must be enabled for ssh access. Other than SSH, there is no other requirement on network devices.
+- Ansible control machine communicates with nodes over ssh.
+- Devices must be enabled for ssh access.
+- Other than enabling SSH, there is no other requirement on network devices.
 
 ---
 
@@ -693,12 +685,12 @@ cisco@ansible-controller:~$ vi ios-conditional-check.yml
     - name: conditional task to verify if router is an IOS XE router
       debug:
         msg: " {{ inventory_hostname }} is an IOS XE Router."   #inventory_hostname is a global variable
-      when: value.stdout | join('') | search('IOS XE')  
+      when: value.stdout | join('') | search('IOS XE')
 
 ```
 
 ## Loops
-- Loop is used when a lot of actions are to be executed repeatedly. 
+- Loop is used when a lot of actions are to be executed repeatedly.
 ```
 cisco@ansible-controller:~$ vi ios-rtr-cfg-1.yml
 ---
@@ -755,7 +747,7 @@ This section contains 4 exercises; in each exercise you will create Ansible play
 ---
 ## Exercise 1 - Configure OSPF on all routers
 
-In the previous exercises you learned how to utilize ansible variables, conditionals, and loops to create a simple playbook. In this exercise you will take it a step further and create one playbook with multiple plays running against multiple hosts. 
+In the previous exercises you learned how to utilize ansible variables, conditionals, and loops to create a simple playbook. In this exercise you will take it a step further and create one playbook with multiple plays running against multiple hosts.
    * You will create a playbook to configure OSPF on both IOS and XR router
    * You will setup pre and post checks to ensure OSPF is working correctly
 
@@ -786,8 +778,8 @@ router ospf 1
 
 ```
 **Step 1 -** Create a single YAML playbook to configure OSPF on both routers.
- 
-This playbook will contain multiple plays: 
+
+This playbook will contain multiple plays:
    * First play will configure OSPF on the IOS router
    * Second play will configure OSPF on the XR router
    * Third play will check if OSPF is working properly on both routers
@@ -864,11 +856,11 @@ cisco@Ansible-Controller:~/project1$ vi multi-host-ospf-config.yml
     - debug: var=iosxr_ospf_cfg
 
 ```
-**Step 3 -** Edit the playbook so that it only configures OSPF, if OSPF is not  already present on the router. 
+**Step 3 -** Edit the playbook so that it only configures OSPF, if OSPF is not  already present on the router.
 
 Setup a pre-check task which runs before the configure task to first check if OSPF is already configured on the router.
 
-In order to accomplish this task, you will need to use the Ansible meta module. The meta task is a special kind of task which can directly influence the Ansible internal execution/state. 
+In order to accomplish this task, you will need to use the Ansible meta module. The meta task is a special kind of task which can directly influence the Ansible internal execution/state.
 
 * Refer to [**Meta Module**](http://docs.ansible.com/ansible/latest/meta_module.html) document for more information on its parameter requirements.
 
@@ -960,7 +952,7 @@ cisco@Ansible-Controller:~/project1$ vi rtr-cfg-bkup-1.yml
 
 ---
 - name: Get Router Config from All Routers
-  hosts: all  
+  hosts: all
   gather_facts: no
 
   tasks:
@@ -992,10 +984,10 @@ Use the set_fact option to set a variable "time" equal to the current time value
 
 Note when saving the output to a file you need to set the connection back to local since the output files need to be saved on the server itself.
 
-**Step 3 -** Setup a cron on the Ansible Controller to execute the playbook once a day and backup the config files. 
+**Step 3 -** Setup a cron on the Ansible Controller to execute the playbook once a day and backup the config files.
 
  You can test the cronjob by setting the execution time to run a one or two mins from the current to verify the job gets executed without errors.
- 
+
  Execute the "date" command to get the current time on the server.
 
 ```
@@ -1015,14 +1007,14 @@ cisco@Ansible-Controller:~/project1$ sudo vi /etc/crontab
 
 In this exercise, you will create a snapshot tool (playbook) which will take two sets of captures, a pre and post capture, and compare the two files to find the differences. Commonly done during network maintenance windows.
 
-There are 3 plays in this playbook: 
+There are 3 plays in this playbook:
     1. Collect Pre-Check Captures
     2. Collect Post-Check Captures
-    3. Compare the two files 
+    3. Compare the two files
 
 The first two plays are the mostly the same, with subtle variations to indicate where its a pre-capture or post-captures. The last play will perform the difference comparison and this is executed locally on the Ansible-Controller.
 
-**Step 1 -** Create a YAML playbook with the first pre-check play to collect and save the following commands from the CSR router. Execute the playbook to create the Pre_Check_CSR.txt output file. 
+**Step 1 -** Create a YAML playbook with the first pre-check play to collect and save the following commands from the CSR router. Execute the playbook to create the Pre_Check_CSR.txt output file.
 
 You can verify the contents of the Pre_check_CSR.txt file by using the more command. {ex: more Pre_check_CSR.txt}
 
@@ -1097,7 +1089,7 @@ cisco@Ansible-Controller:~/project1$ vi iosxe-snapshot-tool.yml
       dest="./Post_check_ios.txt"
 ```
 
-**Step 3 -** Execute the snapshot tool playbook with just the 2nd play (post-check) to create the Post_check_CSR.txt output file. 
+**Step 3 -** Execute the snapshot tool playbook with just the 2nd play (post-check) to create the Post_check_CSR.txt output file.
 
 You can verify the contents of the Post_check_CSR.txt file by using the more command. {more Post_check_CSR.txt}
 
@@ -1137,7 +1129,7 @@ cisco@Ansible-Controller:~/project1$ vi iosxe-snapshot-tool.yml
      register: difference
      failed_when: difference.rc > 1
 
-   - debug: var=difference.stdout_lines 
+   - debug: var=difference.stdout_lines
 
 ```
 
@@ -1233,11 +1225,11 @@ skipping: no hosts matched
 
 PLAY RECAP ********************************************************************************************************************************
 ```
-Ansible was not able to execute the playbook because it was not able to decrypt the inventory file to identify the hosts. 
+Ansible was not able to execute the playbook because it was not able to decrypt the inventory file to identify the hosts.
 
 In order to execute the playbook using an encyrpted inventory file you must enable the --ask-vault-pass option during playbook execution to prompt for decryption password.
 
-STEP 4: Execute the playbook again using the —ask-vault-pass option and providing the vault password {cisco123}  
+STEP 4: Execute the playbook again using the —ask-vault-pass option and providing the vault password {cisco123}
 ```
 cisco@Ansible-Controller:~/project1$ ansible-playbook -i encrypt-inventory.txt ios-rtr-cfg-1.yml --ask-vault-pass
 
