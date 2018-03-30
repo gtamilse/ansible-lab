@@ -69,7 +69,7 @@ The network topology used in this lab consists of the two Cisco routers and to a
 ---
 
 # Installation
-- **DO NOT EXECUTE THE INSTALLATION STEPS, FOR REFERENCE ONLY**
+- Ansible is preinstalled on your Ubuntu server. You need not install Ansible if you are not interested.
 - Ansible Installation steps listed below, simple and easy steps similar to any linux package installation.
 ```
 sudo apt-get update -y
@@ -111,7 +111,7 @@ Reading package lists... Done
 ```
 
 ## Verification
-- Verify Ansible installation. The below commands may help:
+- Verify Ansible installation. Execute the commands below:
   - `ansible --version`
   - `which ansible`
   - `ansible --help`
@@ -138,77 +138,88 @@ cisco@server-1:~$
 
 ---
 
-# ![hands-on](./images/handson.png) Ansible Concepts
+# Ansible Concepts
 - The following concepts are covered in this section:
-  - Ansible configuration file
+  - Configuration file
   - inventory file
-  - Ansible modules
+  - Modules
   - YAML
   - Playbooks
 
+## Configuration file
+- We can customize Ansible settings by editing the configuration file (ansible.cfg)
+- There are advanced methods of tuning Ansible. In this session, we will focus on basic level.
+- Other methods:
+  - Non-default config file
+  - Environmental settings
+  - Command line options
 
-  ## Configuration file
+  > For research: different settings with explanation.
+  > - http://docs.ansible.com/ansible/latest/installation_guide/_config.html
 
-  ### Edit configuration file
-  - Find Ansible config file
-    - `ansible --version`
-  - Browse the config file and quickly go over different sections, denoted by [XXX]
-  - In this section, we will edit 4 settings:
-    - inventory file name: (points to config file path)
-    - retry file creation: (do not create retry file if playbook execution fails)
-    - ssh host-key check: (do not check for ssh keys authentication)
-    - ssh time-out: (set ssh timeout to 10 sec.)
-  - Read the config file and find the default settings for the above parameters
-    - `grep inventory /etc/ansible/ansible.cfg`
-    - `grep host_key /etc/ansible/ansible.cfg`
-    - `grep timeout /etc/ansible/ansible.cfg`
-    - `grep retry_files_enabled /etc/ansible/ansible.cfg`
-  - After editing the config file will look like below. The following output is for observation only; **do not copy/paste**.
+### Edit configuration file
+- Find Ansible config file
+  - `ansible --version`
+- Browse the config file and quickly go over different sections, denoted by [XXX]
+- In this section, we will edit 4 settings:
+  - inventory file name: (points to config file path)
+  - retry file creation: (do not create retry file if playbook execution fails)
+  - ssh host-key check: (do not check for ssh keys authentication)
+  - ssh time-out: (set ssh timeout to 10 sec.)
+- Read the config file and find the default settings for the above parameters
+  - `grep inventory /etc/ansible/ansible.cfg`
+  - `grep host_key /etc/ansible/ansible.cfg`
+  - `grep timeout /etc/ansible/ansible.cfg`
+  - `grep retry_files_enabled /etc/ansible/ansible.cfg`
+- After editing the config file will look like below. The following output is for observation only; **do not copy/paste**.
 
-  ```
-  [defaults]
-  inventory = ./inventory.txt
+```
+[defaults]
 
-  #Turn off ssh key checking so we are not prompted to accept the public key when logging in. In production environment, you should leave this enabled.
-  host_key_checking = False
+inventory = ./inventory.txt
 
-  #Turn set SSH Timeout to 10 Seconds
-  timeout = 10
+#Turn off ssh key checking so we are not prompted to accept the public key when logging in. In production environment, you should leave this enabled.
+host_key_checking = False
 
-  #When Ansible has problems running plays against a host, it will output the name of the host into a file in the user’s home directory ending in ‘.retry’ but this file isn’t useful for us since we only have 3 hosts to work within this lab.
-  retry_files_enabled = False
-  ```
+#Turn set SSH Timeout to 10 Seconds
+timeout = 10
 
-  - Config line for our parameters is commented. We will uncomment.
-    - Delete # at the beginning of the line: you may either edit the file **or** copy/paste the below command at $ prompt.
-    - You can edit the file in many ways. Do it in your favorite method. Below, it is done through "sed" command; simply copy/paste from Ubuntu $ prompt, on Ansible server.
+#When Ansible has problems running plays against a host, it will output the name of the host into a file in the user’s home directory ending in ‘.retry’ but this file isn’t useful for us since we only have 3 hosts to work within this lab.
+retry_files_enabled = False
+```
 
-  ```
-  sudo sed -i s/"#inventory      = \/etc\/ansible\/hosts"/"inventory      = \/etc\/ansible\/hosts"/g /etc/ansible/ansible.cfg
-  ```
+- Config line for our parameters is commented. We will need to uncomment.
+  - Delete # at the beginning of the line:
+  - You may either edit the file **or** copy/paste the below command at $ prompt.
+  - You can edit the file in many ways, such as "vi". Do it using your favorite method.
+  - Below, it is done through "sed" command; If you prefer to follow the belwo "sed" method, simply copy/paste from Ubuntu $ prompt, on Ansible server.
 
-  ```
-  sudo sed -i s/"#host_key_checking = False"/"host_key_checking = False"/g /etc/ansible/ansible.cfg
-  ```
+```
+sudo sed -i s/"#inventory      = \/etc\/ansible\/hosts"/"inventory      = \/etc\/ansible\/hosts"/g /etc/ansible/ansible.cfg
+```
 
-  ```
-  sudo sed -i s/"#timeout = 10"/"timeout = 10"/g /etc/ansible/ansible.cfg
-  ```
+```
+sudo sed -i s/"#host_key_checking = False"/"host_key_checking = False"/g /etc/ansible/ansible.cfg
+```
 
-  ```
-  sudo sed -i s/"#retry_files_enabled = False"/"retry_files_enabled = False"/g /etc/ansible/ansible.cfg
-  ```
+```
+sudo sed -i s/"#timeout = 10"/"timeout = 10"/g /etc/ansible/ansible.cfg
+```
 
-  - Verify that the lines is uncommented
-    - `grep inventory /etc/ansible/ansible.cfg`
-    - `grep host_key /etc/ansible/ansible.cfg`
-    - `grep timeout /etc/ansible/ansible.cfg`
-    - `grep retry_files_enabled /etc/ansible/ansible.cfg`
+```
+sudo sed -i s/"#retry_files_enabled = False"/"retry_files_enabled = False"/g /etc/ansible/ansible.cfg
+```
 
-  ### Sample output
-  - If the above edits go smooth, you dont need to browse the below output.
+- Verify that the lines is uncommented
+  - `grep inventory /etc/ansible/ansible.cfg`
+  - `grep host_key /etc/ansible/ansible.cfg`
+  - `grep timeout /etc/ansible/ansible.cfg`
+  - `grep retry_files_enabled /etc/ansible/ansible.cfg`
 
-  ```
+### Sample output
+- If the above edits go smooth, you dont need to browse the below output.
+
+```
   cisco@Ansible-Controller:~$ ansible --version
   ansible 2.4.2.0
     config file = /etc/ansible/ansible.cfg  <<<
@@ -251,24 +262,28 @@ cisco@server-1:~$
   host_key_checking = False <<<
   #record_host_keys=False
   #host_key_auto_add = True
-  ```
+```
 
 - Review the config file subsection and discuss if you have any questions.
 
-
 ## Inventory file
-### Edit inventory file
-- Edit your default inventory file: /etc/ansible/hosts
+- Ansible can wotk on multiple devices at the same time.
+- This is possible by listing several devices in the inventory file.
+- We can have more than one inventory files. In this session, we will use only one inventory file.
+- As per the config file that we editied above, our inventory file is: /etc/ansible/hosts
+- We can organize devices into several groups.
+- We can optionally, associate parameters to selected devices
 - Structure:
 
 ```
 [device-group-1]
 IP-1
-IP-n
+IP-2
 
 [device-group-n]
 IP-1
-IP-n
+IP-3
+IP-4
 
 [superset-group-1:children]
 [device-group-1]
@@ -299,7 +314,8 @@ IP-n ansible_user=cisco ansible_ssh_pass=cisco
 [device-group-n]
 
 ```
-
+### Edit inventory file
+- Edit your default inventory file: /etc/ansible/hosts
 - Find out your IOS and XR router mgmt IP addresses. Plug them in the file below.
 - For editing, you may use your favorite method. Below one is just an example.
 - Edit below text with correct IP addresses and copy/paste the text at Ubuntu $ prompt, to append to /etc/ansible/hosts file.
