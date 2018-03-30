@@ -154,8 +154,8 @@ cisco@server-1:~$
   - Environmental settings
   - Command line options
 
-  > For research: different settings with explanation.
-  > - http://docs.ansible.com/ansible/latest/installation_guide/_config.html
+> For research: different settings with explanation.
+> - http://docs.ansible.com/ansible/latest/installation_guide/_config.html
 
 ### Edit configuration file
 - Find Ansible config file
@@ -319,15 +319,32 @@ IP-n ansible_user=cisco ansible_ssh_pass=cisco
 - Find out your IOS and XR router mgmt IP addresses. Plug them in the file below.
 - For editing, you may use your favorite method. Below one is just an example.
 - Edit below text with correct IP addresses and copy/paste the text at Ubuntu $ prompt, to append to /etc/ansible/hosts file.
+- Our entries are:
+
+```
+[IOS]
+172.16.101.X ansible_user=cisco ansible_ssh_pass=cisco
+
+[XR]
+172.16.101.X ansible_user=cisco ansible_ssh_pass=cisco
+
+[ALL:children]
+IOS
+XR
+```
+
+- This is one way of appending to the file /etc/ansible/hosts
+- You may use "vi" or other favorite methods.
+- Make sure that you replace X below, according to your address.
 
 ```
 sudo tee -a /etc/ansible/hosts << EOF
 
 [IOS]
-<plug in your IOS mgmt eth IP address> ansible_user=cisco ansible_ssh_pass=cisco
+172.16.101.X ansible_user=cisco ansible_ssh_pass=cisco
 
 [XR]
-<172.16.101.X your XR IP> ansible_user=cisco ansible_ssh_pass=cisco
+172.16.101.X ansible_user=cisco ansible_ssh_pass=cisco
 
 [ALL:children]
 IOS
@@ -468,10 +485,150 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
 ---
 
 # YAML (rhymes with camel)
-Refer to PPT, no hands-on in this section.
+- Why are we talking about YAML: Ansible playbooks are written in YAML (YAML Ain't Markup Language), a data serialization language.
+- YAML is meant to be human readable and intutive, making the playbooks easy to read and write.
+- This section gives basic intro to YAML, good enough to do excericses in this session.
+- There are more than one way of writing a given data. This can be a confusing factor.
 
+> For more info, refer:
+  - http://docs.ansible.com/ansible/latest/YAMLSyntax.html
+  - http://www.yaml.org
+  - https://www.youtube.com/watch?v=cdLNKUoMc6c
+  - https://www.youtube.com/watch?v=U9_gfT0n_5Q
+
+## YAML format
+- Below are some content representations.
+- Space: Empty space is to be typed with "space-bar". Space with "Tab" key is invalid: `space` but `not tab`
+  - Use "space bar key"
+  - "tab key" indentation **won't work**
+- String: wrapped in *single* or *double* quotes.
+  - Example: `"sample string"` `'another sample string'`
+- Key value pair:
+  - Structure: (`key` `colon` `space` `value`)
+  - key:` ` value
+  - Examples:
+
+```
+mountain: Everest
+river: "Colorado River"
+XR_Platform: CRS
+```
+-  Lists or arrays:
+  - Lists are **ordered** data.
+  - The list will have a different effect if the order is changed
+  - Lists start with a - (dash).
+  - Observe `dash` and `space hierarchy` in the below examples:
+
+```
+Food_chain:
+  - eagle
+  - rattlesnake
+  - frog
+  - ladybug
+  - rose_plant
+```
+```
+Access_list:
+  - permit tftp
+  - permit dns
+  - deny udp
+```
+- Dictionary:
+  - Dictionaries are collections of `key: value` pairs.
+  - Set of properties of some data
+  - Space-hierarchy is important. See the below examples:
+
+```
+POP_locations:
+  San Francisco
+  San Jose
+  Los Angeles
+  Sacremento
+  San Deigo
+```
+```
+Pre_checks:
+  show route summary
+  sho ip int br
+  sho interface accounting
+```
+
+- You can have lists in a dictionary. And, dictionaries in a list. And, lists inside lists and dictionaries inside dictionaries. And, any other possible combinations.
+- Pay attention to `spaces` and `dashes` in the below examples:
+  - List of 2 dictionaries (first pre_checks. Second, post_checks)
+
+```
+- pre_checks:
+    show route summary
+    sho ip int br
+    sho interface accounting
+
+- post_checks:
+    show route summary
+    sho ip int br
+    sho interface accounting
+```
+> Notes:
+- It is not super critical to remember all this. Most of this is obvious; so, don't sweat it.
+- Lists have dashes and operation occurs in sequence.
+- It is possible to represent same data is multiple ways. This can be a confusing factor.
+- Syntax check tools are available.
+  - `ansible-playbook play-1.yml --syntax-check`
+  - https://codebeautify.org/yaml-validator
+  - http://www.yamllint.com
+
+
+- Review the subsection and discuss if you have any questions.
+
+---
 
 ## Playbooks
+- Playbook is a method to execute multiple tasks on multiple groups of devices, intelligently, with one user-initiated command.
+- Playbook is the main means of Ansible automation.
+- Playbooks are written in YAML format.
+- A "playbook" is a collection of plays.
+- A playbook can have variables, parameters, loops, conditionals etc. to handle complex tasks.
+- Playbook typically have exetension .yml or .yaml
+- Playbook structure:
+  - Playbook contains a list of plays.
+  - Each "play", mainly has 2 sections: 1) play-level parameters and 2) one or more "tasks"
+  - Each "tasks" section contains a list of modules.
+  - Each "module" consits a list of actions (~commands).
+  - All this is written in YAML format.
+- Here is a typical structure:
+
+```
+---
+Playbook level parameters
+
+- name: play-1 description
+  play-1-level parameters
+
+  tasks:
+    - name: task-1 description
+      module-1
+        action-1
+        action-n
+
+    - name: task-n description
+      module-n
+        action-1
+        action-n
+
+- name: play-n description
+  play-n-level parameters
+  tasks:
+    - name: task-1 description
+      module-1
+        action-1
+        action-n
+
+    - name: task-n description
+      module-n
+        action-1
+        action-n
+```
+
 - Copy the below contents into a file called p1.yml
 - Use your favorite method to do this or use "sudo tee" as in the invenotry section.
 
