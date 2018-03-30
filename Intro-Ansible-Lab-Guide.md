@@ -35,19 +35,19 @@
 
 The network topology used in this lab consists of the two Cisco routers and to a Ubuntu Server. The Ubuntu server will act as the Ansible Controller Machine and the Cisco Routers (IOSXE and IOS-XR) will be the network devices subjected to automation.
 ## Topology
-![topology](./ansible-lab-topo.png)
+![topology](./images/ansible-lab-topo.png)
 
-## Lab access
+## ![hands-on](./images/handson.png)Lab access
 - VPN access instructions are documented in the email that Manish Sehgal sent
 
-### SSH into "your" Ansible server
+### ![hands-on](./images/handson.png)SSH into "your" Ansible server
 - Use *putty* or some other ssh client
   - IP: `172.16.101.x`
   - User: `cisco`
   - Password: `cisco`
 - Or, from Ubuntu/MAC terminal: `ssh -l cisco 172.16.101.x`
 
-### Ping your routers from Ansible server
+### ![hands-on](./images/handson.png)Ping your routers from Ansible server
 - From Ubuntu $ prompt, `ping <IOS router IP>`
 - And, `ping <XR router IP>`
 - You should be able to **ssh into Ubuntu server and ping R1 and R2** to advance to the next section.
@@ -57,7 +57,7 @@ The network topology used in this lab consists of the two Cisco routers and to a
 ## What is Ansible
 - Topology
 
-![Ansible topology](./ansible-topology.png)
+![Ansible topology](./images/ansible-topology.png)
 - Ansible is a automation application software that can automate software provisioning, configuration management, and application deployment.
 - 2 components:
   -  Ansible Control Machine or server: Ansible SW resides here.
@@ -71,6 +71,8 @@ The network topology used in this lab consists of the two Cisco routers and to a
 # Installation
 - Ansible is preinstalled on your Ubuntu server. You need not install Ansible if you are not interested.
 - Ansible Installation steps listed below, simple and easy steps similar to any linux package installation.
+
+![hands-on](./images/handson.png)
 ```
 sudo apt-get update -y
 sudo apt-get install software-properties-common -y
@@ -110,7 +112,7 @@ Reading package lists... Done
 0 upgraded, 0 newly installed, 0 to remove and 198 not upgraded.
 ```
 
-## Verification
+## ![hands-on](./images/handson.png)Verification
 - Verify Ansible installation. Execute the commands below:
   - `ansible --version`
   - `which ansible`
@@ -157,7 +159,7 @@ cisco@server-1:~$
 > For research: different settings with explanation.
 > - http://docs.ansible.com/ansible/latest/installation_guide/_config.html
 
-### Edit configuration file
+### ![hands-on](./images/handson.png)Edit configuration file
 - Find Ansible config file
   - `ansible --version`
 - Browse the config file and quickly go over different sections, denoted by [XXX]
@@ -314,7 +316,7 @@ IP-n ansible_user=cisco ansible_ssh_pass=cisco
 [device-group-n]
 
 ```
-### Edit inventory file
+### ![hands-on](./images/handson.png)Edit inventory file
 - Edit your default inventory file: /etc/ansible/hosts
 - Find out your IOS and XR router mgmt IP addresses. Plug them in the file below.
 - For editing, you may use your favorite method. Below one is just an example.
@@ -353,7 +355,7 @@ XR
 EOF
 ```
 
-### Verification
+### ![hands-on](./images/handson.png)Verification
 - Read the contents of inventory file and verify acuracy: `cat /etc/ansible/hosts`
 - List inventory groups:
 
@@ -430,7 +432,7 @@ cisco@ansible-controller:~$
 > - Detailed documentation is available at: http://docs.ansible.com/ansible/latest/modules.html
 - Example module info: http://docs.ansible.com/ansible/latest/iosxr_command_module.html
 
-### Overview
+### ![hands-on](./images/handson.png)Overview
 - List installed modules:
 ```
 ansible-doc –l
@@ -439,7 +441,7 @@ ansible-doc -l | grep xr
 ```
 - To satisfy your curiosity, let us play with a module in this subsection. We will use more modules later.
 
-### Using "raw" module
+### ![hands-on](./images/handson.png)Using "raw" module
 - What is raw module: Executes a low-down and dirty SSH command, not going through the module subsystem
 - We can execute commands on remote devices, using Ansible Raw module.
 - Ensure your server has Raw module: `ansible-doc -l | grep raw`
@@ -459,7 +461,7 @@ cisco@Ansible-Controller:~$ ansible-doc raw
   - -u = username for router to authenticate
   - -k = prompt for password. Do not use ssh keys for authentication
 
-### Examples
+### ![hands-on](./images/handson.png)Examples
 - Execute a command on your routers
 
 ```
@@ -630,6 +632,8 @@ Playbook level parameters
 - Copy the below contents into a file called p1.yml
 - Use your favorite method to do this or use "sudo tee" as in the inventory section.
 
+![hands-on](./images/handson.png)
+
 ```
 ---
 - name: play-1-output from IOS routers
@@ -662,6 +666,8 @@ Playbook level parameters
 - The above playbook is same as the below in functionality; just another YAML representation.
 - copy the below contents into a file and name it p2.yml
 
+![hands-on](./images/handson.png)
+
 ```
 ---
 - name: play-1-output from IOS routers
@@ -681,7 +687,7 @@ Playbook level parameters
     - debug: var=XR_output
 ```
 
-### Executing playbooks
+### ![hands-on](./images/handson.png)Executing playbooks
 - After creating the playbook, it can be executed using "`ansible-playbook`" command
 - Execute the below:
   - `ansible-playbook p1.yml -u cisco -k`
