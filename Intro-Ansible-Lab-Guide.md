@@ -316,7 +316,7 @@ IP-n ansible_user=cisco ansible_ssh_pass=cisco
 [device-group-n]
 
 ```
-### ![hands-on](./images/handson.png)Edit inventory file
+### Edit inventory file
 - Edit your default inventory file: /etc/ansible/hosts
 - Find out your IOS and XR router mgmt IP addresses. Plug them in the file below.
 - For editing, you may use your favorite method. Below one is just an example.
@@ -334,6 +334,8 @@ IP-n ansible_user=cisco ansible_ssh_pass=cisco
 IOS
 XR
 ```
+
+![hands-on](./images/handson.png)
 
 - This is one way of appending to the file /etc/ansible/hosts
 - You may use "vi" or other favorite methods.
