@@ -41,6 +41,7 @@ The network topology used in this lab consists of the two Cisco routers and to a
 - VPN access instructions are documented in the email that Manish Sehgal sent
 
 ### ![hands-on](./images/handson.png)SSH into "your" Ansible server
+- Your lab setup assignments are listed in the Smartsheet link that Manish sent.
 - Use *putty* or some other ssh client
   - IP: `172.16.101.x`
   - User: `cisco`
@@ -420,7 +421,6 @@ cisco@ansible-controller:~$
 
 - Review the inventory subsection and discuss if you have any questions.
 
----
 
 ## Ansible Modules
 
@@ -485,7 +485,6 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
 
 - Review this subsection and discuss if you have any questions.
 
----
 
 # YAML (rhymes with camel)
 - Why are we talking about YAML: Ansible playbooks are written in YAML (YAML Ain't Markup Language), a data serialization language.
@@ -582,7 +581,6 @@ Pre_checks:
 
 - Review the subsection and discuss if you have any questions.
 
----
 
 ## Playbooks
 - Playbook is a method to execute multiple tasks on multiple groups of devices, intelligently, with one user-initiated command.
@@ -1424,4 +1422,20 @@ Decryption successful
 cisco@Ansible-Controller:~/project1$ more encrypt-inventory.txt
 
 ```
+---
+
+# Acknowledgements
+- A lot of material in this guide is sourced from [Ansible site](https://www.ansible.com)
+
+---
+
+# Reference
+- [Ansible user guide](http://docs.ansible.com/ansible/latest/user_guide/index.html)
+  - Single best resource for all basic Ansible documentation
+- YAML resources
+  - http://docs.ansible.com/ansible/latest/YAMLSyntax.html
+  - http://www.yaml.org
+  - https://www.youtube.com/watch?v=cdLNKUoMc6c
+  - https://www.youtube.com/watch?v=U9_gfT0n_5Q
+
 ---
