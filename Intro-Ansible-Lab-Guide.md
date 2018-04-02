@@ -1437,5 +1437,8 @@ cisco@Ansible-Controller:~/project1$ more encrypt-inventory.txt
   - http://www.yaml.org
   - https://www.youtube.com/watch?v=cdLNKUoMc6c
   - https://www.youtube.com/watch?v=U9_gfT0n_5Q
+- Training
+  - Ansible for the Absolute Beginner - Hands-On by Mumshad Mannambeth @Udemy [Click here](https://www.udemy.com/learn-ansible/learn/v4/overview)
+  - Ansible for Network Engineers: Quick Start GNS3 & Ansible by David Bombal @Udemy [Click here](https://www.udemy.com/ansible-for-network-engineers-cisco-quick-start-gns3-ansible/learn/v4/overview)
 
 ---
