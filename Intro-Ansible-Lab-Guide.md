@@ -179,7 +179,7 @@ cisco@server-1:~$
 ```
 [defaults]
 
-inventory = ./inventory.txt
+inventory      = /etc/ansible/hosts
 
 #Turn off ssh key checking so we are not prompted to accept the public key when logging in. In production environment, you should leave this enabled.
 host_key_checking = False
@@ -254,7 +254,7 @@ sudo sed -i s/"#retry_files_enabled = False"/"retry_files_enabled = False"/g /et
   cisco@Ansible-Controller:~$
   .
   cisco@ansible-controller:~$ grep "retry_files_enabled = False" /etc/ansible/ansible.cfg
-  retry_files_enabled = False
+  retry_files_enabled = False   <<<
   .
   cisco@ansible-controller:~$ grep "timeout = 10" /etc/ansible/ansible.cfg
   # gather_timeout = 10
