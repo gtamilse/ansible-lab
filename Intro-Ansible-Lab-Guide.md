@@ -199,18 +199,22 @@ retry_files_enabled = False
 
 ```
 sudo sed -i s/"#inventory      = \/etc\/ansible\/hosts"/"inventory      = \/etc\/ansible\/hosts"/g /etc/ansible/ansible.cfg
+
 ```
 
 ```
 sudo sed -i s/"#host_key_checking = False"/"host_key_checking = False"/g /etc/ansible/ansible.cfg
+
 ```
 
 ```
 sudo sed -i s/"#timeout = 10"/"timeout = 10"/g /etc/ansible/ansible.cfg
+
 ```
 
 ```
 sudo sed -i s/"#retry_files_enabled = False"/"retry_files_enabled = False"/g /etc/ansible/ansible.cfg
+
 ```
 
 - Verify that the lines is uncommented
