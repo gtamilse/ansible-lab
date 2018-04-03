@@ -511,9 +511,9 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
   - Example: `"sample string"` `'another sample string'`
 - Comments begin with number sign ( **#** )
 
--  Lists or arrays: sequence of items
+-  Lists or arrays: 
   - Lists are **ordered** data, meaning the order in which the items appear matter.
-  - The list will have a different effect if the order is changed.
+  - Lists are a sequence of items
   - Lists start with a - (hyphen+space).
   - All members of a list are lines beginning at the same indentation level.
   - Observe `hyphen` and `space hierarchy` in the below examples:
