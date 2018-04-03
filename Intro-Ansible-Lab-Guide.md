@@ -511,7 +511,7 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
 - String: wrapped in *single* or *double* quotes.
   - Example: `"sample string"` `'another sample string'`
 
-- Lists or arrays: 
+- **Lists or arrays:** 
   - Lists are **ordered** data, meaning the order in which the items appear matter.
   - Lists are a sequence of items
   - Lists start with a - (hyphen+space).
@@ -529,7 +529,7 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
 # List of Employees using Indented Block Example
   - [Adam, John, Mary, Zach]
 ```
-- Dictionary:
+- **Dictionary:**
   - Dictionaries are a mapping of key with a value.
   - Set of properties of some data
   - Dictionaries are **unordered** data, meaning items can be defined in any order.
@@ -550,7 +550,7 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
   {mountain: Everest, river: "Colorado River", XR_Platform: CRS}
 ```
 
-- Merging Lists and Dictionaries: 
+- **Merging Lists and Dictionaries:** 
   - More complicated data structures can be formed by merging lists and dictionaries. 
   - You can have lists in a dictionary and dictionaries in a list.
 - Pay attention to `spaces` and `dashes` in the below examples:
@@ -574,7 +574,7 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
 	      - telnet-filter
 	      - snmp-filter
 ```
-Syntax Summary:
+- **Syntax Summary:**
   1.	Comments being with number sign ( # ); they can start anywhere on a line and continue until the end of the line.
   2.	Lists start with a leading hyphen ( - ) , with one member per line or enclosed in square brackets ( [ ] ) and separated by comma+space ( ,  ).
   3.	Dictionaries contain keys separated from values with a colon+space ( :  ) and can be one pair per line or enclosed in curly brackets ( { } ) and separate by comma+space ( ,  ). 
