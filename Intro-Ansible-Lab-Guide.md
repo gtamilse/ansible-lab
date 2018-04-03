@@ -509,74 +509,79 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
   - "tab key" indentation **won't work**
 - String: wrapped in *single* or *double* quotes.
   - Example: `"sample string"` `'another sample string'`
-- Key value pair:
-  - Structure: (`key` `colon` `space` `value`)
-  - key:` ` value
-  - Examples:
+- Comments begin with number sign ( **#** )
+
+-  Lists or arrays: sequence of items
+  - Lists are **ordered** data, meaning the order in which the items appear matter.
+  - The list will have a different effect if the order is changed.
+  - Lists start with a - (hyphen+space).
+  - All members of a list are lines beginning at the same indentation level.
+  - Observe `hyphen` and `space hierarchy` in the below examples:
 
 ```
-mountain: Everest
-river: "Colorado River"
-XR_Platform: CRS
-```
--  Lists or arrays:
-  - Lists are **ordered** data.
-  - The list will have a different effect if the order is changed
-  - Lists start with a - (dash).
-  - Observe `dash` and `space hierarchy` in the below examples:
-
-```
-Food_chain:
-  - eagle
-  - rattlesnake
-  - frog
-  - ladybug
-  - rose_plant
+# List of Employees using Conventional Block Exmaple
+  - Adam
+  - John
+  - Mary
+  - Zach
 ```
 ```
-Access_list:
-  - permit tftp
-  - permit dns
-  - deny udp
+# List of Employees using Indented Block Example
+  - [Adam, John, Mary, Zach]
 ```
 - Dictionary:
-  - Dictionaries are collections of `key: value` pairs.
+  - Dictionaries are a mapping of key with a value.
   - Set of properties of some data
+  - Dictionaries are **unordered** data, meaning items can be defined in any order.
   - Space-hierarchy is important. See the below examples:
+  - Key value pair:
+    - Structure: (`key` `colon` `space` `value`)
+    - key:` ` value
+    - Examples:
 
 ```
-POP_locations:
-  San Francisco
-  San Jose
-  Los Angeles
-  Sacramento
-  San Deigo
+# Indented Block Key Value Pair Example
+  mountain: Everest
+  river: "Colorado River"
+  XR_Platform: CRS
 ```
 ```
-Pre_checks:
-  show route summary
-  sho ip int br
-  sho interface accounting
+# Inline Block Key Value Pair Example (use comma+space to separate key value pairs between braces)
+  {mountain: Everest, river: "Colorado River", XR_Platform: CRS}
 ```
 
-- You can have lists in a dictionary. And, dictionaries in a list. And, lists inside lists and dictionaries inside dictionaries. And, any other possible combinations.
+- Merging Lists and Dictionaries: 
+  - More complicated data structures can be formed by merging lists and dictionaries. 
+  - You can have lists in a dictionary and dictionaries in a list.
 - Pay attention to `spaces` and `dashes` in the below examples:
-  - List of 2 dictionaries (first pre_checks. Second, post_checks)
+  - List of 2 dictionaries (GigabitEthernet0 and GigabitEthernet1)
 
 ```
-- pre_checks:
-    show route summary
-    sho ip int br
-    sho interface accounting
-
-- post_checks:
-    show route summary
-    sho ip int br
-    sho interface accounting
+---
+	#List of dictionaries - Interface config
+	- GigabitEthernet0:
+	    Description: connection to Server1
+	    IP: 192.168.0.1
+	    Subnet: 255.255.255.252
+	    ACL:
+	      - telnet-filter
+	      - snmp-filter
+	- GigabitEthernet1:
+	    Description: connection to Server2
+	    IP: 192.168.0.2
+	    Subnet: 255.255.255.252
+	    ACL:
+	      - telnet-filter
+	      - snmp-filter
 ```
+Syntax Summary:
+  1.	Comments being with number sign ( # ); they can start anywhere on a line and continue until the end of the line.
+  2.	Lists start with a leading hyphen ( - ) , with one member per line or enclosed in square brackets ( [ ] ) and separated by comma+space ( ,  ).
+  3.	Dictionaries contain keys separated from values with a colon+space ( :  ) and can be one pair per line or enclosed in curly brackets ( { } ) and separate by comma+space ( ,  ). 
+
+
 > Notes:
 > - It is not super critical to remember all this. Most of this is obvious; so, don't sweat it.
-> - Lists have dashes and operation occurs in sequence.
 > - It is possible to represent same data is multiple ways. This can be a confusing factor.
 > - Syntax check tools are available.
 >   - `ansible-playbook play-1.yml --syntax-check`
@@ -584,7 +589,6 @@ Pre_checks:
 >   - http://www.yamllint.com
 
 - Review the subsection and discuss if you have any questions.
-
 
 ## Playbooks
 - Playbook is a method to execute multiple tasks on multiple groups of devices, intelligently, with one user-initiated command.
