@@ -504,14 +504,14 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
 
 ## YAML format
 - Below are some content representations.
+- Comments begin with number sign ( **#** )
 - Space: Empty space is to be typed with "space-bar". Space with "Tab" key is invalid: `space` but `not tab`
   - Use "space bar key"
   - "tab key" indentation **won't work**
 - String: wrapped in *single* or *double* quotes.
   - Example: `"sample string"` `'another sample string'`
-- Comments begin with number sign ( **#** )
 
--  Lists or arrays: 
+- Lists or arrays: 
   - Lists are **ordered** data, meaning the order in which the items appear matter.
   - Lists are a sequence of items
   - Lists start with a - (hyphen+space).
