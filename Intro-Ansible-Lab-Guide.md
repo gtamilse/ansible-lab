@@ -4,6 +4,7 @@
 # **<p align="center">ANSIBLE</p>**
 
 ---
+<!-- toc -->
 # TABLE OF CONTENTS:
 ## [Introduction](#introduction)
 ## [Lab Setup](#lab-setup)
@@ -16,7 +17,7 @@
 ## Reference
 
 ---
-# Introduction [introduction]
+# Introduction
 ## Objective
 - To provide hands-on exposure to automating simple network operational tasks using basic Ansible features.
 
@@ -31,7 +32,7 @@
 - Credentials are same across pods. If you use wrong IP addresses, you will end up working on others' pod.
 
 ---
-# Lab Setup[lab-setup]
+# Lab Setup
 
 The network topology used in this lab consists of the two Cisco routers and to a Ubuntu Server. The Ubuntu server will act as the Ansible Controller Machine and the Cisco Routers (IOSXE and IOS-XR) will be the network devices subjected to automation.
 ## Topology
