@@ -739,8 +739,8 @@ Playbook level parameters
 - Display output of "show ip route summ" from all IOS routers
 - Create a playbook file with the below contents and name it, raw-ios-route-summ.yml
 - Execute the playbook with below CLI:
-  - ansible-playbook raw-ios-route-summ.yml --syntax-check
-  - ansible-playbook raw-ios-route-summ.yml -u cisco -k
+  - ansible-playbook ios_sh_ip_route_sum.yml --syntax-check
+  - ansible-playbook ios_sh_ip_route_sum.yml -v
 
 ```
 cisco@ansible-controller:~$ vi ios_sh_ip_route_sum.yml
@@ -777,7 +777,7 @@ cisco@ansible-controller:~$ vi ios_sh_ip_route_sum.yml
 ### ![hands-on](./images/handson.png)Examples-1
 
 ```
-cisco@ansible-controller:~$ vi ios-rtr-cfg.yml
+cisco@ansible-controller:~$ vi ios_rtr_cfg.yml
 ---
 - name: IOS Module Router Config
   hosts: IOS
@@ -798,7 +798,7 @@ cisco@ansible-controller:~$ vi ios-rtr-cfg.yml
 ```
 ### ![hands-on](./images/handson.png)Examples-2
 ```
-cisco@ansible-controller:~$ vi xr-rtr-cfg.yml
+cisco@ansible-controller:~$ vi xr_rtr_cfg.yml
 ---
 - name: XR Module Router Config
   hosts: XR
@@ -807,7 +807,7 @@ cisco@ansible-controller:~$ vi xr-rtr-cfg.yml
 
   tasks:
     - name: Collect Router Version and Config
-      iosxr_command:   ##Using the ios_command module
+      iosxr_command:   ##Using the iosxr_command module
          commands:
             - show version
             - show ip int bri
@@ -842,9 +842,8 @@ cisco@ansible-controller:~$ vi xr-rtr-cfg.yml
 ```
 
 ## Conditionals
+- It is possible to tie a **when** condition to a task and have it executed based on meeting a condition.
 - We are going to cover "when" condition at basic level in this section.
-- It is possible to tie a **when** condition to a task and have it executed (or not) based on meeting a condition.
-- It is possible to do complex tasks but here, let us stick to basic level.
 
 > Notes:
 > http://docs.ansible.com/ansible/latest/playbooks_conditionals.html
@@ -876,7 +875,6 @@ cisco@ansible-controller:~$ vi ios-conditional-check.yml
 
 ## Loops
 - Loop is used when a lot of actions are to be executed repeatedly.
-
 
 ```
 cisco@ansible-controller:~$ vi ios-rtr-cfg-1.yml
@@ -1243,7 +1241,7 @@ cisco@Ansible-Controller:~/project1$ vi iosxe-snapshot-tool.yml
 
 In this play you are setting a tag value "pre_play" as part of the pre-check play. Ansible allows tags to be added at the play or task level. When executing a playbook, you can select which plays or tasks to perform by listing the tag id as part of the --tags= syntax.
 
-Ex: ansible-playbook iosxe-snapshot-tool.yml --tags=pre_check
+Ex: ansible-playbook iosxe-snapshot-tool.yml --tags=pre_play
 
 **Step 2 -** Create a second play inside the previous iosxe-snapshot-tool playbook to collect and save the post-check commands (similar to pre-check play).
 
