@@ -6,8 +6,8 @@
 ---
 # TABLE OF CONTENTS:
 # [Introduction](#introduction)
-# Lab Setup
-# What is Ansible
+# [Lab Setup](#lab-setup)
+# [What is Ansible](#what-is-ansible)
 # Installation
 # Ansible Concepts
 # Basic Playbooks
