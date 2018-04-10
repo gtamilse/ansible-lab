@@ -4,14 +4,40 @@
 # **<p align="center">ANSIBLE</p>**
 
 ---
-<!-- toc -->
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [Introduction](#introduction)
+- [Lab Setup](#lab-setup)
+- [What is Ansible](#what-is-ansible)
+- [Installation](#installation)
+- [Ansible Concepts](#ansible-concepts)
+	- [Inventory file](#inventory-file)
+	- [Ansible Modules](#ansible-modules)
+- [YAML (rhymes with camel)](#yaml-rhymes-with-camel)
+- [Basic Playbooks](#basic-playbooks)
+	- [Raw module](#raw-module)
+	- [IOS and IOS_XR Commands modules](#ios-and-iosxr-commands-modules)
+	- [Variables](#variables)
+	- [Conditionals](#conditionals)
+	- [Loops](#loops)
+	- [Config module (IOS and IOS XR)](#config-module-ios-and-ios-xr)
+- [Automating Network Operations tasks](#automating-network-operations-tasks)
+	- [![hands-on](./images/handson.png)Exercise 1 - Configure OSPF on all routers](#hands-onimageshandsonpngexercise-1-configure-ospf-on-all-routers)
+	- [![hands-on](./images/handson.png)Exercise 2 - Automate router running-config backups](#hands-onimageshandsonpngexercise-2-automate-router-running-config-backups)
+	- [![hands-on](./images/handson.png)Exercise 3 -  Create snapshot tool](#hands-onimageshandsonpngexercise-3-create-snapshot-tool)
+	- [![hands-on](./images/handson.png)Exercise 4 - Ansible Vault](#hands-onimageshandsonpngexercise-4-ansible-vault)
+- [Acknowledgements](#acknowledgements)
+- [Reference](#reference)
+
+<!-- /TOC -->
+
 # TABLE OF CONTENTS:
 ## [Introduction](#introduction)
 ## [Lab Setup](#lab-setup)
 ## [What is Ansible](#what-is-ansible)
-## Installation
-## Ansible Concepts
-## Basic Playbooks
+## Installation(#installation)
+## Ansible Concepts(#ansible-concepts)
+## Basic Playbooks(#basic-playbooks)
 ## Automating Network Operations
 ## Acknowledgements
 ## Reference
@@ -56,7 +82,7 @@ The network topology used in this lab consists of the two Cisco routers and to a
 - Review the section and discuss if you have any questions.
 ---
 
-## What is Ansible
+# What is Ansible
 - Topology
 
 ![Ansible topology](./images/ansible-topology.png)
