@@ -5,7 +5,7 @@
 
 ---
 # TABLE OF CONTENTS:
-# Introduction
+# [Introduction](#introduction)
 # Lab Setup
 # What is Ansible
 # Installation
