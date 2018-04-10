@@ -30,18 +30,6 @@
 - [Reference](#reference)
 
 <!-- /TOC -->
-
-# TABLE OF CONTENTS:
-## [Introduction](#introduction)
-## [Lab Setup](#lab-setup)
-## [What is Ansible](#what-is-ansible)
-## Installation(#installation)
-## Ansible Concepts(#ansible-concepts)
-## Basic Playbooks(#basic-playbooks)
-## Automating Network Operations
-## Acknowledgements
-## Reference
-
 ---
 # Introduction
 ## Objective
