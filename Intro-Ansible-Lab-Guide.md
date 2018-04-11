@@ -179,7 +179,7 @@ cisco@server-1:~$
 - Find Ansible config file
   - `ansible --version`
 - Browse the config file and quickly go over different sections, denoted by [XXX]
-- In this section, we will edit 4 settings:
+- In this section, we will edit 4 settings inside the ansible.cfg file:
   - inventory file name: (points to config file path)
   - retry file creation: (do not create retry file if playbook execution fails)
   - ssh host-key check: (do not check for ssh keys authentication)
@@ -189,8 +189,7 @@ cisco@server-1:~$
   - `grep host_key /etc/ansible/ansible.cfg`
   - `grep timeout /etc/ansible/ansible.cfg`
   - `grep retry_files_enabled /etc/ansible/ansible.cfg`
-- After editing the config file will look like below. The following output is for observation only; **do not copy/paste**.
-
+- After editing, the config file will look like below. The following output is for observation only; **do not copy/paste**.
 ```
 [defaults]
 
@@ -209,8 +208,9 @@ retry_files_enabled = False
 - Config line for our parameters is commented. We will need to uncomment.
   - Delete # at the beginning of the line:
   - You may either edit the file **or** copy/paste the below command at $ prompt.
-  - You can edit the file in many ways, such as "vi". Do it using your favorite method.
-  - Below, it is done through "sed" command; If you prefer to follow the belwo "sed" method, simply copy/paste from Ubuntu $ prompt, on Ansible server.
+  - You can edit the file in many ways, such as "vi" or "nano". Do it using your favorite method.
+  - sudo user privilege is required to edit /etc/ansible/ansible.cfg file.
+  - Below, it is done through "sed" command; If you prefer to follow the below "sed" method, simply copy/paste from Ubuntu $ prompt, on Ansible server.
 
 ```
 sudo sed -i s/"#inventory      = \/etc\/ansible\/hosts"/"inventory      = \/etc\/ansible\/hosts"/g /etc/ansible/ansible.cfg
@@ -250,12 +250,6 @@ sudo sed -i s/"#retry_files_enabled = False"/"retry_files_enabled = False"/g /et
     executable location = /usr/bin/ansible
     python version = 2.7.6 (default, Oct 26 2016, 20:30:19) [GCC 4.8.4]
   .
-  cisco@Ansible-Controller:~$ grep inventory /etc/ansible/ansible.cfg
-  #inventory      = /etc/ansible/hosts  <<<
-  # if inventory variables overlap, does the higher precedence one win
-  :
-  # If 'true' unparsed inventory sources become fatal errors, they are warnings otherwise.
-  .
   cisco@Ansible-Controller:~$ sudo sed -i s/"#inventory      = \/etc\/ansible\/hosts"/"inventory      = \/etc\/ansible\/hosts"/g /etc/ansible/ansible.cfg
   .
   cisco@ansible-controller:~$ sudo sed -i s/"#retry_files_enabled = False"/"retry_files_enabled = False"/g /etc/ansible/ansible.cfg
@@ -289,7 +283,7 @@ sudo sed -i s/"#retry_files_enabled = False"/"retry_files_enabled = False"/g /et
 - Review the config file subsection and discuss if you have any questions.
 
 ## Inventory file
-- Ansible can wotk on multiple devices at the same time.
+- Ansible can work on multiple devices at the same time.
 - This is possible by listing several devices in the inventory file.
 - We can have more than one inventory files. In this session, we will use only one inventory file.
 - As per the config file that we editied above, our inventory file is: /etc/ansible/hosts
@@ -308,15 +302,15 @@ IP-3
 IP-4
 
 [superset-group-1:children]
-[device-group-1]
-[device-group-2]
+device-group-1
+device-group-2
 
 [superset-group-2:children]
-[device-group-3]
-[device-group-n]
+device-group-3
+device-group-n
 
 ```
-- You can add parameters in the inventory files, as follows
+- You can add parameters in the inventory files, as follows:
 
 ```
 [device-group-1]
@@ -327,19 +321,11 @@ IP-n
 IP-1
 IP-n ansible_user=cisco ansible_ssh_pass=cisco
 
-[superset-group-1:children]
-[device-group-1]
-[device-group-2]
-
-[superset-group-2:children]
-[device-group-3]
-[device-group-n]
-
 ```
 ### Edit inventory file
 - Edit your default inventory file: /etc/ansible/hosts
 - Find out your IOS and XR router mgmt IP addresses. Plug them in the file below.
-- For editing, you may use your favorite method. Below one is just an example.
+- For editing, you may use your favorite method (vi or nano). Below one is just an example.
 - Edit below text with correct IP addresses and copy/paste the text at Ubuntu $ prompt, to append to /etc/ansible/hosts file.
 - Our entries are:
 
@@ -529,7 +515,8 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
 - **Lists or arrays:** 
   - Lists are **ordered** data, meaning the order in which the items appear matter.
   - Lists are a sequence of items
-  - Lists start with a - (hyphen+space).
+  - Lists start with a "- " (hyphen+space).
+  - Lists can also be consolidated on a single line using square **[]** brackets 
   - All members of a list are lines beginning at the same indentation level.
   - Observe `hyphen` and `space hierarchy` in the below examples:
 
@@ -548,6 +535,7 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
   - Dictionaries are a mapping of key with a value.
   - Set of properties of some data
   - Dictionaries are **unordered** data, meaning items can be defined in any order.
+  - Dictionaires can be consolidated on a single line using curly **{}** brackets and each key:value pair separated with commas. 
   - Space-hierarchy is important. See the below examples:
   - Key value pair:
     - Structure: (`key` `colon` `space` `value`)
@@ -568,8 +556,9 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
 - **Merging Lists and Dictionaries:** 
   - More complicated data structures can be formed by merging lists and dictionaries. 
   - You can have lists in a dictionary and dictionaries in a list.
-- Pay attention to `spaces` and `dashes` in the below examples:
-  - List of 2 dictionaries (GigabitEthernet0 and GigabitEthernet1)
+- Pay attention to `spaces` and `dashes` in the below concept example:
+  - Example is a list of 2 dictionaries (GigabitEthernet0 and GigabitEthernet1)
+  - Under each list item (ex: GigabitEthernet0) there are several key:value pairs.
 
 ```
 ---
@@ -597,7 +586,7 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
 
 > Notes:
 > - It is not super critical to remember all this. Most of this is obvious; so, don't sweat it.
-> - It is possible to represent same data is multiple ways. This can be a confusing factor.
+> - It is possible to represent the same data is multiple ways. This can be a confusing factor.
 > - Syntax check tools are available.
 >   - `ansible-playbook play-1.yml --syntax-check`
 >   - https://codebeautify.org/yaml-validator
@@ -606,18 +595,17 @@ ansible ALL -m raw -a "sho ip interface brief" -u cisco -k
 - Review the subsection and discuss if you have any questions.
 
 ## Playbooks
-- Playbook is a method to execute multiple tasks on multiple groups of devices, intelligently, with one user-initiated command.
-- Playbook is the main means of Ansible automation.
+- Playbooks are a method to execute multiple tasks on multiple groups of devices, intelligently, with one user-initiated command.
+- Playbooks are the main means of Ansible automation.
 - Playbooks are written in YAML format.
 - A "playbook" is a collection of plays.
 - A playbook can have variables, parameters, loops, conditionals etc. to handle complex tasks.
-- Playbook typically have exetension .yml or .yaml
+- Playbooks typically have exetension .yml or .yaml
 - Playbook structure:
-  - Playbook contains a list of plays.
-  - Each "play", mainly has 2 sections: 1) play-level parameters and 2) one or more "tasks"
-  - Each "tasks" section contains a list of modules.
-  - Each "module" consists a list of actions (~commands).
-  - All this is written in YAML format.
+  - Playbook contains one or more "plays" in a list.
+  - The goal of a "play" is to map a selection of hosts to some well-defined tasks. 
+  - Each "tasks" section contains a list of modules to be executed in order.
+  - Each "module" consists of a list of actions (~commands).
 - Here is a typical structure:
 
 ```
@@ -658,6 +646,7 @@ Playbook level parameters
 ![hands-on](./images/handson.png)
 
 ```
+cisco@ansible-controller:~$ vi p1.yml
 ---
 - name: play-1-output from IOS routers
   hosts: IOS
@@ -685,9 +674,6 @@ Playbook level parameters
     - debug:
         var: XR_output
 ```
-- The register statement is used to capture the output of a task into a variable.
-- The debug module prints statements during execution and useful for debugging variables.
-- The debug takes in var parameter, which is the variable you want to debug (print output of).
 
 - The above playbook is same as the below in functionality; just another YAML representation.
 - copy the below contents into a file and name it p2.yml
@@ -695,6 +681,7 @@ Playbook level parameters
 ![hands-on](./images/handson.png)
 
 ```
+cisco@ansible-controller:~$ vi p2.yml
 ---
 - name: play-1-output from IOS routers
   hosts: IOS
@@ -719,8 +706,14 @@ Playbook level parameters
   - `ansible-playbook p1.yml -u cisco -k`
   - `ansible-playbook p2.yml`
   - `ansible-playbook p1.yml --syntax-check`
+  - `ansible-playbook p1.yml -v`
   - `ansible-playbook p1.yml --check`
   - `ansible-playbook p1.yml --step`
+
+- The --syntax-check option will perform a syntax check on the playbook, but it does not execute the playbook. 
+- The -v option is verbose mode, this will print more details on each task execution within the playbook. Useful for debuggin.
+- The --check option will not make any changes during playbook execution; instead it tries to show some of the changes that may occur if the playbook were to be executed. Useful way to check playbook execution without actually executing it. 
+- The --step option will prompt you to confirm each task before it is executed. 
 
 > Quick read now, research later:
 >
@@ -728,12 +721,14 @@ Playbook level parameters
 > - By default, Ansible collects system information. This is not supported in our environment and hence disabled.
 >
 > "register"
-> - Save the result in a variable. In this case, we are saving "show ip.." output in edge_output
+> - The register statement is used to capture the output of a task into a variable.
+> - In this case, we are saving "show ip.." output in edge_output
 > - Refer: http://docs.ansible.com/ansible/latest/playbooks_conditionals.html#register-variables
 >
 > "debug"
-> - Debug module prints data
-> - reference: http://docs.ansible.com/ansible/latest/debug_module.html
+> - The debug module prints statements during execution and useful for debugging variables
+> - The debug takes in var parameter, which is the variable you want to debug (print output of).
+> - Refer: http://docs.ansible.com/ansible/latest/debug_module.html
 
 ---
 
@@ -741,12 +736,11 @@ Playbook level parameters
 - Expected time to complete: 45mins
 - This section has the following subsections:
   - Raw module
-  - Variables (vars file)
   - Commands module (IOS and IOSXR)
+  - Variables (vars file)
   - Conditionals
-  - Config module (IOS and IOSXR)
   - Loops
-  - Interface module (IOS and IOSXR)
+  - Config module (IOS and IOSXR)
 
 ## Raw module
 - Recall from earlier section, below is Ansible CLI using raw module:
@@ -836,9 +830,9 @@ cisco@ansible-controller:~$ vi xr_rtr_cfg.yml
 ```
 
 ## Variables
-- Variables are variables, to which we can assign values.
-- Variables are defined in playbooks use "{{ }}" single/double quotes around double curly brackets
-- Variable names should be letters, numbers, and underscores. Variables should always start with a letter.
+- Ansible uses variables to store information that can vary with each host.
+- Variables are defined in playbooks using "{{ }}" single/double quotes around double curly brackets
+- Variable names can contain letters, numbers, and underscores. Variables should always start with a letter.
   - Valid: `foo_port` or `foo5`
   - Invalid: `foo port` (no space) or `5foo` (no start with number) or `foo.port` (no dot) or `foo-port` (no dash)
 - This is some most basic info. As you work through, you will learn more info.
@@ -858,10 +852,13 @@ cisco@ansible-controller:~$ vi xr_rtr_cfg.yml
       password: "{{ ansible_ssh_pass }}"
 
 ```
+- In the above example the variables defined are the same ones listed in the inventory file.
+- Ansible allows you to set variables inside the inventory file and recall them in use inside a playbook.
+- Note: if the variable is defined in the inventory file, you don't have to redefine it inside the playbook, the above is just an example of variables.
 
 ## Conditionals
 - It is possible to tie a **when** condition to a task and have it executed based on meeting a condition.
-- We are going to cover "when" condition at basic level in this section.
+- Ansible uses a when clause to dictate a conditional which needs to be true in order for the task to be performed. 
 
 > Notes:
 > http://docs.ansible.com/ansible/latest/playbooks_conditionals.html
@@ -892,7 +889,12 @@ cisco@ansible-controller:~$ vi ios-conditional-check.yml
 ```
 
 ## Loops
-- Loop is used when a lot of actions are to be executed repeatedly.
+- Ansible loops are used when repeatedly performing the same task with a set of different items. 
+- In the example below ios_command module will execute the commands in the list of items.
+
+- Starting with Ansible version 2.5, with_items has be deprecated, and replaced with **loop**. 
+- Same as with_item, just name changed to loop.
+> - Refer to http://docs.ansible.com/ansible/devel/user_guide/playbooks_loops.html
 
 ```
 cisco@ansible-controller:~$ vi ios-rtr-cfg-1.yml
@@ -1061,7 +1063,7 @@ cisco@Ansible-Controller:~/project1$ vi multi-host-ospf-config.yml
 ```
 **Step 3 -** Edit the playbook so that it only configures OSPF, if OSPF is not  already present on the router.
 
-Setup a pre-check task which runs before the configure task to first check if OSPF is already configured on the router.
+Setup a pre-check task, which will run before the configure ospf task, to first check if OSPF is already configured on the router.
 
 In order to accomplish this task, you will need to use the Ansible meta module. The meta task is a special kind of task which can directly influence the Ansible internal execution/state.
 
@@ -1072,7 +1074,10 @@ In this step, you will use it as a conditional to end the play if OSPF is alread
 cisco@Ansible-Controller:~/project1$ vi multi-host-ospf-config.yml
 
 ---
-- name: IOS XE OSPF CONFIG
+- name: IOS OSPF CONFIG
+  hosts: IOS
+  gather_facts: false
+  connection: local
 
   tasks:
     - name: pre-check for ospf config
@@ -1085,7 +1090,20 @@ cisco@Ansible-Controller:~/project1$ vi multi-host-ospf-config.yml
     - meta: end_play
       when: iosxe_ospf_pre.stdout | join('') | search('router ospf')
 
-      - name: configure ospf in CSR1Kv
+    - name: configure ospf in CSR1Kv
+      ios_config:
+          parents: "router ospf 1"
+          lines:
+            - "router-id 192.168.0.1"
+            - "log-adjacency-changes"
+            - "passive-interface Loopback0"
+            - "network 192.168.0.1 0.0.0.0 area 0"
+            - "network 10.0.0.4 0.0.0.3 area 0"
+
+      register: iosxe_ospf_cfg
+
+    - debug: var=iosxe_ospf_cfg
+
 
 - name: XR OSPF Config
   hosts: XR
@@ -1096,7 +1114,7 @@ cisco@Ansible-Controller:~/project1$ vi multi-host-ospf-config.yml
     - name: pre-check for ospf config
       iosxr_command:
         commands:
-          - show run | be ospf
+          - show run router ospf
 
       register: iosxr_ospf_pre
 
@@ -1104,6 +1122,21 @@ cisco@Ansible-Controller:~/project1$ vi multi-host-ospf-config.yml
       when: iosxr_ospf_pre.stdout | join('') | search('router ospf')
 
     - name: configure ospf in XRv
+      iosxr_config:
+        parents: "router ospf 1"
+        lines:
+          - "router-id 192.168.0.2"
+          - " log adjacency changes"
+          - "area 0"
+          - "interface Loopback0"
+          - "passive enable"
+          - "exit"
+          - "interface GigabitEthernet0/0/0/0 cost 1"
+          - "exit"
+
+      register: iosxr_ospf_cfg
+
+    - debug: var=iosxr_ospf_cfg
 
 ```
 
@@ -1140,7 +1173,8 @@ cisco@Ansible-Controller:~/project1$ ansible-playbook multi-host-ospf-config.yml
 
 ```
 
-Check the playbook execution to verify OSPF configuration was successful. Observe the post-check "show ip route ospf"output to verify OSPF routes are being exchanged between the two routers (check loopback ip).
+- Check the playbook execution to verify OSPF configuration was successful. Observe the post-check "show ip route ospf" output to verify OSPF routes are being exchanged between the two routers (check loopback ip).
+- Rerun the playbook once more and observe the configure opsf tasks being skipped due to the conditional check in the pre-check task.
 
 ---
 
