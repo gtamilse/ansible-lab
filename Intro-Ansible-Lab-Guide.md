@@ -685,6 +685,9 @@ Playbook level parameters
     - debug:
         var: XR_output
 ```
+- The register statement is used to capture the output of a task into a variable.
+- The debug module prints statements during execution and useful for debugging variables.
+- The debug takes in var parameter, which is the variable you want to debug (print output of).
 
 - The above playbook is same as the below in functionality; just another YAML representation.
 - copy the below contents into a file and name it p2.yml
