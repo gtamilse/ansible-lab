@@ -747,7 +747,7 @@ cisco@ansible-controller:~$ vi p2.yml
   - `ansible XR -m raw -a "sho ip int br" -u gnaganab -k` (FYI only. need not execute)
   - In the below example, raw module is used in a playbook
 
-### ![hands-on](./images/handson.png)Example
+### ![hands-on](./images/handson.png)Example-1
 - Display output of "show ip route summ" from all IOS routers
 - Create a playbook file with the below contents and name it, raw-ios-route-summ.yml
 - Execute the playbook with below CLI:
@@ -863,7 +863,7 @@ cisco@ansible-controller:~$ vi xr_rtr_cfg.yml
 > Notes:
 > http://docs.ansible.com/ansible/latest/playbooks_conditionals.html
 
-### Examples
+### ![hands-on](./images/handson.png)Examples-1
 ```
 cisco@ansible-controller:~$ vi ios-conditional-check.yml
 ---
@@ -896,6 +896,7 @@ cisco@ansible-controller:~$ vi ios-conditional-check.yml
 - Same as with_item, just name changed to loop.
 > - Refer to http://docs.ansible.com/ansible/devel/user_guide/playbooks_loops.html
 
+### ![hands-on](./images/handson.png)Examples-1
 ```
 cisco@ansible-controller:~$ vi ios-rtr-cfg-1.yml
 ---
@@ -925,7 +926,7 @@ cisco@ansible-controller:~$ vi ios-rtr-cfg-1.yml
 - Config module uses parent and line options to structure the configuration in a heirarchical way
 > - Refer: http://docs.ansible.com/ansible/latest/iosxr_config_module.html
 
-### Examples
+### Examples-1
 
 ```
  tasks:
