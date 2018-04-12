@@ -23,9 +23,9 @@
 	- [Config module (IOS and IOS XR)](#config-module-ios-and-ios-xr)
 - [Automating Network Operations tasks](#automating-network-operations-tasks)
 	- [Exercise 1 - Configure OSPF on all routers](#exercise-1---configure-ospf-on-all-routers)
-	- [![hands-on](./images/handson.png)Exercise 2 - Automate router running-config backups](#hands-onimageshandsonpngexercise-2-automate-router-running-config-backups)
-	- [![hands-on](./images/handson.png)Exercise 3 -  Create snapshot tool](#hands-onimageshandsonpngexercise-3-create-snapshot-tool)
-	- [![hands-on](./images/handson.png)Exercise 4 - Ansible Vault](#hands-onimageshandsonpngexercise-4-ansible-vault)
+	- [Exercise 2 - Automate router running-config backups](#exercise-2---automate-router-running-config-backups)
+	- [Exercise 3 -  Create snapshot tool](#exercise-3---create-snapshot-tool)
+	- [Exercise 4 - Ansible Vault](#exercise-4---ansible-vault)
 - [Acknowledgements](#acknowledgements)
 - [Reference](#reference)
 
