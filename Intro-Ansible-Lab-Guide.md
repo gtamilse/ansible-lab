@@ -24,7 +24,7 @@
 - [Automating Network Operations tasks](#automating-network-operations-tasks)
 	- [Exercise 1 - Configure OSPF on all routers](#exercise-1---configure-ospf-on-all-routers)
 	- [Exercise 2 - Automate router running-config backups](#exercise-2---automate-router-running-config-backups)
-	- [Exercise 3 -  Create snapshot tool](#exercise-3---create-snapshot-tool)
+	- [Exercise 3 - Create snapshot tool](#exercise-3---create-snapshot-tool)
 	- [Exercise 4 - Ansible Vault](#exercise-4---ansible-vault)
 - [Acknowledgements](#acknowledgements)
 - [Reference](#reference)
@@ -1241,7 +1241,7 @@ cisco@Ansible-Controller:~/project1$ sudo vi /etc/crontab
 
 ```
 ---
-## ![hands-on](./images/handson.png)Exercise 3 -  Create snapshot tool
+## ![hands-on](./images/handson.png)Exercise 3 - Create snapshot tool
 
 In this exercise, you will create a snapshot tool (playbook) which will take two sets of captures, a pre and post capture, and compare the two files to find the differences. Commonly done during network maintenance windows.
 
