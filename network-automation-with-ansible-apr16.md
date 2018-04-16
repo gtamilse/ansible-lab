@@ -25,6 +25,7 @@
 ---
 
 # Lab Access
+- Expected time to complete: 10 min.
 
 ## Topology
 ![topology](./images/ansible-lab-topo.png)
@@ -63,6 +64,7 @@
 ---
 
 # Ansible Concepts
+- Expected time to complete: 30 min.
 - The following concepts are covered in this section:
   - Configuration file
   - inventory file
