@@ -49,13 +49,13 @@
   - IP: `172.16.101.x`
   - User: `cisco`
   - Password: `cisco`
-- If your PC is MAC, from terminal app: `ssh cisco@172.16.101.x`
+- If your PC is MAC, from terminal app: `$ ssh cisco@172.16.101.x`
 
 ### Ping your routers from Ansible server
 - Find your Ansible server IP address
   - Refer to the Smartsheet that Manish sent.
-- On Ansible server, from Ubuntu $ prompt, `ping <IOS router IP>`
-- And, `ping <XR router IP>`
+- On Ansible server, from Ubuntu $ prompt, `$ ping <IOS router IP>`
+- And, `$ ping <XR router IP>`
 - You should be able to **ssh into Ubuntu server and ping R1 and R2** to advance to the next section.
 - Review the section and discuss if you have any questions.
 
@@ -72,9 +72,9 @@
 
 ## Verification
 - Verify Ansible installation. Execute the commands below:
-  - `ansible --version`
-  - `which ansible`
-  - `ansible --help`
+  - `$ ansible --version`
+  - `$ which ansible`
+  - `$ ansible --help`
 
 ### Sample output
 
@@ -179,9 +179,9 @@ XR
 - List inventory groups:
 
 ```
-ansible --list-hosts IOS
-ansible --list-hosts XR
-ansible --list-hosts ALL
+$ ansible --list-hosts IOS
+$ ansible --list-hosts XR
+$ ansible --list-hosts ALL
 ```
 
 ### Example output:
