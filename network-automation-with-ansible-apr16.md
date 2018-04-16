@@ -69,7 +69,6 @@
   - Configuration file
   - inventory file
   - Ansible Modules
-  - YAML
   - Ansible Playbooks
 
 ## Verification
