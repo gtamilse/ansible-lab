@@ -10,32 +10,15 @@
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [**<p align="center">NETWORK AUTOMATION</p>**](#p-aligncenternetwork-automationp)
-- [*<p align="center">with</p>*](#p-aligncenterwithp)
-- [**<p align="center">ANSIBLE</p>**](#p-aligncenteransiblep)
-- [**<p align="center">Lab Guide</p>**](#p-aligncenterlab-guidep)
-- [Table of Contents](#table-of-contents)
 - [Lab Access](#lab-access)
 	- [Topology](#topology)
 	- [Lab access](#lab-access)
-		- [VPN in](#vpn-in)
-		- [SSH into "your" Ansible server](#ssh-into-your-ansible-server)
-		- [Ping your routers from Ansible server](#ping-your-routers-from-ansible-server)
 - [Ansible Concepts](#ansible-concepts)
 	- [Verification](#verification)
-		- [Sample output](#sample-output)
 	- [Configuration file](#configuration-file)
-		- [Sample output](#sample-output)
 	- [Inventory file](#inventory-file)
-		- [Example output](#example-output)
-		- [Verification](#verification)
-		- [Example output:](#example-output)
 	- [Ansible Modules](#ansible-modules)
-		- [Using "raw" module](#using-raw-module)
-		- [Examples](#examples)
 	- [Playbooks](#playbooks)
-		- [Executing playbooks](#executing-playbooks)
-		- [Optional playbook](#optional-playbook)
 
 <!-- /TOC -->
 
