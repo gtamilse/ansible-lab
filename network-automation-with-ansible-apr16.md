@@ -179,7 +179,7 @@ XR
 ```
 
 ### Verification
-- Read the contents of inventory file and verify acuracy: `$ cat /etc/ansible/hosts`
+- Read the contents of inventory file and verify accuracy: `$ cat /etc/ansible/hosts`
 - List inventory groups:
 
 ```
