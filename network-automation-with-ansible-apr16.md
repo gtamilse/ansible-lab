@@ -274,7 +274,6 @@ $ ansible ALL -m raw -a "sho ip interface brief"
       module-n
         action-1
         action-n
-...
 ```
 
 - Copy the below contents into a file called p1.yml
@@ -293,7 +292,6 @@ $ ansible ALL -m raw -a "sho ip interface brief"
 
     - debug:
         var: IOS_output
-...
 ```
 
 ### Executing playbooks
@@ -340,7 +338,6 @@ $ ansible ALL -m raw -a "sho ip interface brief"
     - raw: show route summary
       register: XR_output
     - debug: var=XR_output
-...
 ```
 
 - Execute the playbook p2.yml:
