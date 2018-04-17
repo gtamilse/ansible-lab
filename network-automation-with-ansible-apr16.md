@@ -648,4 +648,11 @@ cisco@ansible-controller:~$ cat basic_loops.yml
 
 # Lab Answers
 - http://172.16.101.93
+- If you want to copy any file: `$ scp cisco@172.16.101.93:/var/www/html/file .`
+
+---
+
+**<p align="center">End of Lab</p>**
+
+--- 
 
