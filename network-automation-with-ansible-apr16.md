@@ -19,6 +19,7 @@
 	- [Inventory file](#inventory-file)
 	- [Ansible Modules](#ansible-modules)
 	- [Playbooks](#playbooks)
+- [Lab Answers] (#lab-answers)
 
 <!-- /TOC -->
 
