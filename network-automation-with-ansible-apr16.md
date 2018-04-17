@@ -346,6 +346,299 @@ $ ansible ALL -m raw -a "sho ip interface brief"
 
 ---
 
+# Basic Playbooks
+- Expected time to complete: 45mins
+- This section covers the following:
+  - Raw module
+  - Commands module (IOS and IOSXR)
+  - Config module (IOS and IOSXR)
+  - Variables
+  - Conditionals
+  - Loops
+
+## Raw module
+- In the last section, you used "raw" module in Ansible command line. Here, we are going to use it in a playbook.
+- Goal: Collect "show ip route summary" output from all routers in the group, IOS.
+- Create a playbook with the contents below:
+
+```
+cisco@ansible-controller:~$ cat basic_raw.yml
+
+---
+- name: show ip route summary from IOS devices
+  hosts: IOS
+  gather_facts: false
+
+  tasks:
+    - name: exec CLI using raw module
+      raw:
+        sho ip route summary
+
+      register: IOS_output
+
+    - name: print output
+      debug:
+        var: IOS_output
+```
+- Execute: `$ ansible-playbook basic_raw.yml --syntax-check`
+- Execute: `$ ansible-playbook basic_raw.yml`
+
+---
+
+## IOS and IOS XR Command modules
+- The module names are: **ios_command** and **iosxr_command**
+
+### IOS Command module
+- Goal: Capture time and interface list from routers in IOS group
+- Create a playbook with the contents below:
+
+```
+cisco@ansible-controller:~$ cat basic_ios_cmd.yml
+
+---
+- name: IOS Module Router Config
+  hosts: IOS
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Collect Router time and intf list
+      ios_command:
+         authorize: yes
+         commands:
+           - show clock
+           - show ip int brief
+
+      register: OUTPUT
+
+    - name: print output
+      debug: var=OUTPUT.stdout_lines
+```
+- Execute: `$ ansible-playbook basic_ios_cmd.yml --syntax-check`
+- Execute: `$ ansible-playbook basic_ios_cmd.yml`
+
+### IOS XR Command module
+
+- Goal: Capture time and interface list from routers in XR group
+- Create a playbook with the contents below:
+
+```
+cisco@ansible-controller:~$ cat basic_xr_cmd.yml
+
+---
+- name: IOS Module Router Config
+  hosts: XR
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Collect Router time and intf list
+      iosxr_command:
+        commands:
+          - show clock
+          - show ip int brief
+
+      register: OUTPUT
+
+    - name: print output
+      debug: var=OUTPUT.stdout_lines
+```
+
+- Execute: `$ ansible-playbook basic_xr_cmd.yml --syntax-check`
+- Execute: `$ ansible-playbook basic_xr_cmd.yml`
+
+---
+
+## IOS and IOS XR Config modules
+- The module names are: ios_command and iosxr_command
+
+### IOS Config module
+- Goal: Configure interface loopback1 and assign an IP address on all routers in IOS group
+
+```
+cisco@ansible-controller:~$ cat basic_ios_config.yml
+
+---
+- name: IOS Module Router Config
+  hosts: IOS
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Configure Interface Setting
+      ios_config:
+        parents: "interface loopback 1"
+        lines:
+          - "description test"
+          - "ip address 1.1.1.1 255.255.255.255"
+```
+- Execute: `$ ansible-playbook basic_ios_config.yml --syntax-check`
+- Execute: `$ ansible-playbook basic_ios_config.yml`
+
+### IOS XR Config module
+- Goal-1: Configure interface loopback1 and assign an IP address on all routers in XR group
+
+```
+cisco@ansible-controller:~$ cat basic_xr_config.yml
+
+---
+- name: XR Module Router Config
+  hosts: XR
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Configure Interface Setting
+      iosxr_config:
+        parents: "interface loopback 1"
+        lines:
+          - "description test"
+          - "ip address 1.1.1.2 255.255.255.255"
+```
+- Execute: `$ ansible-playbook basic_xr_config.yml --syntax-check`
+- Execute: `$ ansible-playbook basic_xr_config.yml`
+- :
+- **Goal-2**: Create loopback1, assign an IP address and display its config on all routers in XR group
+- Create one playbook with two tasks. Task-1 to configure loopback-1 and task-2 to read the running config.
+
+```
+cisco@ansible-controller:~$ cat basic_xr_config_show.yml
+
+---
+- name: XR Module Router Config
+  hosts: XR
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Configure Interface Setting
+      iosxr_config:
+        parents: "interface loopback 1"
+        lines:
+          - "description test"
+          - "ip address 1.1.1.2 255.255.255.255"
+
+    - name: read loopback1 intf config
+      iosxr_command:
+        authorize: yes
+        commands:
+          - show run int loop1
+
+      register: OUTPUT
+
+    - name: print output
+      debug: var=OUTPUT.stdout_lines
+
+```
+- Execute: `$ ansible-playbook basic_xr_config_show.yml --syntax-check`
+- Execute: `$ ansible-playbook basic_xr_config_show.yml`
+
+---
+
+## Variables
+
+- Goal: display interface config of loopback1. Use "variables", so that this playbook can be easily modified for other interfaces.
+- Copy the below contents to a playbook file.
+
+
+```
+cisco@ansible-controller:~$ cat basic_var.yml
+
+---
+- name: play-1-output from IOS routers
+  hosts: XR
+  gather_facts: false
+  connection: local
+  vars:
+    INTF: loopback1
+
+  tasks:
+    - name: read config
+      iosxr_command:
+        commands:
+          show run int {{INTF}}
+
+      register: DATA
+
+    - name: print output
+      debug: var=DATA.stdout_lines
+```
+- Execute: `$ ansible-playbook basic_var.yml --syntax-check`
+- Execute: `$ ansible-playbook basic_var.yml`
+
+### Homework excercise
+- Copy basic_xr_config_show.yml to basic_xr_config_show_var.yml
+- Edit basic_xr_config_show_var.yml. Use variables so that INT=loopback1.
+- The benefit with this playbook should be: it can be modified to create and read loopback2 by simply editing variables section.
+
+---
+
+
+## Conditionals
+- Goal: Scan the invemtory and find if a router is running IOS or XR
+
+```
+cisco@ansible-controller:~$ cat cond_router_os.yml
+
+---
+- name: Verify Router is running IOS-XE
+  hosts: ALL
+  gather_facts: false
+
+  tasks:
+    - name: Collect Router Version
+      raw: show version
+
+      register: SHVER
+
+    - name: conditional task to verify if router is an IOS XE router
+      when: SHVER.stdout | join('') is search('IOS XE')
+      debug: msg="{{inventory_hostname}} is an IOS XE Router."
+
+    - name: conditional task to verify if router is an IOS XR router
+      when: SHVER.stdout | join('') is search('IOS XR')
+      debug: msg="{{inventory_hostname}} is an IOS XR Router."
+```
+
+> For later research:
+> - debug module has a parameter called, msg. In the earlier examples, we used debug/var.
+> - More info at: http://docs.ansible.com/ansible/latest/modules/debug_module.html
+
+
+---
+
+## Loops
+- Goal: Execute several commands, using loops
+
+```
+cisco@ansible-controller:~$ cat basic_loops.yml
+
+---
+- name: Backup IOS-XE Config
+  hosts: IOS
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Collect Router Version and interface brief
+      ios_command:
+         authorize: yes
+         commands: "{{ item }}"
+
+      register: DATA
+
+      with_items:
+           - show clock
+           - show ip int bri
+
+    - debug: var=DATA
+```
+
+> - Refer to http://docs.ansible.com/ansible/devel/user_guide/playbooks_loops.html
+
+
+--- 
+
 # Lab Answers
 - http://172.16.101.93
 
