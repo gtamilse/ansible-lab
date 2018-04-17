@@ -96,6 +96,8 @@ Usage: ansible <host-pattern> [options]
 Some modules do not make sense in Ad-Hoc (include, meta, etc)
 cisco@server-1:~$
 ```
+---
+
 ## Configuration file
 
 - Find Ansible config file
@@ -157,6 +159,8 @@ retry_files_enabled = False
 
 - Review the config file subsection and discuss if you have any questions.
 
+---
+
 ## Inventory file
 
 - Edit your default inventory file: /etc/ansible/hosts
@@ -206,6 +210,7 @@ cisco@ansible-controller:~$
 
 - Review the inventory subsection and discuss if you have any questions.
 
+---
 
 ## Ansible Modules
 
@@ -248,6 +253,8 @@ $ ansible ALL -m raw -a "sho ip interface brief"
 ```
 
 - Review this subsection and discuss if you have any questions.
+
+---
 
 ## Playbooks
 - Playbook structure:
