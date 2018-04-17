@@ -119,7 +119,7 @@ cisco@server-1:~$
   - Or, edit the file on your laptop and copy to Ansible server
   - Or, copy it from reference location
   	- http://172.16.101.93 (or),
-	- scp cisco@172.16.101.93:/var/www/html/file .
+	- `$ scp cisco@172.16.101.93:/var/www/html/file .`
   - The target config lines are already there in the file but are commented. You may add new lines or simple delete # at the beginning of the line.
 - After editing, the config file will look like below.
 
