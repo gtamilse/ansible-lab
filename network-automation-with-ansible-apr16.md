@@ -345,3 +345,7 @@ $ ansible ALL -m raw -a "sho ip interface brief"
 - Review this subsection and discuss if you have any questions.
 
 ---
+
+# Lab Answers
+- http://172.16.101.93
+
