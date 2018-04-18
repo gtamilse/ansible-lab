@@ -530,14 +530,13 @@ cisco@ansible-controller:~$ cat basic_xr_config_show.yml
   tasks:
     - name: Configure Interface Setting
       iosxr_config:
-        parents: "interface loopback 1"
+        parents: "interface loopback1"
         lines:
           - "description test"
           - "ip address 1.1.1.2 255.255.255.255"
 
     - name: read loopback1 intf config
       iosxr_command:
-        authorize: yes
         commands:
           - show run int loop1
 
