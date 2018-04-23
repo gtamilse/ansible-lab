@@ -311,6 +311,19 @@ $ ansible ALL -m raw -a "sho ip interface brief"
         var: IOS_output
 ```
 
+> Quick read now, research later:
+>
+> "gather_facts: no"
+> - By default, Ansible collects system information. This is not supported in our environment and hence disabled.
+>
+> "register"
+> - Saves the result from the module in a variable. In this case, we are saving "show ip.." output in IOS_output
+> - Refer: http://docs.ansible.com/ansible/latest/playbooks_conditionals.html#register-variables
+>
+> "debug"
+> - Debug module prints data
+> - reference: http://docs.ansible.com/ansible/latest/debug_module.html
+
 ### Executing playbooks
 - After creating the playbook, it can be executed by using "`ansible-playbook`" command
 - Execute the below:
@@ -319,24 +332,20 @@ $ ansible ALL -m raw -a "sho ip interface brief"
   - `$ ansible-playbook p1.yml --step`
   - `$ ansible-playbook p1.yml`
 
-> Quick read now, research later:
+> Some options with ansible-playbook CLI:
 >
-> "gather_facts: no"
-> - By default, Ansible collects system information. This is not supported in our environment and hence disabled.
+> --syntax-check: perform a syntax check on the playbook, but do not execute it
 >
-> "register"
-> - Save the result from the module in a variable. In this case, we are saving "show ip.." output in IOS_output
-> - Refer: http://docs.ansible.com/ansible/latest/playbooks_conditionals.html#register-variables
+> --check: aka dry-run. Don't make any changes; instead, try to predict some of the changes that may occur. Not supported with some modules.
 >
-> "debug"
-> - Debug module prints data
-> - reference: http://docs.ansible.com/ansible/latest/debug_module.html
+> --step: one-step-at-a-time: confirm each task before running
 
 
 ### Optional playbook
 - Try this if you have any time left.
 - The above playbook is similar to the one below; just another YAML representation.
 - copy the below contents into a file and name it p2.yml
+- Note that p2.yml has some style differences with reference to p1.yml. There are multiple was to represent data in YAML. One simple data point is that line spaces are ignored. p2.yml doesnt have line spaces but p1.yml has.
 
 ```
 ---
@@ -374,7 +383,6 @@ $ ansible ALL -m raw -a "sho ip interface brief"
   - Loops
 
 ## Raw module
-- In the last section, you used "raw" module in Ansible command line. Here, we are going to use it in a playbook.
 - Goal: Collect "show ip route summary" output from all routers in the group, IOS.
 - Create a playbook with the contents below:
 
