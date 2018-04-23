@@ -345,7 +345,7 @@ $ ansible ALL -m raw -a "sho ip interface brief"
 - Try this if you have any time left.
 - The above playbook is similar to the one below; just another YAML representation.
 - copy the below contents into a file and name it p2.yml
-- Note that p2.yml has some style differences with reference to p1.yml. There are multiple was to represent data in YAML. One simple data point is that line spaces are ignored. p2.yml doesnt have line spaces but p1.yml has.
+- Note that there are some style differences between p1.yml and p2.yml. There are multiple ways to represent data in YAML. One simple data point is that, line spaces are ignored. p2.yml doesn't have line spaces but p1.yml has.
 
 ```
 ---
