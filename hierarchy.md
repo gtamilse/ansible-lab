@@ -9,11 +9,11 @@
 
 ```
 cisco@Ansible-Controller:~/project1$ ansible-galaxy init ler-lsr
-pe-p was created successfully
+ler-lsr was created successfully
 ```
 ### Step 2: Create a playbook xr-hier
--  that will use the pe-p role.
-- This file is hosted on the parent directory of the pe-p role folder.
+-  that will use the LER-LSR role.
+- This file is hosted on the parent directory of the LER-LSR role folder.
 
 ```
 cisco@Ansible-Controller:~/project1$ vi xr-hier.yml
@@ -372,7 +372,7 @@ total 12
 
 Step 5: Define the variables
 
-- needed to generate the template in the /pe-p/vars/main.yml file.
+- needed to generate the template in the /ler-lsr/vars/main.yml file.
 - Each host will need to contain values for all the variables highlighted in the template file.
 
 ```
@@ -410,10 +410,10 @@ PLAY [Create a config for router1 from template XR] ****************************
 TASK [Gathering Facts] **********************************************************************************************************************************************************************************
 ok: [localhost]
 
-TASK [pe-p : Generate the configuration for LER/PE Router1] *********************************************************************************************************************************************
+TASK [ler-lsr : Generate the configuration for LER/PE Router1] *********************************************************************************************************************************************
 changed: [localhost] => (item={u'gig0002_mask': u'255.255.255.0', u'peerip': u'192.168.0.123', u'gig0000_mask': u'255.255.255.0', u'isisno': 12345, u'loopback1_ip': u'192.168.1.1', u'mgmt_ip': u'172.16.1.1', u'loopback1_mask': u'255.255.255.255', u'loopback2_mask': u'255.255.255.255', u'peeras': 65321, u'hostname': u'ler1_xr_cl2018', u'gig0002_ip': u'10.1.2.1', u'loopback0_ip': u'192.168.0.1', u'loopback2_ip': u'192.168.2.1', u'loopback0_mask': u'255.255.255.255', u'mgmt_mask': u'255.255.255.0', u'gig0001_mask': u'255.255.255.0', u'gig0000_ip': u'10.1.0.1', u'gig0001_ip': u'10.1.1.1', u'bgpas': 65123})
 
-TASK [pe-p : Generate the configuration for LSR/P Router2] **********************************************************************************************************************************************
+TASK [ler-lsr : Generate the configuration for LSR/P Router2] **********************************************************************************************************************************************
 changed: [localhost] => (item={u'gig0002_mask': u'255.255.255.0', u'gig0000_mask': u'255.255.255.0', u'isisno': 12345, u'loopback1_ip': u'192.168.1.2', u'mgmt_ip': u'172.16.2.1', u'loopback1_mask': u'255.255.255.255', u'loopback2_mask': u'255.255.255.255', u'hostname': u'lsr1_xr_cl2018', u'gig0002_ip': u'10.2.2.1', u'loopback0_ip': u'192.168.0.2', u'loopback2_ip': u'192.168.2.2', u'mgmt_mask': u'255.255.255.0', u'gig0001_mask': u'255.255.255.0', u'gig0000_ip': u'10.1.0.2', u'gig0001_ip': u'10.2.1.1', u'loopback0_mask': u'255.255.255.255'})
 
 PLAY RECAP **********************************************************************************************************************************************************************************************
