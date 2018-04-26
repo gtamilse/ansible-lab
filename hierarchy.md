@@ -5,7 +5,7 @@
    - Create a hierarchical template using nested templates.
    - Generate configurations for two different roles
 
-### Step 1: Create a new role called pe-p (??? pe-p or ler-lsr?)
+### Step 1: Create a new role called LER-LSR
 
 ```
 cisco@Ansible-Controller:~/project1$ ansible-galaxy init ler-lsr
