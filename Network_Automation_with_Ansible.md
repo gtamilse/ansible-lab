@@ -1209,6 +1209,170 @@ cisco@Ansible-Controller:~/project1$ more encrypt-inventory.txt
 - To browse the files: http://172.16.101.93
 - If you want to copy any file: `$ scp cisco@172.16.101.93:/var/www/html/file .`
 
+--- 
+
+# Managing Playbooks
+- In this section, we will use roles and templates.
+- Roles and templates help to simplify, modularize, and scale playbooks.
+
+---
+
+## R1. Import playbooks
+- In the earlier sections, you created two playbooks: basic_ios_cmd.yml and basic_xr_cmd.yml
+- Excecute the two playbooks and ensure they work:
+  - `$ ansible-playbook basic_ios_cmd.yml`
+  - `$ ansible-playbook basic_xr_cmd.yml`
+- Create a new playbook that include the above two playbooks (playbook of playbooks). Name it p3.yml.
+- Example output:
+
+```
+$ cat p3.yml
+
+---
+- name: ios config
+  import_playbook: basic_ios_cmd.yml
+
+- name: xr config
+  import_playbook: basic_xr_cmd.yml
+```
+---
+
+
+
+## R2. Simplifying playbook with roles
+
+- In this section, we will use Ansible roles that is equivilent to the playbook, basic_var.yml, which you created earlier.
+- Open and review contents of the playbook: `cat basic_var.yml`
+- In the below steps, we will move "tasks" section from thie playbook to Roles.
+
+### R2.1. create basic_var role
+- Use Ansible Galaxy to create a role called basic_var
+- Create the directory structure in a sub-dir called roles.
+
+```
+$ mkdir roles
+$ cd roles
+$ pwd
+$ ansible-galaxy init basic_var --offline
+$ tree basic_var
+```
+- Example output:
+
+```
+$ mkdir roles
+$ cd roles
+cisco@ansible-controller:~/roles$ pwd
+/home/cisco/roles
+cisco@ansible-controller:~/roles$ ansible-galaxy init basic_var --offline
+- basic_var was created successfully
+cisco@ansible-controller:~/roles$ tree basic_var/
+basic_var/
+├── defaults
+│   └── main.yml
+├── files
+├── handlers
+│   └── main.yml
+├── meta
+│   └── main.yml
+├── README.md
+├── tasks
+│   └── main.yml
+├── templates
+├── tests
+│   ├── inventory
+│   └── test.yml
+└── vars
+    └── main.yml
+
+8 directories, 8 files
+cisco@ansible-controller:~/roles$
+
+```
+
+### R2.2. Move tasks to roles
+
+- Goal in this step is to move tasks part from the playbook. So, we will edit tasks/main.yml.
+- Edit tasks/main.yml, as follows:
+
+```
+$ cat /home/cisco/roles/basic_var/tasks/main.yml
+
+---
+# tasks file for basic_var
+- name: read config
+  iosxr_command:
+    commands:
+      show run int {{INTF}}
+
+  register: OUT
+
+- name: print output
+  debug: var=OUT.stdout_lines
+```
+- Now, let us remove tasks part from the playbook
+- Make a copy of the playbook, basic_var.yml and edit the new playbook
+
+```
+$ cp basic_var.yml b_var_r1.yml
+$ vi b_var_r1.yml
+
+$ cat /home/cisco/b_var_r1.yml
+
+---
+- name: play-1-output from IOS routers
+  hosts: XR
+  gather_facts: false
+  connection: local
+  vars:
+    INTF: loopback1
+
+  roles:
+    - basic_var
+```
+- Review the playbook and roles, and then, execute the new playbook
+  - `cat /home/cisco/b_var_r1.yml`
+  - `cat /home/cisco/roles/tasks/main.yml`
+- Execute the new playbook and ensure that it works, just like basic_var.yml
+  - `$ ansible-playbook b_var_r1.yml`
+
+### R2.3. Move variales to roles
+- Goal in this step is to move variables part from the playbook. So, we will edit vars/main.yml.
+- Edit vars/main.yml, as follows:
+
+```
+$ cat /home/cisco/roles/basic_var/vars/main.yml
+
+---
+# vars file for basic_var
+INTF: loopback1
+```
+
+
+- Now, let us remove variables part from the playbook
+- Make a copy of the playbook, b_var_r1 and edit the new playbook
+
+```
+$ cp b_var_r1.yml b_var_r2.yml
+$ vi b_var_r2.yml
+
+$ cat /home/cisco/b_var_r1.yml
+
+---
+- name: play-1-output from IOS routers
+  hosts: XR
+  gather_facts: false
+  connection: local
+
+  roles:
+    - basic_var
+```
+- Review the playbook and roles, and then, execute the new playbook
+  - `cat /home/cisco/b_var_r2.yml`
+  - `cat /home/cisco/roles/vars/main.yml`
+  - `cat /home/cisco/roles/tasks/main.yml`
+- Execute the new playbook and ensure that it works, just like basic_var.yml
+  - $ `ansible-playbook b_var_r2.yml`
+
 ---
 
 **<p align="center">End of Lab</p>**
