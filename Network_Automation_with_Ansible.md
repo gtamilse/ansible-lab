@@ -1211,7 +1211,7 @@ cisco@Ansible-Controller:~/project1$ more encrypt-inventory.txt
 
 --- 
 
-# Managing Playbooks
+# R. Managing Playbooks
 - In this section, we will use roles and templates.
 - Roles and templates help to simplify, modularize, and scale playbooks.
 
