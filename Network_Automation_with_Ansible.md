@@ -1408,7 +1408,7 @@ $ tree /home/cisco/roles/t5
 ```
 - In this exercise, we will use three items in the roles: tasks, templates, vars.
 
-### R3.3.1. Role/tasks
+### R3.4. Role/tasks
 - Edit tasks/main.yml with the below contents
 
 ```
@@ -1419,7 +1419,7 @@ $ cat /home/cisco/roles/t5/tasks/main.yml
   template: src=t5.j2 dest=/home/cisco/c5.txt
 ```
 
-### R3.3.2. Role/templates
+### R3.5. Role/templates
 - Edit templates/t5.j2 with the below contents
 
 ```
@@ -1430,10 +1430,67 @@ ntp server {{ ntp_server }}
 logging host {{ syslog_server }}
 ```
 
-### R3.3.2. Role/variables
+### R3.6. Role/variables
 - In the earlier steps we created playbook, role, task, template.
 - In this step, we will create variables file with the variables used in template file.
-- Edit templates/t5.j2 with the below contents
+- Edit vars/main.yml with the below contents
+
+```
+$ cat /home/cisco/roles/t5/vars/main.yml
+ 
+---
+user_name: alpha
+password: beta
+ntp_server: 9.9.9.9
+syslog_server: 9.9.9.10
+```
+### R3.7. Generate config by executing the playbook
+
+- Review our steps so far: created playbook with role=t5, created role=t5, edited tasks, edited templates, edited variables.
+- Now, let us execute the playbook and see if it generates the config that we are looking for.
+
+```
+$ cat p5.yml
+$ cat /home/roles/t5/tasks/main.yml
+$ cat /home/roles/t5/templates/t5.j2
+$ cat /home/roles/t5/vars/main.yml
+$ ansible-playbook p5.yml --syntax-check
+$ ansible-playbook p5.yml
+$ cat c5.txt
+```
+
+- Example output:
+
+```
+cisco@ansible-controller:~$ ansible-playbook p5.yml --syntax-check
+
+playbook: p5.yml
+
+cisco@ansible-controller:~$ ansible-playbook p5.yml
+
+PLAY [config generation using templates] ************************************************************
+
+TASK [Gathering Facts] ******************************************************************************
+ok: [localhost]
+
+TASK [t5 : make config file as per template] ********************************************************
+changed: [localhost]
+
+PLAY RECAP ******************************************************************************************
+localhost                  : ok=2    changed=1    unreachable=0    failed=0
+
+cisco@ansible-controller:~$ ls -l c5.txt
+-rw-rw-r-- 1 cisco cisco 68 May  2 20:42 c5.txt
+
+cisco@ansible-controller:~$ cat c5.txt
+username alpha secret beta
+ntp server 9.9.9.9
+logging host 9.9.9.10
+
+```
+
+
+
 ---
 
 ## Exercise 4 - Multiple XR config generation using Roles and Templates
