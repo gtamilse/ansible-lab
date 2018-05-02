@@ -24,21 +24,18 @@
 	- [Conditionals](#conditionals)
 	- [Loops](#loops)
 - [Automating Network Operations tasks](#automating-network-operations-tasks)
-	- [Exercise 1 - Configure OSPF on all routers](#exercise-1-configure-ospf-on-all-routers)
+	- [Exercise 1 - Configure OSPF on all routers](#exercise-1-/--configure-ospf-on-all-routers)
 	- [Exercise 2 - Automate router running-config backups](#exercise-2-automate-router-running-config-backups)
 	- [Exercise 3 - Create snapshot tool](#exercise-3-create-snapshot-tool)
 	- [Exercise 4 - Ansible Vault](#exercise-4-ansible-vault)
-- [Lab Files](#lab-files)
+	- [Lab Files](#lab-files)
 - [Ansible Roles and Jinja2 Templating](#ansible-roles-and-jinja2-templating)
 	- [Exercise 1 - Importing other playbooks](#exercise-1-importing-other-playbooks)
 	- [Exericse 2 - Simplifying playbook with roles](#exericse-2-simplifying-playbook-with-roles)
 	- [Exercise 3 - Config generation using Roles/templates](#exercise-3-config-generation-using-rolestemplates)
 	- [Exercise 4 - Multiple XR config generation using Roles and Templates](#exercise-4-multiple-xr-config-generation-using-roles-and-templates)
 
-	
-
 <!-- /TOC -->
-
 
 ---
 
