@@ -29,6 +29,13 @@
 	- [Exercise 3 - Create snapshot tool](#exercise-3-create-snapshot-tool)
 	- [Exercise 4 - Ansible Vault](#exercise-4-ansible-vault)
 - [Lab Files](#lab-files)
+- [Ansible Roles and Jinja2 Templating](#ansible-roles-and-jinja2-templating)
+	- [Exercise 1 - Importing other playbooks](#exercise-1-importing-other-playbooks)
+	- [Exericse 2 - Simplifying playbook with roles](#exericse-2-simplifying-playbook-with-roles)
+	- [Exercise 3 - Config generation using Roles/templates](#exercise-3-config-generation-using-rolestemplates)
+	- [Exercise 4 - Multiple XR config generation using Roles and Templates](#exercise-4-multiple-xr-config-generation-using-roles-and-templates)
+
+	
 
 <!-- /TOC -->
 
@@ -1203,21 +1210,19 @@ cisco@Ansible-Controller:~/project1$ more encrypt-inventory.txt
 
 ```
 
----
-
 # Lab Files
 - To browse the files: http://172.16.101.93
 - If you want to copy any file: `$ scp cisco@172.16.101.93:/var/www/html/file .`
 
 --- 
 
-# R. Managing Playbooks
-- In this section, we will use roles and templates.
+# Ansible Roles and Jinja2 Templating
 - Roles and templates help to simplify, modularize, and scale playbooks.
+- In this section, we will become familar with Ansible Roles directory structure, and utilize Jinja2 Templates to generate router configs.
 
 ---
 
-## R1. Import playbooks
+## Exercise 1 - Importing other playbooks
 - In the earlier sections, you created two playbooks: basic_ios_cmd.yml and basic_xr_cmd.yml
 - Excecute the two playbooks and ensure they work:
   - `$ ansible-playbook basic_ios_cmd.yml`
@@ -1237,9 +1242,7 @@ $ cat p3.yml
 ```
 ---
 
-
-
-## R2. Simplifying playbook with roles
+## Exericse 2 - Simplifying playbook with roles
 
 - In this section, we will use Ansible roles that is equivilent to the playbook, basic_var.yml, which you created earlier.
 - Open and review contents of the playbook: `cat basic_var.yml`
@@ -1375,7 +1378,7 @@ $ cat /home/cisco/b_var_r1.yml
 
 ---
 
-## R3. Config generation using Roles/templates
+## Exercise 3 - Config generation using Roles/templates
 ### R3.1. Goal
 - Goal: In this section, we will generate the below config using Ansible's templates feature.
 
@@ -1434,7 +1437,251 @@ logging host {{ syslog_server }}
 - In the earlier steps we created playbook, role, task, template.
 - In this step, we will create variables file with the variables used in template file.
 - Edit templates/t5.j2 with the below contents
+---
 
+## Exercise 4 - Multiple XR config generation using Roles and Templates
+
+- Goal: To create an XR router common config template that can be scaled to generate configs for multiple routers.
+
+- Note in this exercise you will only generate the multiple router configs on the ansible-controller node, these configs will not be applied to any routers.
+
+### R4.1 Create a new role "XR" 
+
+- Using the Ansible-Galaxy Tool create an XR role under the roles directory.
+
+```
+cisco@ansible-controller:~/roles$ pwd
+/home/cisco/roles
+
+cisco@ansible-controller:~/roles$ ansible-galaxy init xr
+- xr was created successfully
+```
+- Review the Roles directory structure of newly create XR role
+
+```
+cisco@ansible-controller:~/roles$ cd xr/
+
+cisco@ansible-controller:~/roles/xr$ tree
+.
+├── defaults
+│   └── main.yml
+├── files
+├── handlers
+│   └── main.yml
+├── meta
+│   └── main.yml
+├── README.md
+├── tasks
+│   └── main.yml
+├── templates
+├── tests
+│   ├── inventory
+│   └── test.yml
+└── vars
+    └── main.yml
+
+8 directories, 8 files
+```
+
+- In this exercise you will only edit the main.yml files under tasks, template, and vars directories. 
+
+- Note template dir does not contain a yaml file, here we will create a new Jinja2 .j2 template file in a later step.
+
+### R4.2 Create a playbook to execute the xr role
+- Create a playbook under the roles dir to execute files for the xr role.
+- Playbook has to be hosted on the parent directory of the xr role folder.
+
+```
+cisco@ansible-controller:~/roles$ pwd
+/home/cisco/roles
+
+cisco@ansible-controller:~/roles$ vi xr-common-cfg.yml
+---
+  - name: Create a config for router1 from template XR
+    hosts: localhost
+
+    roles:
+      - xr
+
+```
+
+### R4.3 Edit xr role tasks main.yml file
+- Edit the main.yml file under the xr/tasks folder
+- Add the source location of the Jinja2 Template file
+- Add the location of the output destination files.
+- Define the variable dictionary name which will contain values to the template variables.
+
+```
+cisco@ansible-controller:~/roles$ cd xr/tasks/
+
+cisco@ansible-controller:~/roles/xr/tasks$ vi main.yml 
+---
+- name: Generate the configuration for XR routers
+  template:
+     src=xr-common-config-template.j2
+     dest=/home/cisco/roles/{{item.hostname}}.txt
+  with_items:
+     - "{{ xr_hostnames }}"
+
+```
+
+### R4.4 Create xr role template file 
+- Create a template file (xr-common-config-template.j2) with the common XR router configurations
+- Store the file as a J2 template under the /xr/template/ directory.
+
+```
+cisco@ansible-controller:~/roles/xr/tasks$ cd ../templates/
+
+cisco@ansible-controller:~/roles/xr/templates$ ls
+
+cisco@ansible-controller:~/roles/xr/templates$ vi xr-common-config-template.j2
+
+hostname {{item.hostname}}
+service timestamps log datetime msec
+service timestamps debug datetime msec
+clock timezone {{item.timezone}} {{item.timezone_offset}}
+clock summer-time {{item.timezone_dst}} recurring
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+domain name virl.info
+ssh server v2
+ssh server vrf Mgmt-intf
+!
+line template vty
+timestamp
+exec-timeout 720 0
+!
+line console
+exec-timeout 0 0
+!
+line default
+exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+!
+cdp
+!
+!
+interface Loopback0
+  description Loopback
+  ipv4 address {{item.loopback0_ip}} {{item.loopback0_mask}}
+!
+interface GigabitEthernet0/0/0/0
+  description to R1-CSR1kv
+  ipv4 address {{item.gig0000_ip}} {{item.gig0000_mask}}
+  cdp
+  no shutdown
+!
+interface GigabitEthernet0/0/0/1
+  description to R3-NXOS
+  ipv4 address {{item.gig0001_ip}} {{item.gig0001_mask}}
+  cdp
+  no shutdown
+!
+interface mgmteth0/0/CPU0/0
+  description OOB Management
+  ! Configured on launch
+  vrf Mgmt-intf
+  no ipv4 address
+  cdp
+  no shutdown
+!
+!
+router ospf 1
+  log adjacency changes
+  area 0
+    !
+    interface Loopback0
+      passive enable
+    !
+{% for interface in xr_interfaces %}
+interface {{interface}}
+cost 1
+!
+{% endfor %}
+  !
+!
+!
+```
+- Take note of the Jinja2 **for loop** structure to add interfaces with cost 1 under router ospf
+- You will see how variables get defined for this loop in the next step.
+
+### R4.5 Edit xr role vars main.yml file
+-  Define the variables needed to generate the template under the /xr/vars/main.yml file. 
+- You will use the J2 template and vary the variable inputs to generate 5 different XR router configs.
+- Each host will need to contain values for all the variables defined in the template file. 
+
+```
+cisco@ansible-controller:~/roles/xr/templates$ cd ../vars/
+
+cisco@ansible-controller:~/roles/xr/vars$ vi main.yml 
+---
+xr_hostnames:
+   - { hostname: xr-router-rtr1, timezone: EST, timezone_dst: EDT, timezone_offset: -5, loopback0_ip: 192.168.1.11, loopback0_mask: 255.255.255.255, gig0000_ip: 10.1.11.1, gig0000_mask: 255.255.255.252, gig0001_ip: 10.1.11.4 , gig0001_mask: 255.255.255.252,}
+   - { hostname: xr-router-rtr2, timezone: MST, timezone_dst: MDT, timezone_offset: -7, loopback0_ip: 192.168.1.12, loopback0_mask: 255.255.255.255, gig0000_ip: 10.1.12.1, gig0000_mask: 255.255.255.252, gig0001_ip: 10.1.12.4 , gig0001_mask: 255.255.255.252,}
+   - { hostname: xr-router-rtr3, timezone: MST, timezone_dst: MDT, timezone_offset: -7, loopback0_ip: 192.168.1.13, loopback0_mask: 255.255.255.255, gig0000_ip: 10.1.13.1, gig0000_mask: 255.255.255.252, gig0001_ip: 10.1.13.4, gig0001_mask: 255.255.255.252,}
+   - { hostname: xr-router-rtr4, timezone: PST, timezone_dst: PDT, timezone_offset: -8, loopback0_ip: 192.168.1.14, loopback0_mask: 255.255.255.255, gig0000_ip: 10.1.14.1, gig0000_mask: 255.255.255.252, gig0001_ip: 10.1.14.4 , gig0001_mask: 255.255.255.252,}
+   - { hostname: xr-router-rtr5, timezone: MST, timezone_dst: MDT, timezone_offset: -7, loopback0_ip: 192.168.1.15, loopback0_mask: 255.255.255.255, gig0000_ip: 10.1.15.1, gig0000_mask: 255.255.255.252, gig0001_ip: 10.1.15.4 , gig0001_mask: 255.255.255.252,}
+
+xr_interfaces:
+  - GigabitEthernet0/0/0/0
+  - GigabitEthernet0/0/0/1
+
+# vars file for xr
+```
+- Note the variable for the for loop defined inside the template are provided under a separate dictionary called xr_interaces (same as defined in J2 file).
+
+### R4.6 Execute xr-common-cfg.yml playbook to run xr role
+- Execute the xr-common-cfg.yml playbook from the roles directory 
+
+```
+cisco@ansible-controller:~/roles/xr/vars$ cd ../..
+
+cisco@ansible-controller:~/roles$ pwd
+/home/cisco/roles
+
+cisco@ansible-controller:~/roles$ ls -ltr
+total 32
+-rw-rw-r--  1 cisco cisco  140 Apr 27 02:06 roles-basic-v1.yml
+-rw-rw-r--  1 cisco cisco   98 Apr 27 02:35 add-lb-intfs.yml
+drwxrwxr-x  6 cisco cisco 4096 Apr 27 03:05 roles
+-rw-rw-r--  1 cisco cisco  681 Apr 27 03:22 roles-bgp.yml
+-rw-rw-r--  1 cisco cisco   10 Apr 27 03:34 roles-bgp.retry
+drwxrwxr-x  2 cisco cisco 4096 Apr 27 03:41 cfg
+drwxrwxr-x 10 cisco cisco 4096 May  2 16:00 xr
+-rw-rw-r--  1 cisco cisco  104 May  2 16:08 xr-common-cfg.yml
+
+cisco@ansible-controller:~/roles$ ansible-playbook xr-common-cfg.yml -v
+```
+
+- Validate the 5 XR router configs are generated in the desired folder. 
+
+```
+cisco@ansible-controller:~/roles$ ls -al *rtr?.txt
+-rw-rw-r-- 1 cisco cisco 1316 May  2 19:08 xr-router-rtr1.txt
+-rw-rw-r-- 1 cisco cisco 1316 May  2 19:08 xr-router-rtr2.txt
+-rw-rw-r-- 1 cisco cisco 1316 May  2 19:08 xr-router-rtr3.txt
+-rw-rw-r-- 1 cisco cisco 1316 May  2 19:08 xr-router-rtr4.txt
+-rw-rw-r-- 1 cisco cisco 1316 May  2 19:08 xr-router-rtr5.txt
+
+cisco@ansible-controller:~/roles$ more xr-router-rtr1.txt
+```
 ---
 
 **<p align="center">End of Lab</p>**
