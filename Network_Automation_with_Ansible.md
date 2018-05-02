@@ -24,7 +24,7 @@
 	- [Conditionals](#conditionals)
 	- [Loops](#loops)
 - [Automating Network Operations tasks](#automating-network-operations-tasks)
-	- [Exercise 1 - Configure OSPF on all routers](#exercise-1-/--configure-ospf-on-all-routers)
+	- [Exercise 1 - Configure OSPF on all routers](#exercise-1-configure-ospf-on-all-routers)
 	- [Exercise 2 - Automate router running-config backups](#exercise-2-automate-router-running-config-backups)
 	- [Exercise 3 - Create snapshot tool](#exercise-3-create-snapshot-tool)
 	- [Exercise 4 - Ansible Vault](#exercise-4-ansible-vault)
