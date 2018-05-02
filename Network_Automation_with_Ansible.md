@@ -1451,6 +1451,7 @@ syslog_server: 9.9.9.10
 
 ```
 $ cat p5.yml
+$ tree /home/cisco/roles/t5
 $ cat /home/cisco/roles/t5/tasks/main.yml
 $ cat /home/cisco/roles/t5/templates/t5.j2
 $ cat /home/cisco/roles/t5/vars/main.yml
@@ -1462,6 +1463,55 @@ $ cat c5.txt
 - Example output:
 
 ```
+cisco@ansible-controller:~$ cat p5.yml
+---
+- name: config generation using templates
+  hosts: localhost
+
+  roles:
+    - t5
+
+cisco@ansible-controller:~$ tree /home/cisco/roles/t5
+/home/cisco/roles/t5
+├── defaults
+│   └── main.yml
+├── files
+├── handlers
+│   └── main.yml
+├── meta
+│   └── main.yml
+├── README.md
+├── tasks
+│   └── main.yml
+├── templates
+│   └── t5.j2
+├── tests
+│   ├── inventory
+│   └── test.yml
+└── vars
+    └── main.yml
+
+8 directories, 9 files
+
+cisco@ansible-controller:~$ cat /home/cisco/roles/t5/tasks/main.yml
+---
+# tasks file for /home/cisco/roles/t5
+- name: make config file as per template
+  template: src=t5.j2 dest=/home/cisco/c5.txt
+
+cisco@ansible-controller:~$ cat /home/cisco/roles/t5/templates/t5.j2
+username {{ user_name }} secret {{ password }}
+ntp server {{ ntp_server }}
+logging host {{ syslog_server }}
+
+cisco@ansible-controller:~$ cat /home/cisco/roles/t5/vars/main.yml
+---
+# vars file for /home/cisco/roles/t5
+user_name: alpha
+password: beta
+ntp_server: 9.9.9.9
+syslog_server: 9.9.9.10
+
 cisco@ansible-controller:~$ ansible-playbook p5.yml --syntax-check
 
 playbook: p5.yml
