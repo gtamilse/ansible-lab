@@ -1451,9 +1451,9 @@ syslog_server: 9.9.9.10
 
 ```
 $ cat p5.yml
-$ cat /home/roles/t5/tasks/main.yml
-$ cat /home/roles/t5/templates/t5.j2
-$ cat /home/roles/t5/vars/main.yml
+$ cat /home/cisco/roles/t5/tasks/main.yml
+$ cat /home/cisco/roles/t5/templates/t5.j2
+$ cat /home/cisco/roles/t5/vars/main.yml
 $ ansible-playbook p5.yml --syntax-check
 $ ansible-playbook p5.yml
 $ cat c5.txt
