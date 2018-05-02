@@ -1375,6 +1375,68 @@ $ cat /home/cisco/b_var_r1.yml
 
 ---
 
+## R3. Config generation using Roles/templates
+### R3.1. Goal
+- Goal: In this section, we will generate the below config using Ansible's templates feature.
+
+```
+username alpha secret beta
+ntp server 9.9.9.9
+logging host 9.9.9.10
+```
+### R3.2. Playbook
+- Playbook: Create a playbook with below contents and name it, p5.yml
+
+```
+$ cat p5.yml
+
+---
+- name: config generation using Ansible templates
+  hosts: localhost
+
+  roles:
+    - t5
+```
+
+### R3.3. Role
+
+- Create a role called t5
+
+```
+$ ansible-galaxy init /home/cisco/roles/t5 --offline
+$ tree /home/cisco/roles/t5
+```
+- In this exercise, we will use three items in the roles: tasks, templates, vars.
+
+### R3.3.1. Role/tasks
+- Edit tasks/main.yml with the below contents
+
+```
+$ cat /home/cisco/roles/t5/tasks/main.yml
+
+---
+- name: make config file as per template
+  template: src=t5.j2 dest=/home/cisco/c5.txt
+```
+
+### R3.3.2. Role/templates
+- Edit templates/t5.j2 with the below contents
+
+```
+$ cat /home/cisco/roles/t5/templates/t5.j2
+
+username {{ user_name }} secret {{ password }}
+ntp server {{ ntp_server }}
+logging host {{ syslog_server }}
+```
+
+### R3.3.2. Role/variables
+- In the earlier steps we created playbook, role, task, template.
+- In this step, we will create variables file with the variables used in template file.
+- Edit templates/t5.j2 with the below contents
+
+---
+
 **<p align="center">End of Lab</p>**
 
 ---
