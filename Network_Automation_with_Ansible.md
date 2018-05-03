@@ -45,7 +45,7 @@
 ## Topology
 ![topology](./images/ansible-lab-topo.png)
 
-## Lab access
+## Lab access (ignore this and use info from Manish email)
 - Lab access involves two steps:
   - Step-1: VPN into lab VPN server
   - Step-2: SSH into the Ansible server
