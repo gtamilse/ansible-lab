@@ -18,7 +18,7 @@ Initial Tasks
 
 6.	Change directory to “/home/cisco/roles-templates/”
 
-7.  Create a sub-directory with name “roles” under directory “/home/cisco/roles-templates” using the command “mkdir cfg”.
+7.  Create a sub-directory with name “roles” under directory “/home/cisco/roles-templates” using the command “mkdir cfg”.  >> should be “mkdir roles” under the roles-templates dir.
 
 7.	Ensure sub-folder “roles” is created under  “/home/cisco/roles-templates/”
 
