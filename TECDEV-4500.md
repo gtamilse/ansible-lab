@@ -14,12 +14,6 @@
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [**<p align="center">CISCO LIVE 2018</p>**](#p-aligncentercisco-live-2018p)
-- [**<p align="center">ORLANDO, FL</p>**](#p-aligncenterorlando-flp)
-- [**<p align="center">Network Automation with Ansible</p>**](#p-aligncenternetwork-automation-with-ansiblep)
-- [**<p align="center">TECDEV-4500</p>**](#p-aligncentertecdev-4500p)
-- [**<p align="center">Lab Guide</p>**](#p-aligncenterlab-guidep)
-- [Table of Contents](#table-of-contents)
 - [1 Introduction](#1-introduction)
 	- [1.1 Environment](#11-environment)
 	- [1.2 Ad-hoc commands](#12-ad-hoc-commands)
@@ -61,3 +55,7 @@
 ## 2.3 Method of Procedure (MOP)
 ## 2.4 Bulk configuration
 ## 2.5 Encryption
+
+---
+<p align="center">End</p>
+---
