@@ -5,8 +5,8 @@
 # **<p align="center">TECDEV-4500</p>**
 ---
 # **<p align="center">Lab Guide</p>**
-<p align="center">|Yogi Raghunathan|Gopal Naganaboyina|</p>
 <p align="center">|Gowtham Tamilselvan|Muthu Ayyanar|</p>
+<p align="center">|Yogi Raghunathan|Gopal Naganaboyina|</p>
 
 ---
 
