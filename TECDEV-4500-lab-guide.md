@@ -561,20 +561,384 @@ IMPORTANT:  READ CAREFULLY
 :
 Connection to 172.16.101.92 closed by remote host.
 ```
+- Review the section and discuss if you have any questions
 
 ---
 
 ## 1.8 Variables
+- Let us use custom variables in a playbook. Note that custom variables defined in a playbook are valid only within that playbook.
+- Create a playbook, p8-vars.yml, with the below contents
 
+```
+cisco@ansible-controller:~$ cat p8-vars.yml
+
+---
+- name: get config of gig1 and gig2
+  hosts: IOS
+  connection: local
+  vars:
+    INTF1: GigabitEthernet1
+    INTF2: GigabitEthernet2
+
+  tasks:
+    - name: disable proxy-arp
+      ios_command:
+        commands:
+          - sho run int {{INTF1}}
+          - sho run int {{INTF2}}
+
+      register: BLAH
+
+    - name: print stuff
+      debug:
+        var: BLAH
+```
+- Predict the outcome of executing the above playbook
+- Run the playbook
+	- `$ ansible-playbook p8-vars.yml --syntax-check`
+	- `$ ansible-playbook p8-vars.yml`
+
+#### Sample output
+```
+cisco@ansible-controller:~$ ansible-playbook p8-vars.yml --syntax-check
+
+playbook: p8-vars.yml
+cisco@ansible-controller:~$ ansible-playbook p8-vars.yml
+
+PLAY [get config of gig1 and gig2] *******************************************************************
+
+TASK [disable proxy-arp] *****************************************************************************
+ok: [172.16.101.91]
+
+TASK [print stuff] ***********************************************************************************
+ok: [172.16.101.91] => {
+    "BLAH": {
+        "changed": false,
+        "failed": false,
+        "stdout": [
+            "Building configuration...\n\nCurrent configuration : 188 bytes\n!\ninterface GigabitEthernet1\n description OOB Management\n vrf forwarding Mgmt-intf\n ip address 172.16.101.91 255.255.255.0\n negotiation auto\n cdp enable\n no mop enabled\n no mop sysid\nend",
+            "Building configuration...\n\nCurrent configuration : 177 bytes\n!\ninterface GigabitEthernet2\n description Connected to XRV\n ip address 10.0.0.5 255.255.255.252\n ip ospf cost 1\n negotiation auto\n cdp enable\n no mop enabled\n no mop sysid\nend"
+        ],
+        "stdout_lines": [
+            [
+                "Building configuration...",
+                "",
+                "Current configuration : 188 bytes",
+                "!",
+                "interface GigabitEthernet1",
+                " description OOB Management",
+                " vrf forwarding Mgmt-intf",
+                " ip address 172.16.101.91 255.255.255.0",
+                " negotiation auto",
+                " cdp enable",
+                " no mop enabled",
+                " no mop sysid",
+                "end"
+            ],
+            [
+                "Building configuration...",
+                "",
+                "Current configuration : 177 bytes",
+                "!",
+                "interface GigabitEthernet2",
+                " description Connected to XRV",
+                " ip address 10.0.0.5 255.255.255.252",
+                " ip ospf cost 1",
+                " negotiation auto",
+                " cdp enable",
+                " no mop enabled",
+                " no mop sysid",
+                "end"
+            ]
+        ]
+    }
+}
+
+PLAY RECAP *******************************************************************************************
+172.16.101.91              : ok=2    changed=0    unreachable=0    failed=0
+```
 
 
 > Reference: http://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-scopes
+> - Here, we are covering a small part of variables at basic level. After completing this lab, we recommend to read the above page.
 >
+
+- Review the section and discuss if you have any questions
 
 ---
 
-## 1.8 Conditionals
-## 1.9 Loops
+## 1.8 Loops
+- Loops are used to perform a task repeatedly with a set of different items.
+- Create a playbook, p9-loops.yml, with the below contents
+
+```
+cisco@ansible-controller:~$ cat p9-loops.yml
+
+---
+- name: get config of gig1 and gig2 from IOS devices
+  hosts: IOS
+  connection: local
+
+  tasks:
+    - name: get config of gig1 and gig2 and time
+      ios_command:
+        commands:
+          - "{{item}}"
+
+      with_items:
+           - show run int gig1
+           - show run int gig2
+           - show clock
+
+      register: STUFF
+
+    - name: print stuff
+      debug:
+        var: STUFF
+```
+- Predict the outcome of executing the above playbook
+- Run the playbook
+	- `$ ansible-playbook p8-vars.yml --syntax-check`
+	- `$ ansible-playbook p8-vars.yml`
+
+#### Sample output
+```
+cisco@ansible-controller:~$ ansible-playbook p9-loops.yml --syntax-check
+
+playbook: p9-loops.yml
+cisco@ansible-controller:~$ ansible-playbook p9-loops.yml
+
+PLAY [get config of gig1 and gig2 from IOS devices] **************************************************
+
+TASK [get config of gig1 and gig2 and time] **********************************************************
+ok: [172.16.101.91] => (item=show run int gig1)
+ok: [172.16.101.91] => (item=show run int gig2)
+ok: [172.16.101.91] => (item=show clock)
+
+TASK [print stuff] ***********************************************************************************
+ok: [172.16.101.91] => {
+    "STUFF": {
+        "changed": false,
+        "msg": "All items completed",
+        "results": [
+            {
+                "_ansible_ignore_errors": null,
+                "_ansible_item_result": true,
+                "_ansible_no_log": false,
+                "_ansible_parsed": true,
+                "changed": false,
+                "failed": false,
+                "invocation": {
+                    "module_args": {
+                        "auth_pass": null,
+                        "authorize": null,
+                        "commands": [
+                            "show run int gig1"
+                        ],
+                        "host": null,
+                        "interval": 1,
+                        "match": "all",
+                        "password": null,
+                        "port": null,
+                        "provider": {
+                            "auth_pass": null,
+                            "authorize": null,
+                            "host": null,
+                            "password": null,
+                            "port": null,
+                            "ssh_keyfile": null,
+                            "timeout": null,
+                            "username": null
+                        },
+                        "retries": 10,
+                        "ssh_keyfile": null,
+                        "timeout": null,
+                        "username": null,
+                        "wait_for": null
+                    }
+                },
+                "item": "show run int gig1",
+                "stdout": [
+                    "Building configuration...\n\nCurrent configuration : 188 bytes\n!\ninterface GigabitEthernet1\n description OOB Management\n vrf forwarding Mgmt-intf\n ip address 172.16.101.91 255.255.255.0\n negotiation auto\n cdp enable\n no mop enabled\n no mop sysid\nend"
+                ],
+                "stdout_lines": [
+                    [
+                        "Building configuration...",
+                        "",
+                        "Current configuration : 188 bytes",
+                        "!",
+                        "interface GigabitEthernet1",
+                        " description OOB Management",
+                        " vrf forwarding Mgmt-intf",
+                        " ip address 172.16.101.91 255.255.255.0",
+                        " negotiation auto",
+                        " cdp enable",
+                        " no mop enabled",
+                        " no mop sysid",
+                        "end"
+                    ]
+                ]
+            },
+            {
+                "_ansible_ignore_errors": null,
+                "_ansible_item_result": true,
+                "_ansible_no_log": false,
+                "_ansible_parsed": true,
+                "changed": false,
+                "failed": false,
+                "invocation": {
+                    "module_args": {
+                        "auth_pass": null,
+                        "authorize": null,
+                        "commands": [
+                            "show run int gig2"
+                        ],
+                        "host": null,
+                        "interval": 1,
+                        "match": "all",
+                        "password": null,
+                        "port": null,
+                        "provider": {
+                            "auth_pass": null,
+                            "authorize": null,
+                            "host": null,
+                            "password": null,
+                            "port": null,
+                            "ssh_keyfile": null,
+                            "timeout": null,
+                            "username": null
+                        },
+                        "retries": 10,
+                        "ssh_keyfile": null,
+                        "timeout": null,
+                        "username": null,
+                        "wait_for": null
+                    }
+                },
+                "item": "show run int gig2",
+                "stdout": [
+                    "Building configuration...\n\nCurrent configuration : 177 bytes\n!\ninterface GigabitEthernet2\n description Connected to XRV\n ip address 10.0.0.5 255.255.255.252\n ip ospf cost 1\n negotiation auto\n cdp enable\n no mop enabled\n no mop sysid\nend"
+                ],
+                "stdout_lines": [
+                    [
+                        "Building configuration...",
+                        "",
+                        "Current configuration : 177 bytes",
+                        "!",
+                        "interface GigabitEthernet2",
+                        " description Connected to XRV",
+                        " ip address 10.0.0.5 255.255.255.252",
+                        " ip ospf cost 1",
+                        " negotiation auto",
+                        " cdp enable",
+                        " no mop enabled",
+                        " no mop sysid",
+                        "end"
+                    ]
+                ]
+            },
+            {
+                "_ansible_ignore_errors": null,
+                "_ansible_item_result": true,
+                "_ansible_no_log": false,
+                "_ansible_parsed": true,
+                "changed": false,
+                "failed": false,
+                "invocation": {
+                    "module_args": {
+                        "auth_pass": null,
+                        "authorize": null,
+                        "commands": [
+                            "show clock"
+                        ],
+                        "host": null,
+                        "interval": 1,
+                        "match": "all",
+                        "password": null,
+                        "port": null,
+                        "provider": {
+                            "auth_pass": null,
+                            "authorize": null,
+                            "host": null,
+                            "password": null,
+                            "port": null,
+                            "ssh_keyfile": null,
+                            "timeout": null,
+                            "username": null
+                        },
+                        "retries": 10,
+                        "ssh_keyfile": null,
+                        "timeout": null,
+                        "username": null,
+                        "wait_for": null
+                    }
+                },
+                "item": "show clock",
+                "stdout": [
+                    "*21:40:30.056 UTC Mon May 28 2018"
+                ],
+                "stdout_lines": [
+                    [
+                        "*21:40:30.056 UTC Mon May 28 2018"
+                    ]
+                ]
+            }
+        ]
+    }
+}
+
+PLAY RECAP *******************************************************************************************
+172.16.101.91              : ok=2    changed=0    unreachable=0    failed=0
+
+cisco@ansible-controller:~$
+```
+> Reference: http://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html
+
+
+- Review the section and discuss if you have any questions
+
+---
+
+## 1.9 Conditionals
+
+- Conditionals are used to decide whether to run a task or not. In this section, we will be working on "when" condition.
+- Create a playbook, p10-conditionals.yml, with the below contents
+
+```
+cisco@ansible-controller:~$ cat p10-conditionals.yml
+
+---
+- name: get route summary from IOS and XR routers
+  hosts: ALL
+
+  tasks:
+    - name: collect version info
+      raw: show version
+
+      register: SHVER
+
+    - name: run "show ip route summ" on IOS routers
+      when: SHVER.stdout | join('') is search('IOS XE')
+      raw: show ip route summary
+
+      register: IOSRTR
+
+    - debug: var=IOSRTR.stdout_lines
+
+    - name: run "show route summ" on XR routers
+      when: SHVER.stdout | join('') is search('IOS XR')
+      raw: show route summary
+
+      register: XRRTR
+
+    - debug: var=XRRTR.stdout_lines
+```
+
+> Reference: http://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#the-when-statement
+
+---
+
+
 ## 1.10 Importing playbooks
 # 2 Automation Excercises
 ## 2.1 Configuration backup
