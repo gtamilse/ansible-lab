@@ -5,7 +5,7 @@
 # **<p align="center">TECDEV-4500</p>**
 ---
 # **<p align="center">Lab Guide</p>**
-<p align="center">|Yogi Raghunathan|Gopal Naganaboyina|</p>
+<p align="center">|Gopal Naganaboyina| Yogi Raghunathan | </p>
 <p align="center">|Gowtham Tamilselvan|Muthu Ayyanar|</p>
 
 ---
@@ -14,10 +14,6 @@
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [**<p align="center">CISCO LIVE 2018</p>**](#p-aligncentercisco-live-2018p)
-- [**<p align="center">ORLANDO, FL</p>**](#p-aligncenterorlando-flp)
-- [**<p align="center">Network Automation with Ansible</p>**](#p-aligncenternetwork-automation-with-ansiblep)
-- [**<p align="center">TECDEV-4500</p>**](#p-aligncentertecdev-4500p)
 - [**<p align="center">Lab Guide</p>**](#p-aligncenterlab-guidep)
 - [Table of Contents](#table-of-contents)
 - [1 Introduction](#1-introduction)
