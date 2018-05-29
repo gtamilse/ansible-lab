@@ -270,53 +270,71 @@ cisco@ansible-controller:~$ vi p1-raw.yml
 
 #### Sample output
 
+- Use the --syntax-check option with playbook to check for any syntax errors
+
 ```
 cisco@ansible-controller:~$ ansible-playbook p1-raw.yml --syntax-check
 
 playbook: p1-raw.yml
 
+```
+
 - No errors reported in playbook
 
-cisco@ansible-controller:~$ ansible-playbook p1-raw.yml --step
+- For step by step task execution, you can use the --step option
+
+'''
+
+cisco@ansible-controller:~$ sudo ansible-playbook p1-raw.yml --step
 
 PLAY [get time from all hosts, using raw module] **********************************************************************************************
-Perform task: TASK: Gathering Facts (N)o/(y)es/(c)ontinue: y
+Perform task: TASK: execute show clock (N)o/(y)es/(c)ontinue: y
 
-Perform task: TASK: Gathering Facts (N)o/(y)es/(c)ontinue: ************************************************************************************
+Perform task: TASK: execute show clock (N)o/(y)es/(c)ontinue: *********************************************************************************
 
-TASK [Gathering Facts] ************************************************************************************************************************
-fatal: [172.16.101.99]: FAILED! => {"msg": "Cannot write to ControlPath /home/cisco/.ansible/cp"}
-fatal: [172.16.101.98]: FAILED! => {"msg": "Cannot write to ControlPath /home/cisco/.ansible/cp"}
+TASK [execute show clock] *********************************************************************************************************************
+changed: [172.16.101.98]
+changed: [172.16.101.99]
 
 PLAY RECAP ************************************************************************************************************************************
-172.16.101.98              : ok=0    changed=0    unreachable=0    failed=1
-172.16.101.99              : ok=0    changed=0    unreachable=0    failed=1
+172.16.101.98              : ok=1    changed=1    unreachable=0    failed=0
+172.16.101.99              : ok=1    changed=1    unreachable=0    failed=0
 
 cisco@ansible-controller:~$
+
+```
 
 - With step, there is a option to select task to execute with Y or N.
 
+- Execute the playbook
+
+```
 cisco@ansible-controller:~$ ansible-playbook p1-raw.yml
 
-PLAY [get time from all hosts, using raw module] ******************************************************************
+PLAY [get time from all hosts, using raw module] **********************************************************************************************
 
-TASK [execute show clock] *****************************************************************************************
-changed: [172.16.101.91]
-changed: [172.16.101.92]
+TASK [execute show clock] *********************************************************************************************************************
+changed: [172.16.101.98]
+changed: [172.16.101.99]
 
-PLAY RECAP ********************************************************************************************************
-172.16.101.91              : ok=1    changed=1    unreachable=0    failed=0
-172.16.101.92              : ok=1    changed=1    unreachable=0    failed=0
+PLAY RECAP ************************************************************************************************************************************
+172.16.101.98              : ok=1    changed=1    unreachable=0    failed=0
+172.16.101.99              : ok=1    changed=1    unreachable=0    failed=0
 
 cisco@ansible-controller:~$
 ```
 
-- As you may have noticed, router time info is not displayed.
-- Create playbook p2-raw.yml, to print the output from the routers
+- As you may have noticed, router time info is not displayed. 
+- Let us now create playbook p2-raw.yml, to print the output from the routers
+- Create a playbook file (p1-raw.yml) with the below content. 
 
 ```
-cisco@ansible-controller:~$ cat p2-raw.yml
+cisco@ansible-controller:~$ vi p2-raw.yml
+```
 
+- Copy & paste the following file
+
+```
 ---
 - name: get time from all hosts, using raw module
   hosts: ALL
@@ -333,14 +351,69 @@ cisco@ansible-controller:~$ cat p2-raw.yml
         var: P2_RAW_OUTPUT
 ```
 - Execute the playbook
-	- `$ ansible-playbook p2-raw.yml`
+
+#### Sample output
+
+```
+- `$ ansible-playbook p2-raw.yml`
+```
 - If you notice, all the output is in one line.
+
+```
+cisco@ansible-controller:~$ sudo ansible-playbook p2-raw.yml
+
+PLAY [get time from all hosts, using raw module] **********************************************************************************************
+
+TASK [execute show clock] *********************************************************************************************************************
+changed: [172.16.101.98]
+changed: [172.16.101.99]
+
+TASK [print data saved in the variable] *******************************************************************************************************
+ok: [172.16.101.98] => {
+    "P2_RAW_OUTPUT": {
+        "changed": true,
+        "failed": false,
+        "rc": 0,
+        "stderr": "Connection to 172.16.101.98 closed by remote host.\r\nShared connection to 172.16.101.98 closed.\r\n",
+        "stdout": "\r\n*20:39:54.369 UTC Tue May 29 2018",
+        "stdout_lines": [
+            "",
+            "*20:39:54.369 UTC Tue May 29 2018"
+        ]
+    }
+}
+ok: [172.16.101.99] => {
+    "P2_RAW_OUTPUT": {
+        "changed": true,
+        "failed": false,
+        "rc": 0,
+        "stderr": "\n\n\nIMPORTANT:  READ CAREFULLY\nWelcome to the Demo Version of Cisco IOS XRv (the \"Software\").\nThe Software is subject to and governed by the terms and conditions\nof the End User License Agreement and the Supplemental End User\nLicense Agreement accompanying the product, made available at the\ntime of your order, or posted on the Cisco website at\nwww.cisco.com/go/terms (collectively, the \"Agreement\").\nAs set forth more fully in the Agreement, use of the Software is\nstrictly limited to internal use in a non-production environment\nsolely for demonstration and evaluation purposes.  Downloading,\ninstalling, or using the Software constitutes acceptance of the\nAgreement, and you are binding yourself and the business entity\nthat you represent to the Agreement.  If you do not agree to all\nof the terms of the Agreement, then Cisco is unwilling to license\nthe Software to you and (a) you may not download, install or use the\nSoftware, and (b) you may return the Software as more fully set forth\nin the Agreement.\n\n\nShared connection to 172.16.101.99 closed.\r\nConnection to 172.16.101.99 closed by remote host.\r\n",
+        "stdout": "\r\n\r\nTue May 29 20:41:19.993 UTC\r\n20:41:20.022 UTC Tue May 29 2018\r\n",
+        "stdout_lines": [
+            "",
+            "",
+            "Tue May 29 20:41:19.993 UTC",
+            "20:41:20.022 UTC Tue May 29 2018"
+        ]
+    }
+}
+
+PLAY RECAP ************************************************************************************************************************************
+172.16.101.98              : ok=2    changed=1    unreachable=0    failed=0
+172.16.101.99              : ok=2    changed=1    unreachable=0    failed=0
+
+cisco@ansible-controller:~$
+
+```
 
 - Create another playbook p3-raw.yml, to print the output from routers, in multiple lines
 
 ```
-cisco@ansible-controller:~$ cat p3-raw.yml
+cisco@ansible-controller:~$ vi p3-raw.yml
 
+```
+- Copy and paste the following contents to the file
+```
 ---
 - name: get time from all hosts, using raw module
   hosts: ALL
@@ -356,7 +429,40 @@ cisco@ansible-controller:~$ cat p3-raw.yml
       debug:
         var: P3_RAW_OUTPUT.stdout_lines
 ```
----
+#### Sample output
+
+```
+cisco@ansible-controller:~$ sudo ansible-playbook p3-raw.yml
+
+PLAY [get time from all hosts, using raw module] **********************************************************************************************
+
+TASK [execute show clock] *********************************************************************************************************************
+changed: [172.16.101.98]
+changed: [172.16.101.99]
+
+TASK [print data saved in the variable] *******************************************************************************************************
+ok: [172.16.101.98] => {
+    "P3_RAW_OUTPUT.stdout_lines": [
+        "",
+        "*20:44:24.542 UTC Tue May 29 2018"
+    ]
+}
+ok: [172.16.101.99] => {
+    "P3_RAW_OUTPUT.stdout_lines": [
+        "",
+        "",
+        "Tue May 29 20:45:50.104 UTC",
+        "20:45:50.194 UTC Tue May 29 2018"
+    ]
+}
+
+PLAY RECAP ************************************************************************************************************************************
+172.16.101.98              : ok=2    changed=1    unreachable=0    failed=0
+172.16.101.99              : ok=2    changed=1    unreachable=0    failed=0
+
+cisco@ansible-controller:~$
+
+```
 
 ## 1.4 IOS command module
 - Let us use ios_command module to execute some exec commands on the remote devices
