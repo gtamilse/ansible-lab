@@ -245,12 +245,14 @@ cisco@ansible-controller:~$
 ---
 
 ## 1.3 Raw module
-- Let us use raw module in a playbook
-- Create a playbook file (p1-raw.yml) with the below content.
+- Let us create a playbook using raw module. 
+- Create a playbook file (p1-raw.yml) with the below content. Use either vi or ATOM your preferred editor of choice.
+```
+cisco@ansible-controller:~$ vi p1-raw.yml
+```
+- Copy & paste the following file
 
 ```
-$ cat p1-raw.yml
-
 ---
 - name: get time from all hosts, using raw module
   hosts: all
@@ -269,6 +271,31 @@ $ cat p1-raw.yml
 #### Sample output
 
 ```
+cisco@ansible-controller:~$ ansible-playbook p1-raw.yml --syntax-check
+
+playbook: p1-raw.yml
+
+- No errors reported in playbook
+
+cisco@ansible-controller:~$ ansible-playbook p1-raw.yml --step
+
+PLAY [get time from all hosts, using raw module] **********************************************************************************************
+Perform task: TASK: Gathering Facts (N)o/(y)es/(c)ontinue: y
+
+Perform task: TASK: Gathering Facts (N)o/(y)es/(c)ontinue: ************************************************************************************
+
+TASK [Gathering Facts] ************************************************************************************************************************
+fatal: [172.16.101.99]: FAILED! => {"msg": "Cannot write to ControlPath /home/cisco/.ansible/cp"}
+fatal: [172.16.101.98]: FAILED! => {"msg": "Cannot write to ControlPath /home/cisco/.ansible/cp"}
+
+PLAY RECAP ************************************************************************************************************************************
+172.16.101.98              : ok=0    changed=0    unreachable=0    failed=1
+172.16.101.99              : ok=0    changed=0    unreachable=0    failed=1
+
+cisco@ansible-controller:~$
+
+- With step, there is a option to select task to execute with Y or N.
+
 cisco@ansible-controller:~$ ansible-playbook p1-raw.yml
 
 PLAY [get time from all hosts, using raw module] ******************************************************************
