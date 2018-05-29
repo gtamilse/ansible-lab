@@ -146,7 +146,6 @@ XR
 [ALL:vars]
 ansible_user=cisco
 ansible_ssh_pass=cisco
-ansible_connection=local
 
 cisco@ansible-controller:~$
 ```
@@ -230,8 +229,8 @@ cisco@ansible-controller:~$
 - `$ ansible 172.31.56.91 -m raw -a "show ip int brief"`
 - `$ ansible ALL -m raw -a "show clock"`
 - `$ ansible all -m raw -a "ping vrf Mgmt-intf 172.16.101.93"`
-- `$ ansible IOS -m ios_command -a "commands='show ip route summ'"`
-- `$ ansible XR -m iosxr_command -a "commands='show route summ'"`
+- `$ ansible IOS -m ios_command -a "commands='show ip route summ'" -c local'
+- `$ ansible XR -m iosxr_command -a "commands='show route summ'"-c local`
 
 #### Stretch excercises
 > This is for later use. It is possible to use ad-hoc commands with more parameters, as below:
