@@ -5,8 +5,8 @@
 # **<p align="center">TECDEV-4500</p>**
 ---
 # **<p align="center">Lab Guide</p>**
-<p align="center">|Yogi Raghunathan|Gopal Naganaboyina|</p>
-<p align="center">|Gowtham Tamilselvan|Muthu Ayyanar|</p>
+<p align="center">|Gopal Naganaboyina| Yogi Raghunathan | </p>
+<p align="center">|Gowtham Tamilselvan| Muthu Ayyanar|</p>
 
 ---
 
@@ -14,11 +14,7 @@
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [**<p align="center">CISCO LIVE 2018</p>**](#p-aligncentercisco-live-2018p)
-- [**<p align="center">ORLANDO, FL</p>**](#p-aligncenterorlando-flp)
-- [**<p align="center">Network Automation with Ansible</p>**](#p-aligncenternetwork-automation-with-ansiblep)
-- [**<p align="center">TECDEV-4500</p>**](#p-aligncentertecdev-4500p)
-- [**<p align="center">Lab Guide</p>**](#p-aligncenterlab-guidep)
+
 - [Table of Contents](#table-of-contents)
 - [1 Introduction](#1-introduction)
 	- [1.1 Environment](#11-environment)
@@ -50,6 +46,14 @@
 - blah
 
 ### 1.1.1 Ansible installation
+- Ansible installation. Execute the commands below for installtion:
+	- `$ sudo apt-get update`
+	- `$ sudo apt-get install software-properties-common`
+	- `$ sudo apt-add-repository ppa:ansible/ansible`
+	- `$ sudo apt-get update`
+	- `$ sudo apt-get install ansible`
+	
+### 1.1.2 Ansible Verification
 - Verify Ansible installation. Execute the commands below for a quick view:
 	- `$ which ansible`
 	- `$ ansible --help`
@@ -74,16 +78,17 @@ ansible 2.5.0
 ```
 
 ### 1.1.2 Configuration file
+- Review the Ansible config file
+	- Find default config file: `$ ansible --version`
+	- Do a quick review: `$ cat /etc/ansible/ansible.cfg`
+	- Read the uncommented config: `$ cat /etc/ansible/ansible.cfg | grep -v "#" | grep -v ^$`
+
 - Configuration file is preconfigured for you. We uncommented the following config lines, under [default] section:
 	- inventory --> use default inventory file, /etc/ansible/hosts
 	- gathering: --> do not gather facts
 	- host_key_checking --> Do not expect ssh keys for authentication
 	- timeout --> set timeout to 10 sec.
 	- retry_files_enabled --> do not create retry files
-- Review the Ansible config file
-	- Find default config file: `$ ansible --version`
-	- Do a quick review: `$ cat /etc/ansible/ansible.cfg`
-	- Read the uncommented config: `$ cat /etc/ansible/ansible.cfg | grep -v "#" | grep -v ^$`
 
 #### Sample output:
 
@@ -105,6 +110,9 @@ retry_files_enabled = False
 
 cisco@ansible-controller:~$
 ```
+Note: # All parameters can be overridden in ansible-playbook or with command line flags. Ansible will read ANSIBLE_CONFIG,
+ansible.cfg in the current working directory, .ansible.cfg in the home directory or /etc/ansible/ansible.cfg, whichever it
+finds first 
 
 ### 1.1.3 Inventory file
 - Inventory file is preconfigured for you. We added your router IP addresses in two groups: IOS and XR.
