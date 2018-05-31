@@ -1363,12 +1363,85 @@ cisco@ansible-controller:~$
 - Look for config files in `/home/cisco` directory
 
 ### Conclusion
+- We applied two modules, raw and copy, to get the router config.
 
 
 > Rerefence:
 > - Copy module: http://docs.ansible.com/ansible/latest/modules/copy_module.html
+> - inventory_hostname: http://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html
 
 ### Lab captures
+```
+cisco@ansible-controller:~$ cat p21-confback.yml
+---
+- name: backup all routers config
+  hosts: all
+
+  tasks:
+    - name: collect config  from all routers
+      connection: ssh
+      raw:
+        show run
+
+      register: RUNCFG
+
+    - name: save output to a file
+      connection: local
+      copy:
+        content: "{{ RUNCFG.stdout }}"
+        dest: "/home/cisco/{{ inventory_hostname }}.txt"
+
+cisco@ansible-controller:~$ ansible-playbook p21-confback.yml --syntax-check
+
+playbook: p21-confback.yml
+
+cisco@ansible-controller:~$ ansible-playbook p21-confback.yml
+
+PLAY [backup all routers config] *********************************************************************
+
+TASK [collect config  from all routers] **************************************************************
+changed: [172.16.101.91]
+changed: [172.16.101.92]
+
+TASK [save output to a file] *************************************************************************
+changed: [172.16.101.91]
+changed: [172.16.101.92]
+
+PLAY RECAP *******************************************************************************************
+172.16.101.91              : ok=2    changed=2    unreachable=0    failed=0
+172.16.101.92              : ok=2    changed=2    unreachable=0    failed=0
+
+cisco@ansible-controller:~$ ls -l 172.16.101.*
+-rw-rw-r-- 1 cisco cisco 5066 May 31 21:14 172.16.101.91.txt
+-rw-rw-r-- 1 cisco cisco 2008 May 31 21:14 172.16.101.92.txt
+
+cisco@ansible-controller:~$ cat 172.16.101.91.txt | more
+
+Building configuration...
+
+Current configuration : 4768 bytes
+!
+! Last configuration change at 17:02:00 UTC Mon May 28 2018 by cisco
+!
+version 16.5
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+:
+cisco@ansible-controller:~$ cat 172.16.101.92.txt | more
+
+
+Thu May 31 21:16:06.567 UTC
+Building configuration...
+!! IOS XR Configuration 6.2.2.15I
+!! Last configuration change at Mon May 28 16:45:47 2018 by cisco
+!
+!  IOS-XR Config generated on 2018-03-27 20:08
+! by autonetkit_0.24.0
+hostname R2-XRv
+```
 
 ### Optional excercise
 - Create a playbook to backup routers' config, with the below requirements:
