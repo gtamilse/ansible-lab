@@ -1321,7 +1321,7 @@ cisco@ansible-controller:~$
 # 2 Automation Excercises
 
 ---
-## 2.1 Router config back up
+## 2.1 Router config backup
 ### Objective
 - In this exercise, let us create a playbook to take routers config backup.
 
@@ -1364,6 +1364,9 @@ cisco@ansible-controller:~$
 
 ### Conclusion
 - We applied two modules, raw and copy, to get the router config.
+- Note that the file names may be overwritten when you rerun the playbook. And, you need to manually run the playbook.
+- The optional excercise at the end of this section addresses the above tow problems and enhance this playbook. Feel free to follow the optional playbook if you want to review the other playbook.
+- Review the section and discuss if you have any questions.
 
 
 > Rerefence:
@@ -1452,8 +1455,12 @@ hostname R2-XRv
 - Fyi, lab captures file is at: [op21-confback-labcap.txt](https://github.com/gtamilse/ansible-lab/blob/master/optional/op21-confback-labcap.txt)
 ---
 
-## 2.1 Configuration backup
-## 2.2 Configure OSPF
 ## 2.3 Method of Procedure (MOP)
+
+
+
+---
+
 ## 2.4 Bulk configuration
-## 2.5 Encryption
+
+---
