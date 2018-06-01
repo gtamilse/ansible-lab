@@ -42,25 +42,58 @@
 <!-- /TOC -->
 
 ---
+# 1 Ansible environment
 
-# 1 Introduction
+## 1.1 Objective
+- Get familiarize with the pod
+- Review Ansible customization in our lab
+- Run some basic commands
 
-- Read and understand basic Ansible playbooks
-- Write Ansible playbooks to perform simple tasks
-- Research on your own to read and understand complex playbooks
-- Research on your own to create playbooks to perform complex tasks
+## 1.2 Lab excercises
 
-## 1.1 Environment
-### Objective
+### 1.2.1 Lab environment
+- Make sure that you are on the right pod
+- Execute the below from your Ansible Controller $ prompt
+	- `$ ifconfig eth0`
+	- `$ ping IP-of-your-IOS-router`
+	- `$ ping IP-of-your-XR-router`
+- Make sure:
+	- Eth0 IP address matches with **your assigned controller IP**
+	- Ping to both IOS and XR routers succeed
 
+#### Example output
+- This is no more than an example output.
+- This is provided for you to compare if needed. Do not read this if the steps are executed successfully.
 
-### 1.1.1 Ansible environment
+```
+cisco@ansible-controller:~$ ifconfig eth0
+eth0      Link encap:Ethernet  HWaddr 5e:00:00:00:00:00
+          inet addr:172.16.101.93  Bcast:172.16.101.255  Mask:255.255.255.0			<<<
+          inet6 addr: fe80::5c00:ff:fe00:0/64 Scope:Link
+:
+cisco@ansible-controller:~$ ping 172.16.101.91
+PING 172.16.101.91 (172.16.101.91) 56(84) bytes of data.
+64 bytes from 172.16.101.91: icmp_seq=1 ttl=255 time=0.914 ms
+:
+--- 172.16.101.91 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+rtt min/avg/max/mdev = 0.893/0.903/0.914/0.031 ms
+cisco@ansible-controller:~$ ping 172.16.101.92
+PING 172.16.101.92 (172.16.101.92) 56(84) bytes of data.
+64 bytes from 172.16.101.92: icmp_seq=1 ttl=255 time=1.17 ms
+:
+```
+### 1.2.2 Ansible environment
 - Verify Ansible installation. Execute the commands below for a quick view:
 	- `$ which ansible`
 	- `$ ansible --help`
 	- `$ ansible --version`
 
-#### Sample output
+#### Example output
+- This is no more than an example output.
+- This is provided for you to compare if needed. Do not read this if the steps are executed successfully.
+
+
 ```
 cisco@ansible-controller:~$ which ansible
 /usr/bin/ansible
@@ -78,8 +111,8 @@ ansible 2.5.0
   python version = 2.7.6 (default, Oct 26 2016, 20:30:19) [GCC 4.8.4]
 ```
 
-### 1.1.2 Configuration file
-- Configuration file is preconfigured for you.
+### 1.2.3 Configuration file
+- Ansible configuration file is preconfigured for you.
 - Review the Ansible config file
 	- Find default config file: `$ ansible --version`
 	- Do a quick review: `$ cat /etc/ansible/ansible.cfg`
@@ -91,8 +124,10 @@ ansible 2.5.0
 	- timeout --> set timeout to 10 sec.
 	- retry_files_enabled --> do not create retry files
 
+#### Example output
+- This is no more than an example output.
+- This is provided for you to compare if needed. Do not read this if the steps are executed successfully.
 
-#### Sample output:
 
 ```
 cisco@ansible-controller:~$ ansible --version
@@ -120,7 +155,7 @@ cisco@ansible-controller:~$
 	- /etc/ansible/ansible.cfg
 - Ansible will process the above list and use the first file found, all others are ignored.
 
-### 1.1.3 Inventory file
+### 1.2.4 Inventory file
 - Inventory file is preconfigured for you. We added your router IP addresses in two groups: IOS and XR.
 - Review the inventory file
 	- Find default inventory file: `$ grep inventory /etc/ansible/ansible.cfg | grep hosts`
@@ -131,7 +166,9 @@ cisco@ansible-controller:~$
 	- `$ ansible --list-hosts XR`
 	- `$ ansible --list-hosts ALL`
 
-#### Sample output
+#### Example output
+- This is no more than an example output.
+- Refer only if needed. Do not read this if the steps are executed successfully.
 
 ```
 cisco@ansible-controller:~$ grep inventory /etc/ansible/ansible.cfg | grep hosts
@@ -160,15 +197,16 @@ cisco@ansible-controller:~$
 > - It is possible to have conflicting variables setting. To focus on the basics, we are not going into details in this lab.
 
 
-### 1.1.4 Ansible modules
+### 1.2.5 Ansible modules
 - Ansible ships with several modules.
-- Try the below commands to get a overview of the included modules:
+- Try the below commands for a quick review:
 	- `$ ansible-doc --help`
 	- `$ ansible-doc -l | grep ^ios_`
 	- `$ ansible-doc -l | grep iosxr`
 	- `$ ansible-doc -l`
+	- `$ ansible-doc ios_command`
 
-#### Sample output
+#### Example output
 
 ```
 cisco@ansible-controller:~$ ansible-doc --help
@@ -230,17 +268,21 @@ cisco@ansible-controller:~$ ansible-doc -l | wc -l
 cisco@ansible-controller:~$
 ```
 
+> Reference: For your research later; not now.
+> - http://docs.ansible.com/ansible/latest/modules/modules_by_category.html
+
 ---
 
-## 1.2 Ad-hoc commands
+### 1.2.6 Ad-hoc commands
 - Let us use a few modules in this section: `raw`, `ios_command`, and `iosxr_command`
 - Note that not all modules are suitable to use in ad-hoc command.
 - Syntax: `ansible <devices> -m <module> -a <command>`
 	- devices must exist in the inventory file
+- Execute the below ad-hoc commands (from your home directory, /home/cisco)
 - `$ ansible ALL -m raw -a "show clock"`
 - `$ ansible all -m raw -a "ping vrf Mgmt-intf 172.16.101.93"`
-- `$ ansible IOS -m ios_command -a "commands='show ip route summ'"`
-- `$ ansible XR -m iosxr_command -a "commands='show route summ'"`
+- `$ ansible IOS --connection local -m ios_command -a "commands='show ip route summ'"`
+- `$ ansible XR --connection local -m iosxr_command -a "commands='show route summ'"`
 
 #### Stretch excercises
 > This is for later use. It is possible to use ad-hoc commands with more parameters, as below:
@@ -254,13 +296,13 @@ cisco@ansible-controller:~$
 - Review the section and discuss if you have any questions.
 ---
 
-## 1.3 Raw module
+# 2 Playbook primer
+
+## 2.1 Raw module
 - Let us use raw module in a playbook
-- Create a playbook file (p1-raw.yml) with the below content.
+- Create a playbook file (p1-raw.yml) with the below content, in your home directory
 
 ```
-$ cat p1-raw.yml
-
 ---
 - name: get interface info from all hosts
   hosts: ALL
@@ -1455,12 +1497,210 @@ hostname R2-XRv
 - Fyi, lab captures file is at: [op21-confback-labcap.txt](https://github.com/gtamilse/ansible-lab/blob/master/optional/op21-confback-labcap.txt)
 ---
 
-## 2.3 Method of Procedure (MOP)
+## 2.2 Method of Procedure (MOP)
+
+- MOP is a step-by-step sequence of tasks executed on network devices to achieve a preplanned objective.
+- In this exercise, we will have the playbook capture pre-task data, configure OSPF, and capture post-task data.
+- This is a simplified version of a generic MOP. To use in production, it requires a lot of enhancement.
+
+### Objective
+- Configure OSPF on both IOS and XR routers and enable OSPF on loopback and back-to-back Gigabit Ethernet interfaces.
+
+### Approach
+- Step-1: Capture pre-config data
+- Step-2: Configure OSPF on both the routers
+- Step-3: Capture post-config data
+
+### Lab exercise
+
+#### Step-1: Pre-config data capture
+- Let us capture relavent data before configuring ospf on the routers
+- Create a playbook, p22-preconfig.yml, with the below contents
+- This playbook has two plays: first captures data from IOS devices and the second play will capture data from XR devices.
+
+```
+---
+- name: pre-config captures from IOS routers
+  hosts: IOS
+  connection: local
+
+  tasks:
+    - name: collect precheck commands
+      ios_command:
+        authorize: yes
+        commands:
+           - show run | section ospf
+           - show ip ospf interface brief
+           - show ip ospf neighbor
+           - show ip route ospf
+
+      register: IOSPRE
+
+    - name: save output to a file
+      copy:
+        content=" \n\n {{ IOSPRE.stdout[0] }} \n\n {{ IOSPRE.stdout[1] }} \n\n {{ IOSPRE.stdout[2] }} \n\n {{ IOSPRE.stdout[3] \n\n }} "
+        dest="/home/cisco/p22-precheck-ios.txt"
+
+- name: pre-config captures from XR routers
+  hosts: XR
+  connection: local
+
+  tasks:
+    - name: collect precheck commands
+      iosxr_command:
+        commands:
+           - show run router ospf
+           - show ospf interface brief
+           - show ospf neighbor
+           - show route ospf
+
+      register: XRPRE
+
+    - name: save output to a file
+      copy:
+        content=" \n\n {{ XRPRE.stdout[0] }} \n\n {{ XRPRE.stdout[1] }} \n\n {{ XRPRE.stdout[2] }} \n\n {{ XRPRE.stdout[3] \n\n }} "
+        dest="/home/cisco/p22-precheck-xr.txt"
+```
+
+#### Step-2: Configure OSPF
+- Let us make a playbook with two plays
+	- play-1 to configure OSPF on IOS routers
+	- play-2 to configure ospf on XR routers
+- Create a playbook, p22-config.yml, with the below contents
+
+```
+---
+- name: configure ospf on IOS routers
+  hosts: IOS
+  connection: local
+
+  tasks:
+    - name: configure IOS ospf
+      ios_config:
+          parents: "router ospf 1"
+          lines:
+            - "router-id 192.168.0.1"
+            - "passive-interface Loopback0"
+            - "network 192.168.0.1 0.0.0.0 area 0"
+            - "network 10.0.0.4 0.0.0.3 area 0"
+          save_when: changed
+
+- name: configure ospf on XR routers
+  hosts: XR
+  connection: local
+
+  tasks:
+    - name: configure XR ospf
+      iosxr_config:
+        parents: "router ospf 1"
+        lines:
+          - "router-id 192.168.0.2"
+          - "area 0"
+          - "interface Loopback0"
+          - "passive enable"
+          - "exit"
+          - "interface GigabitEthernet0/0/0/0"
+          - "exit"
+```
+- Predict the outcome of this playbook.
+- Note that the playbook execution may be inconsistent if OSPF is already configured on the router
+- Make sure that OSPF config doesnt exist on the routers
+	- `$ ansible IOS -m raw -a "sho run | sec ospf"`
+	- `$ ansible XR -m raw -a "sho run router ospf"`
+- Important: If there is ospf config, **delete** it for this excercise.
+- Run the playbook"
+	- `$ ansible-playbook p22-config.yml --syntax-check`
+	- `$ ansible-playbook p22-config.yml`
+- Verify (OSPF route should be there)
+	- `$ ansible IOS -m raw -a "show ip route ospf"`
+
+# bug: final playbook will fail because this plybook config's ospf
+
+#### Step-3: Post-config data capture
+
+- Capture relavent data before configuring ospf on the routers
+- This playbook has two plays:
+	- play-1 to capture data from IOS devices
+	- play-2 to capture data from XR devices.
+- Create a playbook, p22-postconfig.yml, with the below contents
+
+```
+---
+- name: post-config captures from IOS routers
+  hosts: IOS
+  connection: local
+
+  tasks:
+    - name: collect postcheck commands
+      ios_command:
+        authorize: yes
+        commands:
+           - show run | section ospf
+           - show ip ospf interface brief
+           - show ip ospf neighbor
+           - show ip route ospf
+
+      register: IOSPOST
+
+    - name: save output to a file
+      copy:
+        content=" \n\n {{ IOSPOST.stdout[0] }} \n\n {{ IOSPOST.stdout[1] }} \n\n {{ IOSPOST.stdout[2] }} \n\n {{ IOSPOST.stdout[3] \n\n }} "
+        dest="/home/cisco/p22-postcheck-ios.txt"
+
+- name: post-config captures from XR routers
+  hosts: XR
+  connection: local
+
+  tasks:
+    - name: collect postcheck commands
+      iosxr_command:
+        commands:
+           - show run router ospf
+           - show ospf interface brief
+           - show ospf neighbor
+           - show route ospf
+
+      register: XRPOST
+
+    - name: save output to a file
+      copy:
+        content=" \n\n {{ XRPOST.stdout[0] }} \n\n {{ XRPOST.stdout[1] }} \n\n {{ XRPOST.stdout[2] }} \n\n {{ XRPOST.stdout[3] \n\n }} "
+        dest="/home/cisco/p22-postcheck-xr.txt"
+```
+
+### Conclusion
+
+### Optional exercise
+
+- Step-4: report the difference in the captures. This will help the operator to determine the success of the config task.
+
+> Reference
+>
+
+
+
+### Lab captures
+
 
 
 
 ---
 
 ## 2.4 Bulk configuration
+
+---
+
+# Appendix
+
+## Reference
+## Optional excercise op-21
+
+```
+
+```
+
+
+## Optional excercise op-22
+## Optional excercise op-23
 
 ---
