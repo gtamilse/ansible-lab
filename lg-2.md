@@ -36,13 +36,25 @@
 
 ### VPN connect
 ![anyconnect](./images/anyconnect.png)
-- Use Cisco Anyconnect client to VPN-into the lab
+- Use Cisco-Anyconnect client to VPN-into the lab
 	- type in lab VPN server IP address
-	-
+	- Click on settings-wheel and uncheck "block connections to untrusted servers"
+	- Use VPN credentials provided by the proctor
+	- Verify (from your laptop exec prompt): `ping 172.16.101.93`
+	- Proceed if ping succeeds.
 
+### SSH into your Ansible server
+- SSH into your Ansible server
+	- Use details provided
 
-
-### Verification
+### Final check
+- Execute the below from your Ansible Controller $ prompt
+	- `$ ifconfig eth0`
+	- `$ ping IP-of-your-IOS-router`
+	- `$ ping IP-of-your-XR-router`
+- **Make sure:**
+	- Eth0 IP address matches with **your assigned controller IP**
+	- Ping to both IOS and XR routers succeed
 
 
 ---
@@ -56,14 +68,6 @@
 ## 1.2 Lab excercises
 
 ### 1.2.1 Lab environment
-- Make sure that you are on the right pod
-- Execute the below from your Ansible Controller $ prompt
-	- `$ ifconfig eth0`
-	- `$ ping IP-of-your-IOS-router`
-	- `$ ping IP-of-your-XR-router`
-- Make sure:
-	- Eth0 IP address matches with **your assigned controller IP**
-	- Ping to both IOS and XR routers succeed
 
 #### Example output
 - This is no more than an example output.
