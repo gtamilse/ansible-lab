@@ -18,7 +18,7 @@
 - Understand your lab pod topology
 - SSH into your Ansible controller
 ## Lab topology
-![topology](~/images/lab-topo.png)
+![topology](./images/lab-topo.png)
 ## Lab access
 -
 
