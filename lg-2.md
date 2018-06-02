@@ -14,13 +14,35 @@
 
 ---
 # Lab access
+
 ## Objective
 - Understand your lab pod topology
 - SSH into your Ansible controller
-## Lab topology
+
+## Lab excercise
+
+### Lab topology
 ![topology](./images/lab-topo.png)
-## Lab access
--
+
+### Lab info
+- Get the following info from your proctor
+	- VPN server IP address
+	- VPN server credentials
+	- Ansible controller IP address
+	- R1 IOS router IP address
+	- R2 XR rotuer IP address
+	- Your lab devices credentials
+- Important: **Verify** your lab device IP addresses before proceeding
+
+### VPN connect
+![anyconnect](./images/anyconnect.png)
+- Use Cisco Anyconnect client to VPN-into the lab
+	- type in lab VPN server IP address
+	-
+
+
+
+### Verification
 
 
 ---
