@@ -46,7 +46,7 @@
 - blah
 
 ### 1.1.1 Ansible installation
-- The following are the steps to install Ansible in an ubuntu environment. You are not required to do this excercise.
+- The following are the steps to install Ansible in an ubuntu environment. This is for reference. You are not required to do this excercise.
 	- `$ sudo apt-get update`
 	- `$ sudo apt-get install software-properties-common`
 	- `$ sudo apt-add-repository ppa:ansible/ansible`
@@ -1317,231 +1317,7 @@ PLAY RECAP *********************************************************************
 
 cisco@ansible-controller:~$
 ```
-
-
 > Reference: http://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#the-when-statement
-
----
-
-
-## 1.10 Importing playbooks
-# 2 Automation Excercise
-## 2.1 Configuration backup
-## 2.2 Configure OSPF
-## 2.3 Method of Procedure (MOP)
-## 2.4 Bulk configuration
-### Objective
-
-- Create configuration from the template
-- Load it on the network device
-
-#### Lab Excercise:
-#### Lab Captures:
-### Conclusion
-### Stretch Excercise
-
-## 2.5 Encryption
-## 2.6 Health Monitoring for Cisco Devices
-
-### Objective
-
-- Proactive heath monitoring of network device
-
-
-### Approach
-#### Lab Exercise
-
-- You will create a playbook that will collect a list of command outputs (data) that is specific to device type or role
-- Save the collected data into a file
-- Use the learning from the conditional statements and flag for errors
-
-Note: The playbook shown here is only applicable for XR devices but it can easily be modified for any other device by changing the commands captured and using the appropriate Ansible module.
-
-
-#### Lab Captures
-
-Step 1: As part of this exercise, create a playbook xr_healthcollection.yml with following contents:
-
-```
----
-- name: get route summary from IOS and XR routers
-  hosts: XR
-  gather_facts: no
-  connection: local
-
-  tasks:
-    - name: Collection Monitoring Commands
-      iosxr_command:
-        commands:
-          - show platform
-          - show redundancy
-          - show install active sum
-          - show context
-          - show proc cpu | ex "0%      0%       0%"
-          - show memory sum location all | in "node|Pyhsical|available"
-          - show ipv4 vrf all int bri
-          - show route sum
-
-      register: iosxr_mon
-
-    - name: save output to a file
-      copy:
-          content="\n\n ===show platform=== \n\n {{ iosxr_mon.stdout[0] }} \n\n ===show redundancy=== \n\n {{ iosxr_mon.stdout[1] }} \n\n ===show install active sum=== \n\n {{ iosxr_mon.stdout[2] }} \n\n ===show context=== \n\n {{ iosxr_mon.stdout[3] }} \n\n ===show proc cpu=== \n\n {{ iosxr_mon.stdout[4] }} \n\n ===show memory summary=== \n\n {{ iosxr_mon.stdout[5] }} \n\n ===show ipv4 vrf all int bri=== \n\n {{ iosxr_mon.stdout[6] }} \n\n ===show route sum=== {{ iosxr_mon.stdout[7] }} \n\n"
-           dest="./{{ inventory_hostname }}_health_check.txt"
-```
-Step 2: Execute the playbook
-
-```
-cisco@ansible-controller:~$ sudo  ansible-playbook xr_healthcollection.yml
-
-PLAY [get route summary from IOS and XR routers] **********************************************************************************************
-
-TASK [Collection Monitoring Commands] *********************************************************************************************************
-ok: [172.16.101.99]
-
-TASK [save output to a file] ******************************************************************************************************************
-changed: [172.16.101.99]
-
-PLAY RECAP ************************************************************************************************************************************
-172.16.101.99              : ok=2    changed=1    unreachable=0    failed=0
-
-cisco@ansible-controller:~$ l
-1                               deleteme              p1-raw.yml  p3-raw.yml     p4.yaml           p7-xrconfig.yml  project1/
-172.16.101.99_health_check.txt  hosts                 p1.retry    p4-ioscmd.yml  p5-xrcmd.yml      p8-vars.yml      TECDEV4500/
-ansible.cfg                     p10-conditionals.yml  p2-raw.yml  p4-xrcmd.yml   p6-iosconfig.yml  p9-loops.yml     xr_healthcollection.yml
-cisco@ansible-controller:~$
-```
-Step 3: Validate that data has been captured
-```
-cisco@ansible-controller:~$ more 172.16.101.99_health_check.txt
-
-
- ===show platform===
-
- Node		Type		PLIM		State		Config State
------------------------------------------------------------------------------
-0/0/CPU0        RP(Active)      N/A             IOS XR RUN      PWR,NSHUT,MON
-
- ===show redundancy===
-
- Redundancy information for node 0/0/CPU0:
-==========================================
-Node 0/0/CPU0 is in ACTIVE role
-Node 0/0/CPU0 has no valid partner
-```
-Note: Data collected can be used for offline analysis.
-
-Step 4: Create a playbook xr_healthvalidation.yml with conditional checks on data captured and flag for abnormalities.
-```
----
-- name: XR Router Health Monitoring
-  hosts: XR
-  gather_facts: false
-  connection: local
-
-  tasks:
-    - name: Collection Monitoring Commands
-      iosxr_command:
-        commands:
-          - show platform
-          - show redundancy
-          - show install active sum
-          - show context
-          - show proc cpu | ex "0%      0%       0%"
-          - show memory sum location all | in "node|Pyhsical|available"
-          - show ipv4 vrf all int bri
-          - show route sum
-          - show ospf neighbor
-          - show mpls ldp neighbor | in "Id|Up"
-          - show bgp all all sum | in "Address|^[0-9]+"
-
-      register: iosxr_mon
-
-    - name: save output to a file
-      copy:
-          content="\n\n ===show platform=== \n\n {{ iosxr_mon.stdout[0] }} \n\n ===show redundancy=== \n\n {{ iosxr_mon.stdout[1] }} \n\n ===show install active sum=== \n\n {{ iosxr_mon.stdout[2] }} \n\n ===show context=== \n\n {{ iosxr_mon.stdout[3] }} \n\n ===show proc cpu=== \n\n {{ iosxr_mon.stdout[4] }} \n\n ===show memory summary=== \n\n {{ iosxr_mon.stdout[5] }} \n\n ===show ipv4 vrf all int bri=== \n\n {{ iosxr_mon.stdout[6] }} \n\n ===show route sum=== {{ iosxr_mon.stdout[7] }} \n\n ===show ospf nei=== \n\n {{ iosxr_mon.stdout[8] }} \n\n ===show mpls ldp neighbor=== \n\n {{ iosxr_mon.stdout[9] }} \n\n ===show bgp sum=== {{iosxr_mon.stdout[10] }}"
-           dest="./{{ inventory_hostname }}_health_check.txt"
-
-    - debug:
-        msg: " {{ inventory_hostname }} show_platform indicates card is down"
-      when: iosxr_mon.stdout[0] | join('') | search('Down')
-
-    - debug:
-        msg: " {{ inventory_hostname }} show_redundancy indicates card is not present"
-      when: iosxr_mon.stdout[1] | join('') | search('NSR not ready since Standby is not Present')
-
-#    - debug:
-#        msg: " {{ inventory_hostname }} active packages list: {{iosxr_data[2] }}"
-#      when: iosxr_mon.stdout[2] | join('') | search('Active Packages')
-
-    - debug:
-        msg: " {{ inventory_hostname }} Process Crashed: {{iosxr_mon.stdout[3] }}"
-      when: iosxr_mon.stdout[3] | join('') | search('Crash')
-
-    - debug:
-         msg: "{{ inventory_hostname }} CPU Utilization {{ iosxr_mon.stdout[4] }}"
-
-    - debug:
-        msg: " {{ inventory_hostname }} Memory Available: {{ iosxr_mon.stdout[5] }}"
-
-    - debug:
-        msg: " {{ inventory_hostname }} Interface is Down"
-      when: iosxr_mon.stdout[6] | join('') | search('Down')
-
-    - debug:
-        msg: " {{ inventory_hostname }} Route Summary: {{iosxr_mon.stdout[7]}}"
-```
-
-Step 5: Execute the playbook and validate the exercise
-```
-cisco@ansible-controller:~$ ansible-playbook xr_healthvalidation.yml
-
-PLAY [XR Router Health Monitoring] ************************************************************************************************************
-
-TASK [Collection Monitoring Commands] *********************************************************************************************************
-ok: [172.16.101.99]
-
-TASK [save output to a file] ******************************************************************************************************************
-changed: [172.16.101.99]
-
-TASK [debug] **********************************************************************************************************************************
-skipping: [172.16.101.99]
-
-TASK [debug] **********************************************************************************************************************************
-ok: [172.16.101.99] => {
-    "msg": " 172.16.101.99 show_redundancy indicates card is not present"
-}
-
-TASK [debug] **********************************************************************************************************************************
-skipping: [172.16.101.99]
-
-TASK [debug] **********************************************************************************************************************************
-ok: [172.16.101.99] => {
-    "msg": "172.16.101.99 CPU Utilization CPU utilization for one minute: 0%; five minutes: 0%; fifteen minutes: 0%\n \nPID    1Min    5Min    15Min Process"
-}
-
-TASK [debug] **********************************************************************************************************************************
-ok: [172.16.101.99] => {
-    "msg": " 172.16.101.99 Memory Available: node:      node0_0_CPU0\n\fPhysical Memory: 3071M total (1436M available)\n Application Memory : 2868M (1436M available)"
-}
-
-TASK [debug] **********************************************************************************************************************************
-skipping: [172.16.101.99]
-
-TASK [debug] **********************************************************************************************************************************
-ok: [172.16.101.99] => {
-    "msg": " 172.16.101.99 Route Summary: Route Source                     Routes     Backup     Deleted     Memory(bytes)\nconnected                        1          1          0           320          \nlocal                            2          0          0           320          \ndagr                             0          0          0           0            \nTotal                            3          1          0           640"
-}
-
-PLAY RECAP ************************************************************************************************************************************
-172.16.101.99              : ok=6    changed=1    unreachable=0    failed=0
-```
-
-cisco@ansible-controller:~$
-
-### Conclusion
-
-- Ansible can be leveraged to build a periodic health check for network devices or its roles.
 
 ## 2.2 Bulk config generation
 
@@ -1962,4 +1738,233 @@ Optional Excercise:
 
 ### Lab captures
 
+### Objective
+
+- Proactive heath monitoring of network device
+
+
+### Approach
+#### Lab Exercise
+
+- You will create a playbook that will collect a list of command outputs (data) that is specific to device type or role
+- Save the collected data into a file
+- Use the learning from the conditional statements and flag for errors
+
+Note: The playbook shown here is only applicable for XR devices but it can easily be modified for any other device by changing the commands captured and using the appropriate Ansible module.
+
+
+#### Lab Captures
+
+Step 1: As part of this exercise, create a playbook xr_healthcollection.yml with following contents:
+
+```
+---
+- name: get route summary from IOS and XR routers
+  hosts: XR
+  gather_facts: no
+  connection: local
+
+  tasks:
+    - name: Collection Monitoring Commands
+      iosxr_command:
+        commands:
+          - show platform
+          - show redundancy
+          - show install active sum
+          - show context
+          - show proc cpu | ex "0%      0%       0%"
+          - show memory sum location all | in "node|Pyhsical|available"
+          - show ipv4 vrf all int bri
+          - show route sum
+
+      register: iosxr_mon
+
+    - name: save output to a file
+      copy:
+          content="\n\n ===show platform=== \n\n {{ iosxr_mon.stdout[0] }} \n\n ===show redundancy=== \n\n {{ iosxr_mon.stdout[1] }} \n\n ===show install active sum=== \n\n {{ iosxr_mon.stdout[2] }} \n\n ===show context=== \n\n {{ iosxr_mon.stdout[3] }} \n\n ===show proc cpu=== \n\n {{ iosxr_mon.stdout[4] }} \n\n ===show memory summary=== \n\n {{ iosxr_mon.stdout[5] }} \n\n ===show ipv4 vrf all int bri=== \n\n {{ iosxr_mon.stdout[6] }} \n\n ===show route sum=== {{ iosxr_mon.stdout[7] }} \n\n"
+           dest="./{{ inventory_hostname }}_health_check.txt"
+```
+Step 2: Execute the playbook
+
+```
+cisco@ansible-controller:~$ sudo  ansible-playbook xr_healthcollection.yml
+
+PLAY [get route summary from IOS and XR routers] **********************************************************************************************
+
+TASK [Collection Monitoring Commands] *********************************************************************************************************
+ok: [172.16.101.99]
+
+TASK [save output to a file] ******************************************************************************************************************
+changed: [172.16.101.99]
+
+PLAY RECAP ************************************************************************************************************************************
+172.16.101.99              : ok=2    changed=1    unreachable=0    failed=0
+
+cisco@ansible-controller:~$ l
+1                               deleteme              p1-raw.yml  p3-raw.yml     p4.yaml           p7-xrconfig.yml  project1/
+172.16.101.99_health_check.txt  hosts                 p1.retry    p4-ioscmd.yml  p5-xrcmd.yml      p8-vars.yml      TECDEV4500/
+ansible.cfg                     p10-conditionals.yml  p2-raw.yml  p4-xrcmd.yml   p6-iosconfig.yml  p9-loops.yml     xr_healthcollection.yml
+cisco@ansible-controller:~$
+```
+Step 3: Validate that data has been captured
+```
+cisco@ansible-controller:~$ more 172.16.101.99_health_check.txt
+
+
+ ===show platform===
+
+ Node		Type		PLIM		State		Config State
+-----------------------------------------------------------------------------
+0/0/CPU0        RP(Active)      N/A             IOS XR RUN      PWR,NSHUT,MON
+
+ ===show redundancy===
+
+ Redundancy information for node 0/0/CPU0:
+==========================================
+Node 0/0/CPU0 is in ACTIVE role
+Node 0/0/CPU0 has no valid partner
+```
+Note: Data collected can be used for offline analysis.
+
+Step 4: Create a playbook xr_healthvalidation.yml with conditional checks on data captured and flag for abnormalities.
+```
+---
+- name: XR Router Health Monitoring
+  hosts: XR
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Collection Monitoring Commands
+      iosxr_command:
+        commands:
+          - show platform
+          - show redundancy
+          - show install active sum
+          - show context
+          - show proc cpu | ex "0%      0%       0%"
+          - show memory sum location all | in "node|Pyhsical|available"
+          - show ipv4 vrf all int bri
+          - show route sum
+          - show ospf neighbor
+          - show mpls ldp neighbor | in "Id|Up"
+          - show bgp all all sum | in "Address|^[0-9]+"
+
+      register: iosxr_mon
+
+    - name: save output to a file
+      copy:
+          content="\n\n ===show platform=== \n\n {{ iosxr_mon.stdout[0] }} \n\n ===show redundancy=== \n\n {{ iosxr_mon.stdout[1] }} \n\n ===show install active sum=== \n\n {{ iosxr_mon.stdout[2] }} \n\n ===show context=== \n\n {{ iosxr_mon.stdout[3] }} \n\n ===show proc cpu=== \n\n {{ iosxr_mon.stdout[4] }} \n\n ===show memory summary=== \n\n {{ iosxr_mon.stdout[5] }} \n\n ===show ipv4 vrf all int bri=== \n\n {{ iosxr_mon.stdout[6] }} \n\n ===show route sum=== {{ iosxr_mon.stdout[7] }} \n\n ===show ospf nei=== \n\n {{ iosxr_mon.stdout[8] }} \n\n ===show mpls ldp neighbor=== \n\n {{ iosxr_mon.stdout[9] }} \n\n ===show bgp sum=== {{iosxr_mon.stdout[10] }}"
+           dest="./{{ inventory_hostname }}_health_check.txt"
+
+    - debug:
+        msg: " {{ inventory_hostname }} show_platform indicates card is down"
+      when: iosxr_mon.stdout[0] | join('') | search('Down')
+
+    - debug:
+        msg: " {{ inventory_hostname }} show_redundancy indicates card is not present"
+      when: iosxr_mon.stdout[1] | join('') | search('NSR not ready since Standby is not Present')
+
+#    - debug:
+#        msg: " {{ inventory_hostname }} active packages list: {{iosxr_data[2] }}"
+#      when: iosxr_mon.stdout[2] | join('') | search('Active Packages')
+
+    - debug:
+        msg: " {{ inventory_hostname }} Process Crashed: {{iosxr_mon.stdout[3] }}"
+      when: iosxr_mon.stdout[3] | join('') | search('Crash')
+
+    - debug:
+         msg: "{{ inventory_hostname }} CPU Utilization {{ iosxr_mon.stdout[4] }}"
+
+    - debug:
+        msg: " {{ inventory_hostname }} Memory Available: {{ iosxr_mon.stdout[5] }}"
+
+    - debug:
+        msg: " {{ inventory_hostname }} Interface is Down"
+      when: iosxr_mon.stdout[6] | join('') | search('Down')
+
+    - debug:
+        msg: " {{ inventory_hostname }} Route Summary: {{iosxr_mon.stdout[7]}}"
+```
+
+Step 5: Execute the playbook and validate the exercise
+```
+cisco@ansible-controller:~$ ansible-playbook xr_healthvalidation.yml
+
+PLAY [XR Router Health Monitoring] ************************************************************************************************************
+
+TASK [Collection Monitoring Commands] *********************************************************************************************************
+ok: [172.16.101.99]
+
+TASK [save output to a file] ******************************************************************************************************************
+changed: [172.16.101.99]
+
+TASK [debug] **********************************************************************************************************************************
+skipping: [172.16.101.99]
+
+TASK [debug] **********************************************************************************************************************************
+ok: [172.16.101.99] => {
+    "msg": " 172.16.101.99 show_redundancy indicates card is not present"
+}
+
+TASK [debug] **********************************************************************************************************************************
+skipping: [172.16.101.99]
+
+TASK [debug] **********************************************************************************************************************************
+ok: [172.16.101.99] => {
+    "msg": "172.16.101.99 CPU Utilization CPU utilization for one minute: 0%; five minutes: 0%; fifteen minutes: 0%\n \nPID    1Min    5Min    15Min Process"
+}
+
+TASK [debug] **********************************************************************************************************************************
+ok: [172.16.101.99] => {
+    "msg": " 172.16.101.99 Memory Available: node:      node0_0_CPU0\n\fPhysical Memory: 3071M total (1436M available)\n Application Memory : 2868M (1436M available)"
+}
+
+TASK [debug] **********************************************************************************************************************************
+skipping: [172.16.101.99]
+
+TASK [debug] **********************************************************************************************************************************
+ok: [172.16.101.99] => {
+    "msg": " 172.16.101.99 Route Summary: Route Source                     Routes     Backup     Deleted     Memory(bytes)\nconnected                        1          1          0           320          \nlocal                            2          0          0           320          \ndagr                             0          0          0           0            \nTotal                            3          1          0           640"
+}
+
+PLAY RECAP ************************************************************************************************************************************
+172.16.101.99              : ok=6    changed=1    unreachable=0    failed=0
+```
+
+cisco@ansible-controller:~$
+
+### Conclusion
+
+- Ansible can be leveraged to build a periodic health check for network devices or its roles.
+
+## 1.10 Importing playbooks
+# 2 Automation Excercises
+## 2.1 Configuration backup
+## 2.2 Configure OSPF
+## 2.3 Method of Procedure (MOP)
 ## 2.4 Bulk configuration
+## 2.5 Encryption
+
+## Ansible Lab Overview:
+
+Ansible is an automation tool for configuring systems, deploying software, and orchestrating
+services. The objective of this lab is to introduce Ansible and showcase how automation can
+improve and simplify network operation tasks.
+
+You will learn how to use Ansible to retrieve key information from target systems by executing
+ad hoc commands, utilizing different modules like IOS/XE, and XE, to complete complex tasks.
+You will create custom playbooks to solve common network operation tasks, such as automating
+daily router configuration backups.
+
+## Ansible overview:
+
+### Objective
+
+# References:
+
+Ansible Documentation: http://docs.ansible.com/ansible/latest/index.html
+YAML Version 1.2 Specs: http://www.yaml.org/spec/1.2/spec.html
+Jinjia2 Templating: http://jinja.pocoo.org/docs/dev/templates/#
+Python Configuration generation: - Kirk Byers Blog – Network configuration using Ansbile
+Ansible Up and Running – Lorin Hochstein
