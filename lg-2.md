@@ -47,7 +47,7 @@
 - SSH into your Ansible server
 	- Use details provided
 
-### Final check
+### Verification
 - Execute the below from your Ansible Controller $ prompt
 	- `$ ifconfig eth0`
 	- `$ ping IP-of-your-IOS-router`
@@ -55,7 +55,7 @@
 - **Make sure:**
 	- Eth0 IP address matches with **your assigned controller IP**
 	- Ping to both IOS and XR routers succeed
-
+- Review the section and discuss if you have any questions.
 
 ---
 # 1 Ansible environment
