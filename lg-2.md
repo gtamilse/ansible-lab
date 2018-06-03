@@ -5,8 +5,6 @@
 # **<p align="center">TECDEV-4500</p>**
 ---
 # **<p align="center">Lab Guide</p>**
-<p align="center">|Yogi Raghunathan|Gopal Naganaboyina|</p>
-<p align="center">|Gowtham Tamilselvan|Muthu Ayyanar|</p>
 
 ---
 
@@ -126,7 +124,7 @@ PING 172.16.101.92 (172.16.101.92) 56(84) bytes of data.
 	- `$ ansible --version`
 
 #### Example output
-- This is given for reference, to be used if needed.
+- This output is given for reference, to be used if needed. Feel free to skip it.
 
 ```
 cisco@ansible-controller:~$ which ansible
@@ -149,7 +147,7 @@ ansible 2.5.0
 
 ### 1.2.3 Configuration file
 - Ansible configuration file is preconfigured for you.
-- Review the Ansible config file
+- Execute the bleow to review the Ansible config file
 	- Find default config file: `$ ansible --version`
 	- Do a quick review: `$ cat /etc/ansible/ansible.cfg`
 	- Read the uncommented config: `$ cat /etc/ansible/ansible.cfg | grep -v "#" | grep -v ^$`
@@ -315,14 +313,28 @@ cisco@ansible-controller:~$
 - Syntax: `ansible <devices> -m <module> -a <command>`
 	- devices must exist in the inventory file
 - Execute the below ad-hoc commands (from your home directory, /home/cisco)
-- `$ ansible --list-hosts IOS`
-- `$ ansible --list-hosts XR`
-- `$ ansible --list-hosts ALL`
-- `$ ansible --list-hosts all`
-- `$ ansible ALL -m raw -a "show clock"`
-- `$ ansible all -m raw -a "ping vrf Mgmt-intf 172.16.101.93"`
-- `$ ansible IOS --connection local -m ios_command -a "commands='show ip route summ'"`
-- `$ ansible XR --connection local -m iosxr_command -a "commands='show route summ'"`
+	- `$ ansible --list-hosts IOS`
+	- `$ ansible --list-hosts XR`
+	- `$ ansible --list-hosts ALL`
+	- `$ ansible --list-hosts all`
+	- `$ ansible ALL -m raw -a "show clock"`
+	- `$ ansible all -m raw -a "ping vrf Mgmt-intf 172.16.101.93"`
+	- `$ ansible IOS --connection local -m ios_command -a "commands='show ip route summ'"`
+	- `$ ansible XR --connection local -m iosxr_command -a "commands='show route summ'"`
+
+
+### Optional excercises
+
+- This is for later use. Do this section if you are ahead of schedule, else skip.
+- It is possible to use ad-hoc commands with more parameters, as below:
+	- `$ ansible IOS -c local -m ios_command -a "authorize=true commands='show run int gig1'"`
+	- `$ ansible IOS -c local -m ios_command -a "username=cisco password=cisco auth_pass=cisco authorize=true commands='show run int gig1'"`
+	- `$ ansible XR -c local -m iosxr_facts -a "username=cisco password=cisco gather_subset=hardware"`
+
+### Conclusion
+
+- Review the section and discuss if you have any questions.
+
 
 ### Example output
 
@@ -420,21 +432,21 @@ cisco@ansible-controller:~$ ansible XR --connection local -m iosxr_command -a "c
 }
 ```
 
-### Optional excercises
-> This is for later use. It is possible to use ad-hoc commands with more parameters, as below:
->
-> `$ ansible IOS -c local -m ios_command -a "authorize=true commands='show run int gig1'"`
->
-> `$ ansible IOS -c local -m ios_command -a "username=cisco password=cisco auth_pass=cisco authorize=true commands='show run int gig1'"`
->
-> `$ ansible XR -c local -m iosxr_facts -a "username=cisco password=cisco gather_subset=hardware"`
-
-- Review the section and discuss if you have any questions.
 ---
 
 # 2 Playbook primer
+- Playbook excercises involve creating playbook files.
+- There are multiple options to create playbook files
+	- 1. Create the file in "Atom editor". Atom is configured with remote sync: when you save the file in the default local directory, it will get saved in the home directory of your Ansible contrller.
+	- 2. Use Ubuntu's "vi" or "vim" editor, which is included in your Ansible controller.
+	- 3. Any other methods that you are most comfortable with.
+- Playbook files are also posted at: `https://github.com/gtamilse/ansible-lab/tree/master/playbooks`
+- If you choose to go with Atom option, create a test file, with name, deleteme.txt.
+	- Make sure the file appears in your Ansible controller.
 
 ## 2.1 Raw module
+### Lab excercise
+
 - Let us use raw module in a playbook
 - Create a playbook file (p1-raw.yml) with the below content, in your home directory
 
@@ -454,54 +466,11 @@ cisco@ansible-controller:~$ ansible XR --connection local -m iosxr_command -a "c
 	- `$ ansible-playbook p1-raw.yml --step`
 	- `$ ansible-playbook p1-raw.yml`
 
-#### Sample output
-
-```
-cisco@ansible-controller:~$ ansible-playbook p1-raw.yml
-
-PLAY [get time from all hosts, using raw module] ******************************************************************
-
-TASK [execute show clock] *****************************************************************************************
-changed: [172.16.101.91]
-changed: [172.16.101.92]
-
-PLAY RECAP ********************************************************************************************************
-172.16.101.91              : ok=1    changed=1    unreachable=0    failed=0
-172.16.101.92              : ok=1    changed=1    unreachable=0    failed=0
-
-cisco@ansible-controller:~$
-```
 
 - As you may have noticed, command output is not displayed.
-- Create playbook p2-raw.yml, to print the output from the routers
-
-```
-cisco@ansible-controller:~$ cat p2-raw.yml
-
----
-- name: get interface info from all hosts
-  hosts: ALL
-
-  tasks:
-    - name: execute show ip interface brief
-      raw:
-        show ip interface brief
-
-      register: P2_RAW_OUTPUT
-
-    - name: print data saved in the variable
-      debug:
-        var: P2_RAW_OUTPUT
-```
-- Predict the outcome of this playbook.
-- Execute the playbook
-	- `$ ansible-playbook p2-raw.yml`
-- If you notice, text output is misformatted.
 - Create another playbook p3-raw.yml, to print the output from routers, in multiple lines
 
 ```
-cisco@ansible-controller:~$ cat p3-raw.yml
-
 ---
 - name: get interface info from all hosts
   hosts: ALL
@@ -521,18 +490,79 @@ cisco@ansible-controller:~$ cat p3-raw.yml
 - Execute the playbook
 	- `$ ansible-playbook p3-raw.yml --syntax-check`
 	- `$ ansible-playbook p3-raw.yml`
+
+### Example output
+
+```
+cisco@ansible-controller:~$ ansible-playbook p1-raw.yml
+
+PLAY [get time from all hosts, using raw module] ******************************************************************
+
+TASK [execute show clock] *****************************************************************************************
+changed: [172.16.101.91]
+changed: [172.16.101.92]
+
+PLAY RECAP ********************************************************************************************************
+172.16.101.91              : ok=1    changed=1    unreachable=0    failed=0
+172.16.101.92              : ok=1    changed=1    unreachable=0    failed=0
+
+cisco@ansible-controller:~$
+cisco@ansible-controller:~$ ansible-playbook p3-raw.yml --syntax-check
+
+playbook: p3-raw.yml
+cisco@ansible-controller:~$ ansible-playbook p3-raw.yml
+
+PLAY [get interface info from all hosts] *************************************************************
+
+TASK [execute show intf] *****************************************************************************
+changed: [172.16.101.91]
+changed: [172.16.101.92]
+
+TASK [print data saved in the variable] **************************************************************
+ok: [172.16.101.91] => {
+    "P3_RAW_OUTPUT.stdout_lines": [
+        "",
+        "Interface              IP-Address      OK? Method Status                Protocol",
+        "GigabitEthernet1       172.16.101.91   YES TFTP   up                    up      ",
+        "GigabitEthernet2       10.0.0.5        YES TFTP   up                    up      ",
+        "Loopback0              192.168.0.1     YES TFTP   up                    up      ",
+        "Loopback1              1.1.1.1         YES manual up                    up      "
+    ]
+}
+ok: [172.16.101.92] => {
+    "P3_RAW_OUTPUT.stdout_lines": [
+        "",
+        "",
+        "Sun Jun  3 19:07:57.578 UTC",
+        "",
+        "Interface                      IP-Address      Status          Protocol Vrf-Name",
+        "Loopback0                      192.168.0.2     Up              Up       default ",
+        "Loopback1                      1.1.1.2         Up              Up       default ",
+        "Loopback99                     1.1.1.99        Up              Up       default ",
+        "Loopback102                    1.1.1.102       Up              Up       default ",
+        "MgmtEth0/0/CPU0/0              172.16.101.92   Up              Up       Mgmt-intf",
+        "GigabitEthernet0/0/0/0         10.0.0.6        Up              Up       default "
+    ]
+}
+
+PLAY RECAP *******************************************************************************************
+172.16.101.91              : ok=2    changed=1    unreachable=0    failed=0
+172.16.101.92              : ok=2    changed=1    unreachable=0    failed=0
+```
+
+### Conclusion
+- We used raw module in a playbook.
 - Review the section and discuss if you have any questions.
 
 ---
 
 ## 1.4 IOS command module
+### Lab excercise
 - Let us use ios_command module to execute some exec commands on the remote devices
 - In this playbook, we will be using ios_command module in the tasks (instead of raw module)
 - Create a playbook, p4-ioscmd.yml, with the below contents
 
 ```
-cisco@ansible-controller:~$ cat p4-ioscmd.yml
-
 ---
 - name: collect ip route summary from all IOS devices
   hosts: IOS
@@ -553,7 +583,17 @@ cisco@ansible-controller:~$ cat p4-ioscmd.yml
 	- `$ ansible-playbook p4-ioscmd.yml --syntax-check`
 	- `$ ansible-playbook p4-ioscmd.yml`
 
-#### Sample output
+
+> Reference:
+	> - this is for future reference only (don't spend time on this now).
+	> - Pay attention to sections: parameters and return values.
+	> - http://docs.ansible.com/ansible/latest/modules/ios_command_module.html
+	> - http://docs.ansible.com/ansible/latest/modules/modules_by_category.html
+
+### Conclusion
+- Review the section and discuss if you have any questions
+
+### Example output
 
 ```
 cisco@ansible-controller:~$ ansible-playbook p4-ioscmd.yml
@@ -588,22 +628,15 @@ PLAY RECAP *********************************************************************
 172.16.101.91              : ok=2    changed=0    unreachable=0    failed=0
 ```
 
-> Reference:
-> - this is for future reference only (don't spend time on this now).
-> - Pay attention to sections: parameters and return values.
-> - http://docs.ansible.com/ansible/latest/modules/ios_command_module.html
-> - http://docs.ansible.com/ansible/latest/modules/modules_by_category.html
-
 ---
 
 ## 1.5 XR command module
+### Lab excercise
 - Let us use iosxr_command module to execute some exec commands on the remote devices
 - In this playbook, we will be using iosxr_command module in the tasks
 - Create a playbook, p5-xrcmd.yml, with the below contents
 
 ```
-cisco@ansible-controller:~$ cat p5-xrcmd.yml
-
 ---
 - name: collect ip route summary from all XR devices
   hosts: XR
@@ -624,7 +657,19 @@ cisco@ansible-controller:~$ cat p5-xrcmd.yml
 	- `$ ansible-playbook p5-xrcmd.yml --syntax-check`
 	- `$ ansible-playbook p5-xrcmd.yml`
 
-#### Sample output
+### Conclusion
+- Review the section and discuss if you have any questions.
+
+### Optional excercise
+- This section is given as a filler if you are ahead of schedule. Do not attempt this if you are on par or slower.
+- This lab will be available for you to work for a few days after Cisco Live. You have the option of doing this later as well.
+- Write a playbook to meet the below requirements:
+	- Collect output of route summary from both IOS and XR routers
+	- Use the modules, ios_command and iosxr_command
+	- Write 2 plays within one playbook.
+- Playbook answer is in the appendix section.
+
+### Example output
 ```
 cisco@ansible-controller:~$ ansible-playbook p5-xrcmd.yml --syntax-check
 
@@ -654,21 +699,15 @@ ok: [172.16.101.92] => {
 PLAY RECAP ********************************************************************************************************
 172.16.101.92              : ok=2    changed=0    unreachable=0    failed=0
 ```
-- Review the section and discuss if you have any questions.
-
----
-Stretch excercise ???
-2 plays: ios and iosxr
 
 ---
 
 ## 1.6 IOS config module
+### Lab excercise
 - Let us use ios_config module to config IOS devices
 - Create a playbook, p6-iosconfig.yml, with the below contents
 
 ```
-cisco@ansible-controller:~$ cat p6-iosconfig.yml
-
 ---
 - name: configure loopback1 interface on IOS devices
   hosts: IOS
@@ -691,18 +730,51 @@ cisco@ansible-controller:~$ cat p6-iosconfig.yml
 	- `ansible-playbook p6-iosconfig.yml`
 - - Check if loopback101 interface is created by p6-iosconfig.yml playbook
 	- `ansible IOS -m raw -a "show run int loop101"`
+
+### Conclusion
 - Review the section and discuss if you have any questions
 
+### Example output
+```
+cisco@ansible-controller:~$ ansible IOS -m raw -a "show run int loop101"
+172.16.101.91 | SUCCESS | rc=0 >>
 
+Line has invalid autocommand "show run int loop101"Shared connection to 172.16.101.91 closed.
+Connection to 172.16.101.91 closed by remote host.
+
+
+cisco@ansible-controller:~$ ansible-playbook p6-iosconfig.yml
+
+PLAY [configure loopback1 interface on IOS devices] **********************************************************************************************
+
+TASK [configure loopback101 interface] ***********************************************************************************************************
+changed: [172.16.101.91]
+
+PLAY RECAP ***************************************************************************************************************************************
+172.16.101.91              : ok=1    changed=1    unreachable=0    failed=0
+
+cisco@ansible-controller:~$ ansible IOS -m raw -a "show run int loop101"
+172.16.101.91 | SUCCESS | rc=0 >>
+
+Building configuration...
+
+Current configuration : 98 bytes
+!
+interface Loopback101
+ description test config by p6
+ ip address 1.1.1.101 255.255.255.255
+end
+Shared connection to 172.16.101.91 closed.
+Connection to 172.16.101.91 closed by remote host.
+```
 ---
 
 ## 1.7 XR config module
+### Lab excercise
 - Let us use iosxr_config module to config XR devices
 - Create a playbook, p7-xrconfig.yml, with the below contents"
 
 ```
-cisco@ansible-controller:~$ cat p7-xrconfig.yml
-
 ---
 - name: configure ACL test7 on all XR devices
   hosts: XR
