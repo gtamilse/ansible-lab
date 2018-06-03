@@ -12,11 +12,22 @@
 
 # Table of Contents
 
+# Time estimate
+- 9:30AM - 11:00AM: 90 minutes, before the half-time break
+	- Lab access (10 min)
+	- Ansible environment (20 min)
+	- Playbook primer (60 min)
+- 11:30AM - 12:30PM: 60 minutes
+	- Network automation excercises
+- 12:30PM - 1:00PM: 30 min
+	- Roles and templates
+	- Bulk configuration
+
 ---
 # Lab access
 
 ## Objective
-- Understand your lab pod topology
+- Understand lab topology
 - SSH into your Ansible controller
 
 ## Lab excercise
@@ -44,8 +55,8 @@
 	- Proceed if ping succeeds.
 
 ### SSH into your Ansible server
-- SSH into your Ansible server
-	- Use details provided
+- SSH into your Ansible server using any SSH client
+	- IP address and credentials will be provided
 
 ### Verification
 - Execute the below from your Ansible Controller $ prompt
@@ -55,25 +66,25 @@
 - **Make sure:**
 	- Eth0 IP address matches with **your assigned controller IP**
 	- Ping to both IOS and XR routers succeed
-- Review the section and discuss if you have any questions.
 
----
-# 1 Ansible environment
-
-## 1.1 Objective
-- Get familiarize with the pod
-- Review Ansible customization in our lab
-- Run some basic commands
-
-## 1.2 Lab excercises
-
-### 1.2.1 Lab environment
-
-#### Example output
-- This is no more than an example output.
-- This is provided for you to compare if needed. Do not read this if the steps are executed successfully.
+## Example output
+- This example output is provided for reference, to be used as needed.
+- Do not read this if the steps are executed successfully.
 
 ```
+GNAGANAB-M-J0A4:~ gnaganab$ ping 172.16.101.93 -c 1
+PING 172.16.101.93 (172.16.101.93): 56 data bytes
+64 bytes from 172.16.101.93: icmp_seq=0 ttl=63 time=34.493 ms
+
+--- 172.16.101.93 ping statistics ---
+1 packets transmitted, 1 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 34.493/34.493/34.493/0.000 ms
+GNAGANAB-M-J0A4:~ gnaganab$
+GNAGANAB-M-J0A4:~ gnaganab$ ssh cisco@172.16.101.93
+cisco@172.16.101.93's password:
+Welcome to Ubuntu 14.04.5 LTS (GNU/Linux 3.13.0-119-generic x86_64)
+:
+cisco@ansible-controller:~$
 cisco@ansible-controller:~$ ifconfig eth0
 eth0      Link encap:Ethernet  HWaddr 5e:00:00:00:00:00
           inet addr:172.16.101.93  Bcast:172.16.101.255  Mask:255.255.255.0			<<<
@@ -91,16 +102,31 @@ PING 172.16.101.92 (172.16.101.92) 56(84) bytes of data.
 64 bytes from 172.16.101.92: icmp_seq=1 ttl=255 time=1.17 ms
 :
 ```
-### 1.2.2 Ansible environment
-- Verify Ansible installation. Execute the commands below for a quick view:
+
+- Review the section and discuss if you have any questions.
+
+---
+# 1 Ansible environment
+
+## 1.1 Objective
+- Review Ansible customization in our lab
+- Run Ansible ad-hoc commands
+
+## 1.2 Lab excercises
+- Ansible environment
+- Configuration file
+- Inventory file
+- Ansible modules
+- Ad-hoc commands
+
+### 1.2.1 Ansible environment
+- Review your Ansible. Execute the commands below for a quick view:
 	- `$ which ansible`
 	- `$ ansible --help`
 	- `$ ansible --version`
 
 #### Example output
-- This is no more than an example output.
-- This is provided for you to compare if needed. Do not read this if the steps are executed successfully.
-
+- This is given for reference, to be used if needed.
 
 ```
 cisco@ansible-controller:~$ which ansible
@@ -119,6 +145,8 @@ ansible 2.5.0
   python version = 2.7.6 (default, Oct 26 2016, 20:30:19) [GCC 4.8.4]
 ```
 
+---
+
 ### 1.2.3 Configuration file
 - Ansible configuration file is preconfigured for you.
 - Review the Ansible config file
@@ -127,15 +155,13 @@ ansible 2.5.0
 	- Read the uncommented config: `$ cat /etc/ansible/ansible.cfg | grep -v "#" | grep -v ^$`
 - We uncommented the following config lines, under [default] section:
 	- inventory --> use default inventory file, /etc/ansible/hosts
-	- gathering: --> do not gather facts
+	- gathering: --> do not gather facts unless specified
 	- host_key_checking --> Do not expect ssh keys for authentication
 	- timeout --> set timeout to 10 sec.
 	- retry_files_enabled --> do not create retry files
 
 #### Example output
-- This is no more than an example output.
-- This is provided for you to compare if needed. Do not read this if the steps are executed successfully.
-
+- Just for reference, if you want to compare your lab output to someone else's.
 
 ```
 cisco@ansible-controller:~$ ansible --version
@@ -155,13 +181,15 @@ retry_files_enabled = False
 :
 cisco@ansible-controller:~$
 ```
-> Reference: http://docs.ansible.com/ansible/latest/reference_appendices/config.html#ansible-configuration-settings
+> Reference: for later use. http://docs.ansible.com/ansible/latest/reference_appendices/config.html#ansible-configuration-settings
 > - Changes can be made and used in a configuration file which will be searched for in the following order:
 	- ANSIBLE_CONFIG (environment variable if set)
 	- ansible.cfg (in the current directory)
 	- ~/.ansible.cfg (in the home directory)
 	- /etc/ansible/ansible.cfg
-- Ansible will process the above list and use the first file found, all others are ignored.
+> - Ansible will process the above list and use the first file found, all others are ignored.
+
+---
 
 ### 1.2.4 Inventory file
 - Inventory file is preconfigured for you. We added your router IP addresses in two groups: IOS and XR.
@@ -175,8 +203,7 @@ cisco@ansible-controller:~$
 	- `$ ansible --list-hosts ALL`
 
 #### Example output
-- This is no more than an example output.
-- Refer only if needed. Do not read this if the steps are executed successfully.
+- Reference purpose only. Feel free to skip it.
 
 ```
 cisco@ansible-controller:~$ grep inventory /etc/ansible/ansible.cfg | grep hosts
@@ -204,6 +231,7 @@ cisco@ansible-controller:~$
 > - It is possible to have multiple inventory files.
 > - It is possible to have conflicting variables setting. To focus on the basics, we are not going into details in this lab.
 
+---
 
 ### 1.2.5 Ansible modules
 - Ansible ships with several modules.
@@ -283,21 +311,121 @@ cisco@ansible-controller:~$
 
 ### 1.2.6 Ad-hoc commands
 - Let us use a few modules in this section: `raw`, `ios_command`, and `iosxr_command`
-- Note that not all modules are suitable to use in ad-hoc command.
+- Note that not all modules are suitable for use in ad-hoc command.
 - Syntax: `ansible <devices> -m <module> -a <command>`
 	- devices must exist in the inventory file
 - Execute the below ad-hoc commands (from your home directory, /home/cisco)
+- `$ ansible --list-hosts IOS`
+- `$ ansible --list-hosts XR`
+- `$ ansible --list-hosts ALL`
+- `$ ansible --list-hosts all`
 - `$ ansible ALL -m raw -a "show clock"`
 - `$ ansible all -m raw -a "ping vrf Mgmt-intf 172.16.101.93"`
 - `$ ansible IOS --connection local -m ios_command -a "commands='show ip route summ'"`
 - `$ ansible XR --connection local -m iosxr_command -a "commands='show route summ'"`
 
-#### Stretch excercises
+### Example output
+
+```
+cisco@ansible-controller:~$ ansible --list-hosts IOS
+  hosts (1):
+    172.16.101.91
+cisco@ansible-controller:~$ ansible --list-hosts XR
+  hosts (1):
+    172.16.101.92
+cisco@ansible-controller:~$ ansible --list-hosts ALL
+  hosts (2):
+    172.16.101.91
+    172.16.101.92
+cisco@ansible-controller:~$ ansible --list-hosts all
+  hosts (2):
+    172.16.101.91
+    172.16.101.92
+cisco@ansible-controller:~$
+cisco@ansible-controller:~$ ansible ALL -m raw -a "show clock"
+172.16.101.91 | SUCCESS | rc=0 >>
+
+*03:27:05.914 UTC Sun Jun 3 2018Shared connection to 172.16.101.91 closed.
+Connection to 172.16.101.91 closed by remote host.
+
+
+172.16.101.92 | SUCCESS | rc=0 >>
+
+
+Sun Jun  3 03:28:36.549 UTC
+03:28:36.589 UTC Sun Jun 3 2018
+
+:
+
+cisco@ansible-controller:~$ ansible all -m raw -a "ping vrf Mgmt-intf 172.16.101.93"
+172.16.101.91 | SUCCESS | rc=0 >>
+
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 172.16.101.93, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 1/1/1 msShared connection to 172.16.101.91 closed.
+Connection to 172.16.101.91 closed by remote host.
+
+
+172.16.101.92 | SUCCESS | rc=0 >>
+
+
+Sun Jun  3 03:28:53.207 UTC
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 172.16.101.93, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 1/1/1 ms
+:
+cisco@ansible-controller:~$ ansible IOS --connection local -m ios_command -a "commands='show ip route summ'"
+172.16.101.91 | SUCCESS => {
+    "changed": false,
+    "stdout": [
+        "IP routing table name is default (0x0)\nIP routing table maximum-paths is 32\nRoute Source    Networks    Subnets     Replicates  Overhead    Memory (bytes)\napplication     0           0           0           0           0\nconnected       0           4           0           384         1216\nstatic          0           0           0           0           0\nospf 1          0           1           0           96          308\n  Intra-area: 1 Inter-area: 0 External-1: 0 External-2: 0\n  NSSA External-1: 0 NSSA External-2: 0\nbgp 1           0           0           0           0           0\n  External: 0 Internal: 0 Local: 0\ninternal        3                                               1432\nTotal           3           5           0           480         2956"
+    ],
+    "stdout_lines": [
+        [
+            "IP routing table name is default (0x0)",
+            "IP routing table maximum-paths is 32",
+            "Route Source    Networks    Subnets     Replicates  Overhead    Memory (bytes)",
+            "application     0           0           0           0           0",
+            "connected       0           4           0           384         1216",
+            "static          0           0           0           0           0",
+            "ospf 1          0           1           0           96          308",
+            "  Intra-area: 1 Inter-area: 0 External-1: 0 External-2: 0",
+            "  NSSA External-1: 0 NSSA External-2: 0",
+            "bgp 1           0           0           0           0           0",
+            "  External: 0 Internal: 0 Local: 0",
+            "internal        3                                               1432",
+            "Total           3           5           0           480         2956"
+        ]
+    ]
+}
+cisco@ansible-controller:~$ ansible XR --connection local -m iosxr_command -a "commands='show route summ'"
+172.16.101.92 | SUCCESS => {
+    "changed": false,
+    "stdout": [
+        "Route Source                     Routes     Backup     Deleted     Memory(bytes)\nlocal                            5          0          0           800          \nconnected                        1          4          0           800          \ndagr                             0          0          0           0            \nospf 1                           1          0          0           160          \nbgp 1                            0          0          0           0            \nTotal                            7          4          0           1760"
+    ],
+    "stdout_lines": [
+        [
+            "Route Source                     Routes     Backup     Deleted     Memory(bytes)",
+            "local                            5          0          0           800          ",
+            "connected                        1          4          0           800          ",
+            "dagr                             0          0          0           0            ",
+            "ospf 1                           1          0          0           160          ",
+            "bgp 1                            0          0          0           0            ",
+            "Total                            7          4          0           1760"
+        ]
+    ]
+}
+```
+
+### Optional excercises
 > This is for later use. It is possible to use ad-hoc commands with more parameters, as below:
 >
-> `$ ansible IOS -c local -m ios_command -a "authorize=true commands='show run'"`
+> `$ ansible IOS -c local -m ios_command -a "authorize=true commands='show run int gig1'"`
 >
-> `$ ansible IOS -c local -m ios_command -a "username=cisco password=cisco auth_pass=cisco authorize=true commands='show run'"`
+> `$ ansible IOS -c local -m ios_command -a "username=cisco password=cisco auth_pass=cisco authorize=true commands='show run int gig1'"`
 >
 > `$ ansible XR -c local -m iosxr_facts -a "username=cisco password=cisco gather_subset=hardware"`
 
