@@ -1,4 +1,8 @@
-User pod assignment
+# Credentials for lab devices
+- username: cisco
+- password: cisco
+
+# User pod assignment
 
 | Pod | Ansible Controller | IOS Router | XR Router |
 |------|--------------------|------------|-----------|
