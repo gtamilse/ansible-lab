@@ -3,107 +3,30 @@
 
 # **<p align="center">Network Automation with Ansible</p>**
 # **<p align="center">TECDEV-4500</p>**
+
 ---
 # **<p align="center">Lab Guide</p>**
 
 ---
+<p align="center">Gopal Naganaboyina | Yogi Raghunathan </p>
+
+---
+
 
 # Table of Contents
+
+---
 
 # Time estimate
 - 9:30AM - 11:00AM: 90 minutes, before the half-time break
 	- Lab access (10 min)
-	- Ansible environment (20 min)
+	- Ansible introduction (20 min)
 	- Playbook primer (60 min)
-- 11:30AM - 12:30PM: 60 minutes
-	- Network automation excercises
-- 12:30PM - 1:00PM: 30 min
-	- Roles and templates
-	- Bulk configuration
+- 11:30AM - 1:00PM: 90 minutes
+	- Automating common operational tasks
 
 ---
-# Lab access
 
-## Objective
-- Understand lab topology
-- SSH into your Ansible controller
-
-## Lab excercise
-
-### Lab topology
-![topology](./images/lab-topo.png)
-
-### Lab info
-- Get the following info from your proctor
-	- VPN server IP address
-	- VPN server credentials
-	- Ansible controller IP address
-	- R1 IOS router IP address
-	- R2 XR rotuer IP address
-	- Your lab devices credentials
-- Important: **Verify** your lab device IP addresses before proceeding
-
-### VPN connect
-![anyconnect](./images/anyconnect.png)
-- Use Cisco-Anyconnect client to VPN-into the lab
-	- type in lab VPN server IP address
-	- Click on settings-wheel and uncheck "block connections to untrusted servers"
-	- Use VPN credentials provided by the proctor
-	- Verify (from your laptop exec prompt): `ping 172.16.101.93`
-	- Proceed if ping succeeds.
-
-### SSH into your Ansible server
-- SSH into your Ansible server using any SSH client
-	- IP address and credentials will be provided
-
-### Verification
-- Execute the below from your Ansible Controller $ prompt
-	- `$ ifconfig eth0`
-	- `$ ping IP-of-your-IOS-router`
-	- `$ ping IP-of-your-XR-router`
-- **Make sure:**
-	- Eth0 IP address matches with **your assigned controller IP**
-	- Ping to both IOS and XR routers succeed
-
-## Example output
-- This example output is provided for reference, to be used as needed.
-- Do not read this if the steps are executed successfully.
-
-```
-GNAGANAB-M-J0A4:~ gnaganab$ ping 172.16.101.93 -c 1
-PING 172.16.101.93 (172.16.101.93): 56 data bytes
-64 bytes from 172.16.101.93: icmp_seq=0 ttl=63 time=34.493 ms
-
---- 172.16.101.93 ping statistics ---
-1 packets transmitted, 1 packets received, 0.0% packet loss
-round-trip min/avg/max/stddev = 34.493/34.493/34.493/0.000 ms
-GNAGANAB-M-J0A4:~ gnaganab$
-GNAGANAB-M-J0A4:~ gnaganab$ ssh cisco@172.16.101.93
-cisco@172.16.101.93's password:
-Welcome to Ubuntu 14.04.5 LTS (GNU/Linux 3.13.0-119-generic x86_64)
-:
-cisco@ansible-controller:~$
-cisco@ansible-controller:~$ ifconfig eth0
-eth0      Link encap:Ethernet  HWaddr 5e:00:00:00:00:00
-          inet addr:172.16.101.93  Bcast:172.16.101.255  Mask:255.255.255.0			<<<
-          inet6 addr: fe80::5c00:ff:fe00:0/64 Scope:Link
-:
-cisco@ansible-controller:~$ ping 172.16.101.91
-PING 172.16.101.91 (172.16.101.91) 56(84) bytes of data.
-64 bytes from 172.16.101.91: icmp_seq=1 ttl=255 time=0.914 ms
-:
---- 172.16.101.91 ping statistics ---
-2 packets transmitted, 2 received, 0% packet loss, time 1001ms
-rtt min/avg/max/mdev = 0.893/0.903/0.914/0.031 ms
-cisco@ansible-controller:~$ ping 172.16.101.92
-PING 172.16.101.92 (172.16.101.92) 56(84) bytes of data.
-64 bytes from 172.16.101.92: icmp_seq=1 ttl=255 time=1.17 ms
-:
-```
-
-- Review the section and discuss if you have any questions.
-
----
 # 1 Ansible environment
 
 ## 1.1 Objective
@@ -123,7 +46,7 @@ PING 172.16.101.92 (172.16.101.92) 56(84) bytes of data.
 	- `$ ansible --help`
 	- `$ ansible --version`
 
-#### Example output
+### Example output
 - This output is given for reference, to be used if needed. Feel free to skip it.
 
 ```
@@ -436,13 +359,10 @@ cisco@ansible-controller:~$ ansible XR --connection local -m iosxr_command -a "c
 
 # 2 Playbook primer
 - Playbook excercises involve creating playbook files.
-- There are multiple options to create playbook files
-	- 1. Create the file in "Atom editor". Atom is configured with remote sync: when you save the file in the default local directory, it will get saved in the home directory of your Ansible contrller.
-	- 2. Use Ubuntu's "vi" or "vim" editor, which is included in your Ansible controller.
-	- 3. Any other methods that you are most comfortable with.
+- There are two options to create playbook files
+	- Option-1: Create the file in "Atom editor". Atom is preconfigured with remote-sync: when you save the file in the default local directory, it will get automatically copied to your home directory of your Ansible contrller (/home/cisco).
+	- Option-2: Use Ubuntu's "vi" or "vim" editor, which is included in your Ansible controller.
 - Playbook files are also posted at: `https://github.com/gtamilse/ansible-lab/tree/master/playbooks`
-- If you choose to go with Atom option, create a test file, with name, deleteme.txt.
-	- Make sure the file appears in your Ansible controller.
 
 ## 2.1 Raw module
 ### Lab excercise
@@ -1581,10 +1501,10 @@ cisco@ansible-controller:~$
 - Task-2 to save the contents of the variable into a file. We will be using "copy" module for this.
 
 ### Lab excercise
-- Review the contents in the below box.
+- Review the contents in the playbook below.
 - Task-1 collects and saves running-config in a variable named as RUNCFG
 - Task-2 saves the contents of RUNCFG in a file in the home directory.
-- Task-2 contains a wellknown variable (aka default variable) called, inventory_hostname. It means, the current inventory device.
+- Task-2 contains a wellknown variable (aka default variable) called, inventory_hostname. It means, "current inventory device", the router on which the tasks are run.
 - Create the playbook with file name, p21-confback.yml, with the contents below.
 
 ```
@@ -1618,12 +1538,13 @@ cisco@ansible-controller:~$
 - The optional excercise at the end of this section addresses the above tow problems and enhance this playbook. Feel free to follow the optional playbook if you want to review the other playbook.
 - Review the section and discuss if you have any questions.
 
+### Reference
 
-> Rerefence:
 > - Copy module: http://docs.ansible.com/ansible/latest/modules/copy_module.html
 > - inventory_hostname: http://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html
 
 ### Lab captures
+
 ```
 cisco@ansible-controller:~$ cat p21-confback.yml
 ---
@@ -1698,11 +1619,11 @@ hostname R2-XRv
 
 ### Optional excercise
 - Create a playbook to backup routers' config, with the below requirements:
-	- Config backup should be taken daily at 01:00 hrs UTC
 	- Filename of the config files should include timestamp to maintain uniqueness.
+	- Config backup should be taken daily at 01:00 hrs UTC. Use linux cronjob for this task.
 - Execute your playbook and verify if the results meet the requirements.
-- Fyi, a playbook file is here: [op21-confback.yml](https://github.com/gtamilse/ansible-lab/blob/master/optional/op21-confback.yml)
-- Fyi, lab captures file is at: [op21-confback-labcap.txt](https://github.com/gtamilse/ansible-lab/blob/master/optional/op21-confback-labcap.txt)
+- Fyi, a solution playbook file is given in the appendix section for your reference.
+
 ---
 
 ## 2.2 Method of Procedure (MOP)
@@ -1882,7 +1803,20 @@ hostname R2-XRv
 
 - Step-4: report the difference in the captures. This will help the operator to determine the success of the config task.
 
-> Reference
+### Optional excercise
+
+> - Add the below requirements to the above MOP playbook:
+>   - Insert a delay of 30 seconds before collecting post-config data
+>   - Create a file with the differences between pre-config and post-config data
+> - Execute your playbook and verify if the results meet the requirements.
+> - Fyi, a solution playbook file is given in the appendix section for your reference.
+
+
+### Reference
+
+> copy module: http://docs.ansible.com/ansible/latest/modules/copy_module.html
+> meta module: http://docs.ansible.com/ansible/latest/modules/meta_module.html
+> pause: http://docs.ansible.com/ansible/latest/modules/pause_module.html
 >
 
 
