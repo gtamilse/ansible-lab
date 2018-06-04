@@ -6,5 +6,6 @@ Presenters Gopal Naganaboyina & Yogi Raghunathan
 June 10, 2018
 
 Session 1 - 30 attendees
+
 Directory for Ansible lab
 
