@@ -345,7 +345,7 @@ cisco@ansible-controller:~$ ansible XR --connection local -m iosxr_command -a "c
 # 2 Playbook primer
 - Playbook excercises involve creating playbook files.
 - There are two options to create playbook files
-	- Option-1: Create the file in "Atom editor". Atom is preconfigured with remote-sync: when you save the file in the default local directory, it will get automatically copied to your home directory of your Ansible contrller (/home/cisco).
+	- Option-1: Create the file in "Atom" editor, on the laptop. Atom is preconfigured with remote-sync: when you save the file in the default local directory, it will automatically get copied to your home directory of your Ansible controller (/home/cisco).
 	- Option-2: Use Ubuntu's "vi" or "vim" editor, which is included in your Ansible controller.
 - Playbook files are also posted at: `https://github.com/gtamilse/ansible-lab/tree/master/playbooks`
 
@@ -710,7 +710,7 @@ Connection to 172.16.101.91 closed by remote host.
 ### Conclusion
 - Review the section and discuss if you have any questions
 
-### Sample output
+### Example output
 ```
 cisco@ansible-controller:~$ ansible XR -m raw -a "sho run ipv4 access-list"
 172.16.101.92 | SUCCESS | rc=0 >>
@@ -1978,13 +1978,41 @@ hostname R2-XRv
 # Appendix
 
 ## Reference
-## Optional excercise op-21
+- Ansible Documentation: http://docs.ansible.com/ansible/latest/index.html
+- YAML Version 1.2 Specs: http://www.yaml.org/spec/1.2/spec.html
+- Jinjia2 Templating: http://jinja.pocoo.org/docs/dev/templates/
+- Ansible installation: https://www.youtube.com/watch?v=NIEVaCBGOUc
+- Introduction to YAML: https://www.youtube.com/watch?v=o9pT9cWzbnI
+- Ansible - Playbooks for beginners: https://www.youtube.com/watch?v=Z01b9QZG0D0
+- Python Configuration generation: - Kirk Byers Blog – Network configuration using Ansbile
+- Ansible Up and Running – Lorin Hochstein
+
+---
+
+## Ansible installation
+- Ansible control machine is on Linux based systems with Python 2 (versions 2.6 or higher) or Python 3 (versions 3.5 or higher).
+- Red Hat, Debian, CentOS, OS X (MAC OS), Ubuntu, BSDs etc. are supported. MS Windows OS is not supported.
+- Installation steps are straight forward. Depending on your OS flavor, pick the steps from the installation guide.
+- Ansible installation guide: http://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
+- Just for example, installtion steps for CentOS:
+	- `$ sudo yum update`
+	- `$ sudo yum install ansible`
+- Installation steps for Ubuntu:
+	- `$ sudo apt-get update`
+	- `$ sudo apt-get install software-properties-common`
+	- `$ sudo apt-add-repository ppa:ansible/ansible`
+	- `$ sudo apt-get update`
+	- `$ sudo apt-get install ansible`
+
+---
+
+## Optional excercise oe-21
 
 ```
 
 ```
 
-## Optional excercise op-22
-## Optional excercise op-23
+## Optional excercise oe-22
+## Optional excercise o-23
 
 ---
