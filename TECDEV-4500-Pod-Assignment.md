@@ -1,10 +1,10 @@
 # TECDEV-4500 POD ASSIGNMENT
 
-# Lab Nodes Login Credentials
+## Lab Nodes Login Credentials
 - username: cisco
 - password: cisco
 
-# User pod assignment
+## User pod assignment
 
 | Pod | Ansible Controller | IOS Router | XR Router |
 |------|--------------------|------------|-----------|
