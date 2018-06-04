@@ -2,11 +2,11 @@
 
 ## Network Automation with Ansible
 
+### Session 2 - 18 attendees
+
 Presenters Gowtham Tamilselvan & Muthuraja Ayyanar
 
 June 10, 2018
-
-Session 2 - 18 attendees
 
 Directory for Ansible lab
 
