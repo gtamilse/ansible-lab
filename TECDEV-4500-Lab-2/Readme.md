@@ -5,6 +5,8 @@
 Presenters Gowtham Tamilselvan & Muthuraja Ayyanar
 June 10, 2018
 
-Directory for Ansible lab, session 2 - 18 attendees
+Session 2 - 18 attendees
+
+Directory for Ansible lab
 
 
