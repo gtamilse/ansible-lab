@@ -2,7 +2,7 @@
 
 ## Network Automation with Ansible
 
-###Session 1 - 30 attendees
+### Session 1 - 30 attendees
 
 Presenters Gopal Naganaboyina & Yogi Raghunathan
 
