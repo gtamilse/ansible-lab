@@ -2,10 +2,11 @@
 
 ## Network Automation with Ansible
 
-Presenters Gopal Naganaboyina & Yogi Raghunathan
-June 10, 2018
+###Session 1 - 30 attendees
 
-Session 1 - 30 attendees
+Presenters Gopal Naganaboyina & Yogi Raghunathan
+
+June 10, 2018
 
 Directory for Ansible lab
 
