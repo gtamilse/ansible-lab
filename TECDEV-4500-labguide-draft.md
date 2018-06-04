@@ -23,7 +23,7 @@
 	- Ansible introduction (20 min)
 	- Playbook primer (60 min)
 - 11:30AM - 1:00PM: 90 minutes
-	- Automating common operational tasks
+	- Automation excercises
 
 ---
 
@@ -1779,13 +1779,12 @@ hostname R2-XRv
 
 ### Objective
 
-- Create a playbook to collect critical captures, and flag for any deviations from the predefined thresholds.
+- Create a playbook to collect critical data, and flag any deviations from the predefined thresholds.
 
 ### Approach
 
 - In this exercise, you will collect critical data.
-- Check some metrics in the data against predefined thresholds
-- Check against the outputs and flagged for threshold critical for meeting operational objectives.
+- Compare metrics in the data against predefined thresholds
 
 ### Lab Exercise
 
@@ -1855,60 +1854,59 @@ Step 4: Create a playbook xr_healthvalidation.yml with conditional checks on dat
 ---
 - name: XR Router Health Monitoring
   hosts: XR
-  gather_facts: false
   connection: local
 
   tasks:
-    - name: Collection Monitoring Commands
+    - name: Health monitoring commands
       iosxr_command:
         commands:
           - show platform
           - show redundancy
-          - show install active sum
           - show context
-          - show proc cpu | ex "0%      0%       0%"
-          - show memory sum location all | in "node|Pyhsical|available"
-          - show ipv4 vrf all int bri
-          - show route sum
-          - show ospf neighbor
-          - show mpls ldp neighbor | in "Id|Up"
+          - show proc cpu | inc CPU utilization
+          - show memory sum | inc Application Memory
+          - sho route summ | inc "Routes|Total"
+          - show ospf neighbor | inc Neighbor is up
+          - show mpls ldp neighbor brief
           - show bgp all all sum | in "Address|^[0-9]+"
 
       register: iosxr_mon
 
     - name: save output to a file
       copy:
-          content="\n\n ===show platform=== \n\n {{ iosxr_mon.stdout[0] }} \n\n ===show redundancy=== \n\n {{ iosxr_mon.stdout[1] }} \n\n ===show install active sum=== \n\n {{ iosxr_mon.stdout[2] }} \n\n ===show context=== \n\n {{ iosxr_mon.stdout[3] }} \n\n ===show proc cpu=== \n\n {{ iosxr_mon.stdout[4] }} \n\n ===show memory summary=== \n\n {{ iosxr_mon.stdout[5] }} \n\n ===show ipv4 vrf all int bri=== \n\n {{ iosxr_mon.stdout[6] }} \n\n ===show route sum=== {{ iosxr_mon.stdout[7] }} \n\n ===show ospf nei=== \n\n {{ iosxr_mon.stdout[8] }} \n\n ===show mpls ldp neighbor=== \n\n {{ iosxr_mon.stdout[9] }} \n\n ===show bgp sum=== {{iosxr_mon.stdout[10] }}"
-           dest="./{{ inventory_hostname }}_health_check.txt"
+          content="\n\n ===show platform=== \n\n {{ iosxr_mon.stdout[0] }} \n\n ===show redundancy=== \n\n {{ iosxr_mon.stdout[1] }} \n\n ===show context=== \n\n {{ iosxr_mon.stdout[2] }} \n\n ===CPU Utilization=== \n\n {{ iosxr_mon.stdout[3] }} \n\n ===show mem summ=== \n\n {{ iosxr_mon.stdout[4] }} \n\n ===show route summ=== \n\n {{ iosxr_mon.stdout[5] }} \n\n ===show ospf neighbor=== \n\n {{ iosxr_mon.stdout[6] }} \n\n ===show mpls ldp neighbor br=== {{ iosxr_mon.stdout[7] }} \n\n ===show bgp summ=== \n\n {{ iosxr_mon.stdout[8] }} \n\n"
+          dest="/home/cisco/{{ inventory_hostname }}_health_check.txt"
 
     - debug:
-        msg: " {{ inventory_hostname }} show_platform indicates card is down"
+        msg: "{{ inventory_hostname }} show_platform indicates card is down"
       when: iosxr_mon.stdout[0] | join('') | search('Down')
 
     - debug:
-        msg: " {{ inventory_hostname }} show_redundancy indicates card is not present"
-      when: iosxr_mon.stdout[1] | join('') | search('NSR not ready since Standby is not Present')
-
-#    - debug:
-#        msg: " {{ inventory_hostname }} active packages list: {{iosxr_data[2] }}"
-#      when: iosxr_mon.stdout[2] | join('') | search('Active Packages')
+        msg: "{{ inventory_hostname }} NSR not ready"
+      when: iosxr_mon.stdout[1] | join('') | search('NSR not ready')
 
     - debug:
-        msg: " {{ inventory_hostname }} Process Crashed: {{iosxr_mon.stdout[3] }}"
-      when: iosxr_mon.stdout[3] | join('') | search('Crash')
+        msg: "{{ inventory_hostname }} has process crash(es)"
+      when: iosxr_mon.stdout[2] | join('') | search('Crash')
 
     - debug:
-         msg: "{{ inventory_hostname }} CPU Utilization {{ iosxr_mon.stdout[4] }}"
+         msg: "{{ inventory_hostname }} CPU {{ iosxr_mon.stdout[3] }}"
 
     - debug:
-        msg: " {{ inventory_hostname }} Memory Available: {{ iosxr_mon.stdout[5] }}"
+        msg: "{{ inventory_hostname }} Mem {{ iosxr_mon.stdout[4] }}"
 
     - debug:
-        msg: " {{ inventory_hostname }} Interface is Down"
-      when: iosxr_mon.stdout[6] | join('') | search('Down')
+        msg: "{{ inventory_hostname }} Route {{iosxr_mon.stdout[5]}}"
 
     - debug:
-        msg: " {{ inventory_hostname }} Route Summary: {{iosxr_mon.stdout[7]}}"
+        msg: "{{ inventory_hostname }} OSPF {{ iosxr_mon.stdout[6] }}"
+
+    - debug:
+        msg: "{{ inventory_hostname }} LDP {{ iosxr_mon.stdout[7] }}"
+
+    - debug:
+        msg: "{{ inventory_hostname }} BGP {{iosxr_mon.stdout[8]}}"
+      when: iosxr_mon.stdout[8] | join('') | search('Idle|Active')
 ```
 
 Step 5: Execute the playbook and validate the exercise
