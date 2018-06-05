@@ -18,7 +18,7 @@
 
 Step 1: Create a playbook xr_healthvalidation.yml with following contents:
 
-- Tasks under "Collection Monitoring Commands" data will do the data capture by leverging the iosxr_command module
+- Tasks under "Health Monitoring Commands" data will do the data capture by leverging the iosxr_command module
 - Tasks under copy module, stores the collected data into {{inventory_hostname }}_health_check.txt"
 - Tasks under debug module, checks the data captured against abnormalities using conditionals.
 
@@ -30,7 +30,7 @@ Step 1: Create a playbook xr_healthvalidation.yml with following contents:
   connection: local
 
   tasks:
-    - name: Collection Monitoring Commands
+    - name: Health Monitoring Commands
       iosxr_command:
         commands:
           - show platform
@@ -392,7 +392,7 @@ router bgp 1
 ```
 ### Conclusion
 
-- Roles expect certian folders like tasks/vars and templates.
+- Roles expect certain folders like tasks/vars and templates.
 - Irrespective of roles, the file structure is the same
 - Ansible Roles can be utilized to generate config small or big
 - Leverage module to load configuration onto to devices
@@ -426,32 +426,32 @@ localhost                  : ok=2    changed=2    unreachable=0    failed=0
 
 cisco@ansible-controller:~$
 
-Streach Exercise: Use Ansible ad-hoc command or create a simple playbook to check if the iBGP configuration has been added and the iBGP session between R1 and R2 is established.
+Optional Exercise: Use Ansible ad-hoc command or create a simple playbook to check if the iBGP configuration has been added and the iBGP session between R1 and R2 is established.
 
 ## Bulk config generation
 
-- Network end users have been using different mechanism such as per device template, excel sheet for developing and managing configuration.
-- Depending upon the methodology, for any changes in baseline or adding new features across network, new build outs it may take months.
-- Leveraging Ansible Roles and templates, You can build configuration within days for different device types and operating system.
+- By Leveraging Ansible Roles and templates, Users can build bulk (many) configuration for deployment @ scale.
 
 ### Objective
 
-- Building configuration for 2 different cisco network operating systems - IOS and XR.
+- Build configuration for 2 different cisco network operating systems - IOS and XR.
 
 ### Approach
-- Initialize the roles directory and create the file structure
-- Build the playbook, template and variables
-- Create bulk Configuration
 
-### Lab exercise
+- Initialize the roles directory and file structure by using ansible-galaxy cli
+- Build the playbook, template and variables for bulk config generation
 
-Step 1: Create a new role for config generation leverging utiliy ansible-galaxy
+### Lab Exercise
+
+Step 1: Create a new role for config generation leveraging utility "ansible-galaxy"
+
+- Note: Ansible-Galaxy is open source that allows building Roles file structure
 
 ```
 cisco@ansible-controller:~$ ansible-galaxy init config-gen
 - config-gen was created successfully
 ```
-Step 2: Review the tree structure that has been created by galaxy. For this lab, we will be using templates/vars and task folder.
+Step 2: Review the tree structure that has been created by galaxy. For this lab, we will be using templates/vars and task folder for buld config generation.
 ```
 cisco@ansible-controller:~$ tree config-gen/
 config-gen/
@@ -474,10 +474,11 @@ config-gen/
 		8 directories, 8 files
 		cisco@ansible-controller:~$
 ```
-step 3: Create a playbook to execute the config-gen role.
+step 3: Create a playbook main.yml with the following contents.
+
+Note: If done through vi editor, the file main.yml is to be created under config-gen/tasks folder. If done through ATOM editor, it is a 2 step process - copy to home directory and them move to tasks folder
 
 ```
-cisco@ansible-controller:~$ more config-gen/tasks/main.yml
 ---
 - name: Generate the configuration for xr-routers
   template:
@@ -496,9 +497,16 @@ cisco@ansible-controller:~$ more config-gen/tasks/main.yml
 # tasks file for config-gen
 
 ```
+- copy from home directory and move under config-gen/tasks folder
+
+```
+cisco@ansible-controller:~$
+cisco@ansible-controller:~$ mv main.yml config-gen/tasks/main.yml
+cisco@ansible-controller:~$
+```
 Step 4: Create the platform specific configuration and save them under the config-gen/templates folder.
 
-- 4a. Create the following XR-Config template
+- 4a. Create the following file "xr-config-template.j2" template
 ```
 hostname {{item.hostname}}
 service timestamps log datetime msec
@@ -585,7 +593,7 @@ cost 1
 !
 !
 ```
-- 4b. Create the following IOS-Config templates
+- 4b. Create the following "ios-config-template.j2" file with following content
 
 ```
 
@@ -774,9 +782,12 @@ line vty 0 4
 !
 end
 ```
+Step 4c: Move the templates *.j2 from the home directory to core-gen/templates directory
+```
+cisco@ansible-controller:~$ mv *.j2 config-gen/templates/
+```
 
-step 5: Define the variables needed to generate the template in the config-gen-vars.yml file. Each host will
-need to contain values for all the variables highlighted in the template file.
+step 5: Define the variables needed to generate the template in the main.yml file. Each host will need to contain values for all the variables highlighted in the template file.
 
 ```
 ---
@@ -799,20 +810,40 @@ ios_interfaces:
 # vars file for config-gen
 ```
 
-Step 6: You will need to move the config from the home directory to roles directory
+Step 6: Move the file main.yml from the home directory to core-gen/vars directory
+
 ```
-cisco@ansible-controller:~$ mv config-playbook.yml config-gen/tasks/main.yml
-cisco@ansible-controller:~$ mv *.j2 config-gen/templates/
-cisco@ansible-controller:~$ mv config-gen-vars.yml config-gen/vars/main.yml
+cisco@ansible-controller:~$ mv main.yml config-gen/tasks/main.yml
 ```
-Step 7: Execute the playbook core-gen-config.yml. You will see the config files are generated in target location.
+
+Step 7: Create a playbook config-gen.yml to invoke the role of Bulk config generation
+
+```
+---
+  - name: Playbook to generate configuration based on role "config-gen"
+    hosts: localhost
+
+    roles:
+       - config-gen
+```       
+
+Step 8: Execute the playbook config-gen.yml. You will see the config files are generated in target location.
 
 ```
 cisco@ansible-controller:~$ ansible-playbook config-gen.yml
 
 ```
+Step 9: Validate the files are created
+```
+cisco@ansible-controller:~$ ls -ltr *BGP.txt
+-rw-r--r-- 1 cisco cisco 168 Jun  5 02:40 R2-XRv-BGP.txt
+-rw-r--r-- 1 cisco cisco 148 Jun  5 02:41 R1-CSR1K-BGP.txt
+cisco@ansible-controller:~$
+```
 
 #### Exercise captures:
+
+```
 
 PLAY [Playbook to generate configuration based on role "config-gen"] **************************************************************************
 
@@ -825,25 +856,12 @@ changed: [localhost] => (item={u'timezone_dst': u'EDT', u'areaid': 0, u'ospf_net
 PLAY RECAP ************************************************************************************************************************************
 localhost                  : ok=2    changed=2    unreachable=0    failed=0
 
-cisco@ansible-controller:~$ ansible-playbook p2-raw.yml
-
-PLAY [get time from all hosts, using raw module] **********************************************************************************************
-
-TASK [execute show clock] *********************************************************************************************************************
-fatal: [172.16.101.99]: FAILED! => {"msg": "Cannot write to ControlPath /home/cisco/.ansible/cp"}
-fatal: [172.16.101.98]: FAILED! => {"msg": "Cannot write to ControlPath /home/cisco/.ansible/cp"}
-
-PLAY RECAP ************************************************************************************************************************************
-172.16.101.98              : ok=0    changed=0    unreachable=0    failed=1
-172.16.101.99              : ok=0    changed=0    unreachable=0    failed=1
-
-cisco@ansible-controller:~$
 ```
 ### Conclusion
 
 - You can utilize the concept of roles - predetermined order of directories and files to automate generating bulk tasks.
 
-Optional Excercise:
+Optional Exercise:
 
 1. Generate config for more than one roles for XR and IOS device.
 2. Generate a playbook to push a config to the device node.
