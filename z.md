@@ -2049,7 +2049,7 @@ R2                         : ok=5    changed=2    unreachable=0    failed=0
 
 ---
 
-## 3.4 Generate IBGP config
+## 3.4 Generate iBGP config
 
 - For operators, network configuration and rollout are critical part of daily operations.
 - This exercise will simulate a network config generation via roles and rollout of configs to network elements through automation.

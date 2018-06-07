@@ -13,5 +13,5 @@
 # [VI reference](https://github.com/gtamilse/ansible-lab/blob/master/vi-reference.md)
 # [Lab guide](https://github.com/gtamilse/ansible-lab/blob/master/TECDEV-4500-labguide-draft-gopal-3.md)
 # [Playbook files](https://github.com/gtamilse/ansible-lab/tree/master/playbooks)
-
+# [Session presentation](https://github.com/gtamilse/ansible-lab/blob/master/TECDEV-4500.pdf)
 ---
