@@ -17,7 +17,7 @@
 
 ---
 
-# 1 Ansible introduction
+# 1. Ansible introduction
 
 ### Objective
 - Review Ansible customization in your pod
@@ -213,7 +213,6 @@ cisco@ansible-controller:~$
 
 ## 1.4 Ad-hoc commands
 - Let us use a few modules in this section: `raw`, `ios_command`, and `iosxr_command`
-- Note that not all modules are suitable for use in ad-hoc command.
 - Syntax: `ansible <devices> -m <module> -a <command>`
 	- devices must exist in the inventory file
 - Execute the below ad-hoc commands (from your home directory, /home/cisco)
@@ -829,17 +828,26 @@ $ ansible-playbook p8-vars.yml -v
 ```
 
 
+### Conclusion
+- In this section you created variables inside a playbook and recalled the variables to complete a task execution.
+- When multiple commands are there, "register" keeps track of each command output output. We used BLAH.stdout_lines[n] to print them out separately.
+- Do not distract yourself too much on print formatting, now. Stay focused on playbooks.
+- Review the section and discuss if you have any questions
+
+
 ### Optional exercise
 > - Create a playbook to print messages, "This is <IOS router hostname>" and "This is <XR router hostname>".
 > - Use default variable, "inventory_hostname". The messages will look like: "This is R1" and "This is R2"
 > - Solution playbook (op8-vars.yml) is given in the Appendix section
 >
 
-### Conclusion
-- In this section you created variables inside a playbook and recalled the variables to complete a task execution.
-- When multiple commands are there, "register" keeps track of each command output output. We used BLAH.stdout_lines[n] to print them out separately.
-- Do not distract yourself too much on print formatting, now. Stay focused on playbooks.
-- Review the section and discuss if you have any questions
+
+
+### Reference
+> - This is a simple exercise on variables; recommend to read below pages for more advanced use cases.
+> - http://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html
+> - https://gist.github.com/andreicristianpetcu/b892338de279af9dac067891579cad7d
+>
 
 
 ### Example output
@@ -902,13 +910,6 @@ PLAY RECAP *********************************************************************
 172.16.101.91              : ok=2    changed=0    unreachable=0    failed=0
 ```
 
-
-### Reference
-> - This is a simple exercise on variables; recommend to read below pages for more advanced use cases.
-> - http://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html
-> - https://gist.github.com/andreicristianpetcu/b892338de279af9dac067891579cad7d
->
-
 ---
 
 ## 2.7 Loops
@@ -952,6 +953,12 @@ $ ansible-playbook p9-loops.yml -v
 ### Conclusion
 - In this section you created a loop to iterate the execution of multiple show commands.
 - Review the section and discuss if you have any questions
+
+
+### Reference
+
+> Reference: http://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html
+
 
 ### Example output
 ```
@@ -1145,16 +1152,11 @@ PLAY RECAP *********************************************************************
 cisco@ansible-controller:~$
 ```
 
-### Reference
-
-> Reference: http://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html
-
-
 ---
 
 ## 2.8 Conditionals
 
-- Conditionals are used to decide whether to run a task or not.
+- Conditionals are used, to decide whether to run a task or not.
 - In this section, you will be working on "when" condition.
 
 ### Lab exercise
@@ -1209,6 +1211,11 @@ $ ansible-playbook p10-conditionals.yml -v
 >   - If a router has IOS, print message, "'hostname' is a IOS router" and if a router has XR, print, "'hostname' is a XR router"
 >   - Playbook need to find the router names dynamically from the invenotry file.
 > - Solution playbook, op10-conditionals.yml is included in the Appendix section.
+
+
+### Reference
+> Reference: http://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#the-when-statement
+
 
 ### Example output
 ```
@@ -1281,10 +1288,6 @@ R2                         : ok=4    changed=2    unreachable=0    failed=0
 cisco@ansible-controller:~$
 ```
 
-
-### Reference
-> Reference: http://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#the-when-statement
-
 ---
 
 ## 2.9 Importing playbooks
@@ -1321,8 +1324,13 @@ $ ansible-playbook p11-import.yml
 ```
 
 ### Conclusion
+- Note that import_play is to be used at **play-level** and not at task-level
 - In this section you created a playbook to import and execute two other playbooks, rather than recreating the same playbook content again.
 - Review the section and discuss if you have any questions.
+
+### Reference
+> Details: https://docs.ansible.com/ansible/2.4/import_playbook_module.html
+>
 
 ### Example output
 
@@ -1378,336 +1386,6 @@ ok: [R2] => {
 PLAY RECAP ***************************************************************************************************************************************
 R1                         : ok=2    changed=0    unreachable=0    failed=0
 R2                         : ok=2    changed=0    unreachable=0    failed=0
-
-cisco@ansible-controller:~$
-```
----
-
-## 2.10 Ansible Vault
-- This section is **optional** and can be skipped. Automation exercises in this lab guide do not depend on Vault.
-- Do this session if you are on time. You can do this later if you run out of time.
-- Ansible vault has many security features but this section will cover only the basics of encrypting and decrypting a file.
-
-### Objective
-- Encrypt the inventory (/etc/hosts) file using Ansible Vault, so router login data is not stored in plain text.
-
-### Lab exercise
-- Use Ansible vault to encrypt and decrypt the inventory file.
-
-#### Pre-check
-
-- Pay attention the owner and file privileges (`-rw-r--r--`).
-- Make sure the playbook runs without any errors
-
-```
-$ ls -l /etc/ansible/hosts
-
-$ cat /etc/ansible/hosts
-
-$ ansible-playbook p4-ioscmd.yml
-```
-#### Encrypt inventory file and execute a playbook
-
-- Steps summary
-  - Encrypt the inventory file using `ansible-vault` command.
-    - sudo password: `cisco`
-    - New vault password: `cisco123`
-  - Read the encrypted file
-  - Playbook execution without vault-key will fail.
-  - Read the failure error message about inventory file
-  - Execute the playbook with vault-key
-  - supply sudo and vault passwords as prompted.
-  - The playbook should run fine now.
-
-```
-$ ansible-vault --help
-
-$ sudo ansible-vault encrypt /etc/ansible/hosts
-
-$ sudo cat /etc/ansible/hosts
-
-$ sudo ansible-vault view /etc/ansible/hosts
-
-$ sudo ansible-playbook p4-ioscmd.yml
-
-$ sudo ansible-playbook p4-ioscmd.yml --ask-vault-pass
-```
-#### Decrypt and restore
-
-- Steps summary
-  - Pay attention the owner and file privileges. Notice that the file permissions are not changed back to the original values.
-  - Change the file permissions to the previous settings.
-  - Make sure that the file permissions are: `-rw-r--r--`
-  - Ensure the playbook runs successfully before proceeding to next section.
-
-```
-$ sudo ansible-vault decrypt /etc/ansible/hosts
-
-$ ls -l /etc/ansible/hosts
-
-$ sudo chmod 644 /etc/ansible/hosts
-
-$ ls -l /etc/ansible/hosts
-
-$ cat /etc/ansible/hosts
-
-$ ansible-playbook p4-ioscmd.yml
-```
-### Conclusion
-- Ansible files can be encrypted and decrypted using Vault.
-- It is possible to use the encrypted files in playbooks using the option --ask-vault-pass
--Note: When vault encrypted the file it changed the file permissions; but when it decrypted the file it did not restore the old permissions.
-- Review the section and discuss if you have any questions.
-
-### Example output
-- This section is to be referred on-need basis. If your lab steps go smooth, there is no need to refer this section.
-
-```
-cisco@ansible-controller:~$ ls -l /etc/ansible/hosts
--rw-r--r-- 1 root root 1333 May 31 15:03 /etc/ansible/hosts
-cisco@ansible-controller:~$ cat /etc/ansible/hosts
-# This is the default ansible 'hosts' file.
-#
-# It should live in /etc/ansible/hosts
-#
-#   - Comments begin with the '#' character
-#   - Blank lines are ignored
-#   - Groups of hosts are delimited by [header] elements
-#   - You can enter hostnames or ip addresses
-#   - A hostname/ip can be a member of multiple groups
-
-[IOS]
-172.16.101.91
-
-[XR]
-172.16.101.92
-
-[ALL:children]
-IOS
-XR
-
-[ALL:vars]
-ansible_user=cisco
-ansible_ssh_pass=cisco
-:
-cisco@ansible-controller:~$ ansible-playbook p4-ioscmd.yml
-
-PLAY [collect ip route summary from all IOS devices] *************************************************
-
-TASK [execute route summary command] *****************************************************************
-ok: [172.16.101.91]
-
-TASK [print output] **********************************************************************************
-ok: [172.16.101.91] => {
-    "P4_OUTPUT.stdout_lines": [
-        [
-            "IP routing table name is default (0x0)",
-            "IP routing table maximum-paths is 32",
-            "Route Source    Networks    Subnets     Replicates  Overhead    Memory (bytes)",
-            "application     0           0           0           0           0",
-            "connected       0           4           0           384         1216",
-            "static          0           0           0           0           0",
-            "ospf 1          0           1           0           96          308",
-            "  Intra-area: 1 Inter-area: 0 External-1: 0 External-2: 0",
-            "  NSSA External-1: 0 NSSA External-2: 0",
-            "bgp 1           0           0           0           0           0",
-            "  External: 0 Internal: 0 Local: 0",
-            "internal        3                                               1432",
-            "Total           3           5           0           480         2956"
-        ]
-    ]
-}
-
-PLAY RECAP *******************************************************************************************
-172.16.101.91              : ok=2    changed=0    unreachable=0    failed=0
-
-cisco@ansible-controller:~$
-cisco@ansible-controller:~$ ansible-vault --help
-Usage: ansible-vault [create|decrypt|edit|encrypt|encrypt_string|rekey|view] [options] [vaultfile.yml]
-
-:
-cisco@ansible-controller:~$ sudo ansible-vault encrypt /etc/ansible/hosts
-[sudo] password for cisco:
-New Vault password:
-Confirm New Vault password:
-Encryption successful
-cisco@ansible-controller:~$ sudo cat /etc/ansible/hosts
-'$ANSIBLE_VAULT;1.1;AES256
-66366161326466633561633433343264646366646330633430313061663639333836386531313936
-3562333338303936633733396662613166323439393639390a336661333532646534373138363663
-30386630383365386639633461366332363939373465386132373930653235353466333032633663
-3262363565343539650a613264636664336339313532363938393766333130616364336133386531
-:
-cisco@ansible-controller:~$
-cisco@ansible-controller:~$ sudo ansible-vault view /etc/ansible/hosts
-Vault password:
-# This is the default ansible 'hosts' file.
-#
-# It should live in /etc/ansible/hosts
-#
-#   - Comments begin with the '#' character
-#   - Blank lines are ignored
-#   - Groups of hosts are delimited by [header] elements
-#   - You can enter hostnames or ip addresses
-#   - A hostname/ip can be a member of multiple groups
-
-[IOS]
-172.16.101.91
-
-[XR]
-172.16.101.92
-
-[ALL:children]
-IOS
-XR
-
-[ALL:vars]
-ansible_user=cisco
-ansible_ssh_pass=cisco
-:
-cisco@ansible-controller:~$ sudo ansible-playbook p4-ioscmd.yml
-[sudo] password for cisco:
- [WARNING]:  * Failed to parse /etc/ansible/hosts with yaml plugin: Attempting to decrypt but no
-vault secrets found
-
- [WARNING]:  * Failed to parse /etc/ansible/hosts with ini plugin: Attempting to decrypt but no vault
-secrets found
-
- [WARNING]: Unable to parse /etc/ansible/hosts as an inventory source
-
- [WARNING]: No inventory was parsed, only implicit localhost is available
-
- [WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit
-localhost does not match 'all'
-
- [WARNING]: Could not match supplied host pattern, ignoring: IOS
-
-
-PLAY [collect ip route summary from all IOS devices] *************************************************
-skipping: no hosts matched
-
-PLAY RECAP *******************************************************************************************
-
-cisco@ansible-controller:~$
-cisco@ansible-controller:~$ sudo ansible-playbook p4-ioscmd.yml --ask-vault-pass
-Vault password:
-
-PLAY [collect ip route summary from all IOS devices] *************************************************
-
-TASK [execute route summary command] *****************************************************************
-ok: [172.16.101.91]
-
-TASK [print output] **********************************************************************************
-ok: [172.16.101.91] => {
-    "P4_OUTPUT.stdout_lines": [
-        [
-            "IP routing table name is default (0x0)",
-            "IP routing table maximum-paths is 32",
-            "Route Source    Networks    Subnets     Replicates  Overhead    Memory (bytes)",
-            "application     0           0           0           0           0",
-            "connected       0           4           0           384         1216",
-            "static          0           0           0           0           0",
-            "ospf 1          0           1           0           96          308",
-            "  Intra-area: 1 Inter-area: 0 External-1: 0 External-2: 0",
-            "  NSSA External-1: 0 NSSA External-2: 0",
-            "bgp 1           0           0           0           0           0",
-            "  External: 0 Internal: 0 Local: 0",
-            "internal        3                                               1432",
-            "Total           3           5           0           480         2956"
-        ]
-    ]
-}
-
-PLAY RECAP *******************************************************************************************
-172.16.101.91              : ok=2    changed=0    unreachable=0    failed=0
-
-cisco@ansible-controller:~$
-cisco@ansible-controller:~$ sudo ansible-playbook p4-ioscmd.yml
-[sudo] password for cisco:
- [WARNING]:  * Failed to parse /etc/ansible/hosts with yaml plugin: Attempting to decrypt but no
-vault secrets found
-
- [WARNING]:  * Failed to parse /etc/ansible/hosts with ini plugin: Attempting to decrypt but no vault
-secrets found
-
- [WARNING]: Unable to parse /etc/ansible/hosts as an inventory source
-
- [WARNING]: No inventory was parsed, only implicit localhost is available
-
- [WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit
-localhost does not match 'all'
-
- [WARNING]: Could not match supplied host pattern, ignoring: IOS
-
-
-PLAY [collect ip route summary from all IOS devices] *************************************************
-skipping: no hosts matched
-
-PLAY RECAP *******************************************************************************************
-
-cisco@ansible-controller:~$
-cisco@ansible-controller:~$ ls -l /etc/ansible/hosts
--rw------- 1 root root 1333 May 31 17:26 /etc/ansible/hosts
-cisco@ansible-controller:~$
-cisco@ansible-controller:~$ sudo chmod 644 /etc/ansible/hosts
-cisco@ansible-controller:~$ ls -l /etc/ansible/hosts
--rw-r--r-- 1 root root 1333 May 31 17:26 /etc/ansible/hosts
-cisco@ansible-controller:~$ cat /etc/ansible/hosts
-# This is the default ansible 'hosts' file.
-#
-# It should live in /etc/ansible/hosts
-#
-#   - Comments begin with the '#' character
-#   - Blank lines are ignored
-#   - Groups of hosts are delimited by [header] elements
-#   - You can enter hostnames or ip addresses
-#   - A hostname/ip can be a member of multiple groups
-
-[IOS]
-172.16.101.91
-
-[XR]
-172.16.101.92
-
-[ALL:children]
-IOS
-XR
-
-[ALL:vars]
-ansible_user=cisco
-ansible_ssh_pass=cisco
-:
-cisco@ansible-controller:~$ ansible-playbook p4-ioscmd.yml
-
-
-PLAY [collect ip route summary from all IOS devices] *************************************************
-
-TASK [execute route summary command] *****************************************************************
-ok: [172.16.101.91]
-
-TASK [print output] **********************************************************************************
-ok: [172.16.101.91] => {
-    "P4_OUTPUT.stdout_lines": [
-        [
-            "IP routing table name is default (0x0)",
-            "IP routing table maximum-paths is 32",
-            "Route Source    Networks    Subnets     Replicates  Overhead    Memory (bytes)",
-            "application     0           0           0           0           0",
-            "connected       0           4           0           384         1216",
-            "static          0           0           0           0           0",
-            "ospf 1          0           1           0           96          308",
-            "  Intra-area: 1 Inter-area: 0 External-1: 0 External-2: 0",
-            "  NSSA External-1: 0 NSSA External-2: 0",
-            "bgp 1           0           0           0           0           0",
-            "  External: 0 Internal: 0 Local: 0",
-            "internal        3                                               1432",
-            "Total           3           5           0           480         2956"
-        ]
-    ]
-}
-
-PLAY RECAP *******************************************************************************************
-172.16.101.91              : ok=2    changed=0    unreachable=0    failed=0
 
 cisco@ansible-controller:~$
 ```
@@ -2701,6 +2379,338 @@ $ sudo apt-get update
 
 $ sudo apt-get install ansible
 ```
+
+---
+
+## 4.3 Ansible Vault
+- This section is **optional** and can be skipped. Automation exercises in this lab guide do not depend on Vault.
+- Do this session if you are on time. You can do this later if you run out of time.
+- Ansible vault has many security features but this section will cover only the basics of encrypting and decrypting a file.
+
+### Objective
+- Encrypt the inventory (/etc/hosts) file using Ansible Vault, so router login data is not stored in plain text.
+
+### Lab exercise
+- Use Ansible vault to encrypt and decrypt the inventory file.
+
+#### Pre-check
+
+- Pay attention the owner and file privileges (`-rw-r--r--`).
+- Make sure the playbook runs without any errors
+
+```
+$ ls -l /etc/ansible/hosts
+
+$ cat /etc/ansible/hosts
+
+$ ansible-playbook p4-ioscmd.yml
+```
+#### Encrypt inventory file and execute a playbook
+
+- Steps summary
+  - Encrypt the inventory file using `ansible-vault` command.
+    - sudo password: `cisco`
+    - New vault password: `cisco123`
+  - Read the encrypted file
+  - Playbook execution without vault-key will fail.
+  - Read the failure error message about inventory file
+  - Execute the playbook with vault-key
+  - supply sudo and vault passwords as prompted.
+  - The playbook should run fine now.
+
+```
+$ ansible-vault --help
+
+$ sudo ansible-vault encrypt /etc/ansible/hosts
+
+$ sudo cat /etc/ansible/hosts
+
+$ sudo ansible-vault view /etc/ansible/hosts
+
+$ sudo ansible-playbook p4-ioscmd.yml
+
+$ sudo ansible-playbook p4-ioscmd.yml --ask-vault-pass
+```
+#### Decrypt and restore
+
+- Steps summary
+  - Pay attention the owner and file privileges. Notice that the file permissions are not changed back to the original values.
+  - Change the file permissions to the previous settings.
+  - Make sure that the file permissions are: `-rw-r--r--`
+  - Ensure the playbook runs successfully before proceeding to next section.
+
+```
+$ sudo ansible-vault decrypt /etc/ansible/hosts
+
+$ ls -l /etc/ansible/hosts
+
+$ sudo chmod 644 /etc/ansible/hosts
+
+$ ls -l /etc/ansible/hosts
+
+$ cat /etc/ansible/hosts
+
+$ ansible-playbook p4-ioscmd.yml
+```
+### Conclusion
+- Ansible files can be encrypted and decrypted using Vault.
+- It is possible to use the encrypted files in playbooks using the option --ask-vault-pass
+-Note: When vault encrypted the file it changed the file permissions; but when it decrypted the file it did not restore the old permissions.
+- Review the section and discuss if you have any questions.
+
+### Example output
+- This section is to be referred on-need basis. If your lab steps go smooth, there is no need to refer this section.
+
+```
+cisco@ansible-controller:~$ ls -l /etc/ansible/hosts
+-rw-r--r-- 1 root root 1333 May 31 15:03 /etc/ansible/hosts
+cisco@ansible-controller:~$ cat /etc/ansible/hosts
+# This is the default ansible 'hosts' file.
+#
+# It should live in /etc/ansible/hosts
+#
+#   - Comments begin with the '#' character
+#   - Blank lines are ignored
+#   - Groups of hosts are delimited by [header] elements
+#   - You can enter hostnames or ip addresses
+#   - A hostname/ip can be a member of multiple groups
+
+[IOS]
+172.16.101.91
+
+[XR]
+172.16.101.92
+
+[ALL:children]
+IOS
+XR
+
+[ALL:vars]
+ansible_user=cisco
+ansible_ssh_pass=cisco
+:
+cisco@ansible-controller:~$ ansible-playbook p4-ioscmd.yml
+
+PLAY [collect ip route summary from all IOS devices] *************************************************
+
+TASK [execute route summary command] *****************************************************************
+ok: [172.16.101.91]
+
+TASK [print output] **********************************************************************************
+ok: [172.16.101.91] => {
+    "P4_OUTPUT.stdout_lines": [
+        [
+            "IP routing table name is default (0x0)",
+            "IP routing table maximum-paths is 32",
+            "Route Source    Networks    Subnets     Replicates  Overhead    Memory (bytes)",
+            "application     0           0           0           0           0",
+            "connected       0           4           0           384         1216",
+            "static          0           0           0           0           0",
+            "ospf 1          0           1           0           96          308",
+            "  Intra-area: 1 Inter-area: 0 External-1: 0 External-2: 0",
+            "  NSSA External-1: 0 NSSA External-2: 0",
+            "bgp 1           0           0           0           0           0",
+            "  External: 0 Internal: 0 Local: 0",
+            "internal        3                                               1432",
+            "Total           3           5           0           480         2956"
+        ]
+    ]
+}
+
+PLAY RECAP *******************************************************************************************
+172.16.101.91              : ok=2    changed=0    unreachable=0    failed=0
+
+cisco@ansible-controller:~$
+cisco@ansible-controller:~$ ansible-vault --help
+Usage: ansible-vault [create|decrypt|edit|encrypt|encrypt_string|rekey|view] [options] [vaultfile.yml]
+
+:
+cisco@ansible-controller:~$ sudo ansible-vault encrypt /etc/ansible/hosts
+[sudo] password for cisco:
+New Vault password:
+Confirm New Vault password:
+Encryption successful
+cisco@ansible-controller:~$ sudo cat /etc/ansible/hosts
+'$ANSIBLE_VAULT;1.1;AES256
+66366161326466633561633433343264646366646330633430313061663639333836386531313936
+3562333338303936633733396662613166323439393639390a336661333532646534373138363663
+30386630383365386639633461366332363939373465386132373930653235353466333032633663
+3262363565343539650a613264636664336339313532363938393766333130616364336133386531
+:
+cisco@ansible-controller:~$
+cisco@ansible-controller:~$ sudo ansible-vault view /etc/ansible/hosts
+Vault password:
+# This is the default ansible 'hosts' file.
+#
+# It should live in /etc/ansible/hosts
+#
+#   - Comments begin with the '#' character
+#   - Blank lines are ignored
+#   - Groups of hosts are delimited by [header] elements
+#   - You can enter hostnames or ip addresses
+#   - A hostname/ip can be a member of multiple groups
+
+[IOS]
+172.16.101.91
+
+[XR]
+172.16.101.92
+
+[ALL:children]
+IOS
+XR
+
+[ALL:vars]
+ansible_user=cisco
+ansible_ssh_pass=cisco
+:
+cisco@ansible-controller:~$ sudo ansible-playbook p4-ioscmd.yml
+[sudo] password for cisco:
+ [WARNING]:  * Failed to parse /etc/ansible/hosts with yaml plugin: Attempting to decrypt but no
+vault secrets found
+
+ [WARNING]:  * Failed to parse /etc/ansible/hosts with ini plugin: Attempting to decrypt but no vault
+secrets found
+
+ [WARNING]: Unable to parse /etc/ansible/hosts as an inventory source
+
+ [WARNING]: No inventory was parsed, only implicit localhost is available
+
+ [WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit
+localhost does not match 'all'
+
+ [WARNING]: Could not match supplied host pattern, ignoring: IOS
+
+
+PLAY [collect ip route summary from all IOS devices] *************************************************
+skipping: no hosts matched
+
+PLAY RECAP *******************************************************************************************
+
+cisco@ansible-controller:~$
+cisco@ansible-controller:~$ sudo ansible-playbook p4-ioscmd.yml --ask-vault-pass
+Vault password:
+
+PLAY [collect ip route summary from all IOS devices] *************************************************
+
+TASK [execute route summary command] *****************************************************************
+ok: [172.16.101.91]
+
+TASK [print output] **********************************************************************************
+ok: [172.16.101.91] => {
+    "P4_OUTPUT.stdout_lines": [
+        [
+            "IP routing table name is default (0x0)",
+            "IP routing table maximum-paths is 32",
+            "Route Source    Networks    Subnets     Replicates  Overhead    Memory (bytes)",
+            "application     0           0           0           0           0",
+            "connected       0           4           0           384         1216",
+            "static          0           0           0           0           0",
+            "ospf 1          0           1           0           96          308",
+            "  Intra-area: 1 Inter-area: 0 External-1: 0 External-2: 0",
+            "  NSSA External-1: 0 NSSA External-2: 0",
+            "bgp 1           0           0           0           0           0",
+            "  External: 0 Internal: 0 Local: 0",
+            "internal        3                                               1432",
+            "Total           3           5           0           480         2956"
+        ]
+    ]
+}
+
+PLAY RECAP *******************************************************************************************
+172.16.101.91              : ok=2    changed=0    unreachable=0    failed=0
+
+cisco@ansible-controller:~$
+cisco@ansible-controller:~$ sudo ansible-playbook p4-ioscmd.yml
+[sudo] password for cisco:
+ [WARNING]:  * Failed to parse /etc/ansible/hosts with yaml plugin: Attempting to decrypt but no
+vault secrets found
+
+ [WARNING]:  * Failed to parse /etc/ansible/hosts with ini plugin: Attempting to decrypt but no vault
+secrets found
+
+ [WARNING]: Unable to parse /etc/ansible/hosts as an inventory source
+
+ [WARNING]: No inventory was parsed, only implicit localhost is available
+
+ [WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit
+localhost does not match 'all'
+
+ [WARNING]: Could not match supplied host pattern, ignoring: IOS
+
+
+PLAY [collect ip route summary from all IOS devices] *************************************************
+skipping: no hosts matched
+
+PLAY RECAP *******************************************************************************************
+
+cisco@ansible-controller:~$
+cisco@ansible-controller:~$ ls -l /etc/ansible/hosts
+-rw------- 1 root root 1333 May 31 17:26 /etc/ansible/hosts
+cisco@ansible-controller:~$
+cisco@ansible-controller:~$ sudo chmod 644 /etc/ansible/hosts
+cisco@ansible-controller:~$ ls -l /etc/ansible/hosts
+-rw-r--r-- 1 root root 1333 May 31 17:26 /etc/ansible/hosts
+cisco@ansible-controller:~$ cat /etc/ansible/hosts
+# This is the default ansible 'hosts' file.
+#
+# It should live in /etc/ansible/hosts
+#
+#   - Comments begin with the '#' character
+#   - Blank lines are ignored
+#   - Groups of hosts are delimited by [header] elements
+#   - You can enter hostnames or ip addresses
+#   - A hostname/ip can be a member of multiple groups
+
+[IOS]
+172.16.101.91
+
+[XR]
+172.16.101.92
+
+[ALL:children]
+IOS
+XR
+
+[ALL:vars]
+ansible_user=cisco
+ansible_ssh_pass=cisco
+:
+cisco@ansible-controller:~$ ansible-playbook p4-ioscmd.yml
+
+
+PLAY [collect ip route summary from all IOS devices] *************************************************
+
+TASK [execute route summary command] *****************************************************************
+ok: [172.16.101.91]
+
+TASK [print output] **********************************************************************************
+ok: [172.16.101.91] => {
+    "P4_OUTPUT.stdout_lines": [
+        [
+            "IP routing table name is default (0x0)",
+            "IP routing table maximum-paths is 32",
+            "Route Source    Networks    Subnets     Replicates  Overhead    Memory (bytes)",
+            "application     0           0           0           0           0",
+            "connected       0           4           0           384         1216",
+            "static          0           0           0           0           0",
+            "ospf 1          0           1           0           96          308",
+            "  Intra-area: 1 Inter-area: 0 External-1: 0 External-2: 0",
+            "  NSSA External-1: 0 NSSA External-2: 0",
+            "bgp 1           0           0           0           0           0",
+            "  External: 0 Internal: 0 Local: 0",
+            "internal        3                                               1432",
+            "Total           3           5           0           480         2956"
+        ]
+    ]
+}
+
+PLAY RECAP *******************************************************************************************
+172.16.101.91              : ok=2    changed=0    unreachable=0    failed=0
+
+cisco@ansible-controller:~$
+```
+
 
 ---
 
