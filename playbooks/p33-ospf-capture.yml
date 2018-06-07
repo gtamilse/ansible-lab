@@ -1,0 +1,61 @@
+---
+- name: OSPF captures from IOS routers
+  hosts: IOS
+  connection: local
+
+  tasks:
+    - name: Collect IOS OSPF commands
+      ios_command:
+        authorize: yes
+        commands:
+           - show run | section ospf
+           - show ip ospf interface brief
+           - show ip ospf neighbor
+           - show ip route ospf
+      tags:
+          - always
+
+      register: IOSPRE
+
+    - name: Save IOS precheck output to a file
+      copy:
+        content=" \n\n ===show run router ospf=== \n\n {{ IOSPRE.stdout[0] }} \n\n ===show ip ospf int bri=== \n\n {{ IOSPRE.stdout[1] }} \n\n ===show ip ospf nei=== \n\n {{ IOSPRE.stdout[2] }} \n\n ===show ip route ospf=== \n\n {{ IOSPRE.stdout[3] \n\n }} "
+        dest="./p33-precheck-ios-ospf.txt"
+      tags: precheck
+
+    - name: Save IOS postcheck output to a file
+      copy:
+        content=" \n\n ===show run router ospf=== \n\n {{ IOSPRE.stdout[0] }} \n\n ===show ip ospf int bri=== \n\n {{ IOSPRE.stdout[1] }} \n\n ===show ip ospf nei=== \n\n {{ IOSPRE.stdout[2] }} \n\n ===show ip route ospf=== \n\n {{ IOSPRE.stdout[3] \n\n }} "
+        dest="./p33-postcheck-ios-ospf.txt"
+      tags: postcheck
+
+- name: OSPF captures from XR routers
+  hosts: XR
+  connection: local
+
+  tasks:
+    - name: Collect XR OSPF commands
+      iosxr_command:
+        commands:
+           - show run router ospf
+           - show ospf interface brief
+           - show ospf neighbor
+           - show route ospf
+      tags: 
+          - always
+
+      register: XRPRE
+
+    - name: Save XR precehck output to a file
+      copy:
+        content=" \n\n ===show run router ospf=== \n\n {{ XRPRE.stdout[0] }} \n\n ===show ospf int bri=== \n\n {{ XRPRE.stdout[1] }} \n\n ===show ospf nei=== \n\n {{ XRPRE.stdout[2] }} \n\n===show route ospf=== \n\n {{ XRPRE.stdout[3] \n\n }} "
+        dest="./p33-precheck-xr-ospf.txt"
+      tags: precheck
+
+    - name: Save XR postcheck output to a file
+      copy:
+        content=" \n\n ===show run router ospf=== \n\n {{ XRPRE.stdout[0] }} \n\n ===show ospf int bri=== \n\n {{ XRPRE.stdout[1] }} \n\n ===show ospf nei=== \n\n {{ XRPRE.stdout[2] }} \n\n===show route ospf=== \n\n {{ XRPRE.stdout[3] \n\n }} "
+        dest="./p33-postcheck-xr-ospf.txt"
+      tags: postcheck
+
+

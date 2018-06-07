@@ -1,0 +1,12 @@
+#Ansible VIRL Lab Nodes
+
+[IOS]
+R1 ansible_host=172.16.101.88 ansible_user=cisco ansible_ssh_pass=cisco
+
+[XR]
+R2 ansible_host=172.16.101.89 ansible_user=cisco ansible_ssh_pass=cisco
+
+[ALL:children]
+IOS
+XR
+

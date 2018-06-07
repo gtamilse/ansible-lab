@@ -1,0 +1,5 @@
+---
+- name: Generate R1 CSR router iBGP config file
+  template: src=CSR-BGP.j2 dest=./{{item.hostname}}-BGP.txt
+  with_items: "{{router_list}}"
+

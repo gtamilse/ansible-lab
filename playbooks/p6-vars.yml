@@ -1,0 +1,21 @@
+---
+- name: get config of gig1 and gig2
+  hosts: IOS
+  connection: local
+  vars:
+    INTF1: GigabitEthernet1
+    INTF2: GigabitEthernet2
+
+  tasks:
+    - name: disable proxy-arp
+      ios_command:
+        commands:
+          - sho run int {{INTF1}}
+          - sho run int {{INTF2}}
+
+      register: BLAH
+
+    - name: print stuff
+      debug:
+        var: BLAH
+

@@ -1,0 +1,26 @@
+---
+- name: get route summary from IOS and XR routers
+  hosts: ALL
+
+  tasks:
+    - name: collect version info
+      raw: show version
+
+      register: SHVER
+
+    - name: run "show ip route summ" on IOS routers
+      when: SHVER.stdout | join('') is search('IOS XE')
+      raw: show ip route summary
+
+      register: IOSRT
+
+    - debug: var=IOSRT.stdout_lines
+
+    - name: run "show route summ" on XR routers
+      when: SHVER.stdout | join('') is search('IOS XR')
+      raw: show route summary
+
+      register: XRRT
+
+    - debug: var=XRRT.stdout_lines
+

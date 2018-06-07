@@ -1,0 +1,75 @@
+
+
+ ===show platform=== 
+
+ Node		Type		PLIM		State		Config State
+-----------------------------------------------------------------------------
+0/0/CPU0        RP(Active)      N/A             IOS XR RUN      PWR,NSHUT,MON 
+
+ ===show redundancy=== 
+
+ Redundancy information for node 0/0/CPU0:
+==========================================
+Node 0/0/CPU0 is in ACTIVE role
+Node 0/0/CPU0 has no valid partner
+
+Details
+--------
+Current active rmf state: 
+    NSR not ready since Standby is not Present
+
+Reload and boot info
+----------------------
+RP reloaded Wed Mar 28 16:09:14 2018: 10 weeks, 10 hours, 41 minutes ago
+Active node booted Wed Mar 28 16:09:14 2018: 10 weeks, 10 hours, 41 minutes ago
+
+Active node reload : Unable to retrieve reboot reason 
+
+ ===show proc cpu=== 
+
+ CPU utilization for one minute: 0%; five minutes: 0%; fifteen minutes: 0%
+ 
+PID    1Min    5Min    15Min Process 
+
+ ===show memory summary=== 
+
+ node:      node0_0_CPU0
+Physical Memory: 3071M total (1376M available)
+ Application Memory : 2868M (1376M available) 
+
+ ===show ipv4 vrf all int bri=== 
+
+ Interface                      IP-Address      Status          Protocol Vrf-Name
+Loopback0                      192.168.0.2     Up              Up       default 
+MgmtEth0/0/CPU0/0              172.16.101.89   Up              Up       Mgmt-intf
+GigabitEthernet0/0/0/0         10.0.0.6        Up              Up       default 
+
+ ===show route sum=== 
+
+ Route Source                     Routes     Backup     Deleted     Memory(bytes)
+local                            2          0          0           320          
+connected                        1          1          0           320          
+dagr                             0          0          0           0            
+ospf 1                           1          0          0           160          
+Total                            4          1          0           800 
+
+ ===show ospf nei=== 
+
+ * Indicates MADJ interface
+# Indicates Neighbor awaiting BFD session up
+
+Neighbors for OSPF 1
+
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+192.168.0.1     1     FULL/BDR        00:00:31    10.0.0.5        GigabitEthernet0/0/0/0
+    Neighbor is up for 05:33:24
+
+Total neighbor count: 1 
+
+ ===show mpls ldp neighbor=== 
+
+  
+
+ ===show bgp sum=== 
+
+ % BGP instance 'default' not active

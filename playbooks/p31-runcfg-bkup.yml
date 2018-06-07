@@ -1,0 +1,18 @@
+---
+- name: backup all routers config
+  hosts: all
+
+  tasks:
+    - name: collect config  from all routers
+      connection: ssh
+      raw:
+        show run
+
+      register: RUNCFG
+
+    - name: save output to a file
+      connection: local
+      copy:
+        content: "{{ RUNCFG.stdout }}"
+        dest: "/home/cisco/{{ inventory_hostname }}.txt"
+

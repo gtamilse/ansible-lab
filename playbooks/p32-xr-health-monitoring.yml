@@ -1,0 +1,60 @@
+---
+- name: XR Router Health Monitoring
+  hosts: XR
+  gather_facts: false
+  connection: local
+
+  tasks:
+    - name: Router Health Monitoring Commands
+      iosxr_command:
+        commands:
+          - show platform
+          - show redundancy
+          - show proc cpu | ex "0%      0%       0%"
+          - show memory sum location all | in "node|Pyhsical|available"
+          - show ipv4 vrf all int bri
+          - show route sum
+          - show ospf neighbor
+          - show mpls ldp neighbor | in "Id|Up"
+          - show bgp all all sum | in "Address|^[0-9]+"
+
+      register: iosxr_mon
+
+    - name: save output to a file
+      copy:
+          content="\n\n ===show platform=== \n\n {{ iosxr_mon.stdout[0] }} \n\n ===show redundancy=== \n\n {{ iosxr_mon.stdout[1] }} \n\n ===show proc cpu=== \n\n {{ iosxr_mon.stdout[2] }} \n\n ===show memory summary=== \n\n {{ iosxr_mon.stdout[3] }} \n\n ===show ipv4 vrf all int bri=== \n\n {{ iosxr_mon.stdout[4] }} \n\n ===show route sum=== \n\n {{ iosxr_mon.stdout[5] }} \n\n ===show ospf nei=== \n\n {{ iosxr_mon.stdout[6] }} \n\n ===show mpls ldp neighbor=== \n\n {{ iosxr_mon.stdout[7] }} \n\n ===show bgp sum=== \n\n {{iosxr_mon.stdout[8] }}"
+           dest="./{{ inventory_hostname }}_health_check.txt"
+
+    - debug:
+        msg: " {{ inventory_hostname }} show_platform indicates card is down"
+      when: iosxr_mon.stdout[0] | join('') | search('Down')
+
+    - debug:
+        msg: " {{ inventory_hostname }} show_redundancy indicates card is not present"
+      when: iosxr_mon.stdout[1] | join('') | search('NSR not ready since Standby is not Present')
+
+    - debug:
+         msg: "{{ inventory_hostname }} CPU Utilization {{ iosxr_mon.stdout[2] }}"
+
+    - debug:
+        msg: " {{ inventory_hostname }} Memory Available: {{ iosxr_mon.stdout[3] }}"
+
+    - debug:
+        msg: " {{ inventory_hostname }} Interface is Down"
+      when: iosxr_mon.stdout[4] | join('') | search('Down')
+
+    - debug:
+        msg: " {{ inventory_hostname }} Route Summary: {{iosxr_mon.stdout[5]}}"
+
+    - debug:
+        msg: " {{ inventory_hostname }} OSPF Summary: {{iosxr_mon.stdout[6]}}"
+      when: iosxr_mon.stdout[6] | join('') | search('FULL')
+
+    - debug:
+        msg: " {{ inventory_hostname }} MPLS LDP Summary: {{iosxr_mon.stdout[7]}}"
+
+    - debug:
+        msg: " {{ inventory_hostname }} BGP Sessions Down: {{ iosxr_mon.stdout[8] }} "
+      when: iosxr_mon.stdout[8] | join('') | search('Active')
+
+
