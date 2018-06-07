@@ -25,10 +25,10 @@
 
 ### Lab exercises
 - The following topics are covered:
- - Configuration file
- - Inventory file
- - Ansible modules
- - Ad-hoc commands
+	- Configuration file
+	- Inventory file
+	- Ansible modules
+	- Ad-hoc commands
 
 ## 1.1 Configuration file
 - Ansible configuration file is preconfigured for you.
