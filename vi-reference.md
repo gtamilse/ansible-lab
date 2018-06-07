@@ -7,7 +7,6 @@
 ## Hot keys
 - ESC: bring back to command mode
 - i: take to edit/insert mode
-- a: take to edit/append mode
 
 ## Edit or create a file
 - vi playbook.yml  --> vi to create or edit file named playbook.yml
