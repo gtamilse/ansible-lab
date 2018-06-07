@@ -3,6 +3,8 @@
 ## Lab Nodes Login Credentials
 - username: cisco
 - password: cisco
+- enable password: cisco
+- sudo password: cisco
 
 ## User pod assignment
 
