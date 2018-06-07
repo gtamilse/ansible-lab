@@ -26,8 +26,13 @@
 	- type in lab VPN server IP address
 	- Click on settings-wheel and uncheck "block connections to untrusted servers"
 	- Use VPN credentials provided by the proctor
-	- Verify (from your laptop exec prompt): `ping 172.16.101.93`
-	- Proceed if ping succeeds.
+	- Verify (from your laptop exec prompt):
+
+```
+ping 172.16.101.93
+```
+
+- Proceed if ping succeeds.
 
 ### SSH into your Ansible server
 - SSH into your Ansible server using any SSH client
@@ -35,9 +40,15 @@
 
 ### Verification
 - Execute the below from your Ansible Controller $ prompt
-	- `$ ifconfig eth0`
-	- `$ ping IP-of-your-IOS-router`
-	- `$ ping IP-of-your-XR-router`
+
+```
+$ ifconfig eth0
+
+$ ping IP-of-your-IOS-router
+
+$ ping IP-of-your-XR-router
+```
+
 - **Make sure:**
 	- Eth0 IP address matches with **your assigned controller IP**
 	- Ping to both IOS and XR routers succeed
