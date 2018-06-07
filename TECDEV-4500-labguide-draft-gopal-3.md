@@ -118,9 +118,9 @@ inventory      = /etc/ansible/hosts
 cisco@ansible-controller:~$ grep -v "#" /etc/ansible/hosts | grep -v ^$
 localhost
 [IOS]
-R1	ansible_host=172.16.101.91 ansible_user=cisco ansible_ssh_pass=cisco
+R1	ansible_host=172.16.101.XX ansible_user=cisco ansible_ssh_pass=cisco
 [XR]
-R2	ansible_host=172.16.101.92 ansible_user=cisco ansible_ssh_pass=cisco
+R2	ansible_host=172.16.101.XX ansible_user=cisco ansible_ssh_pass=cisco
 [ALL:children]
 IOS
 XR
@@ -233,7 +233,7 @@ $ ansible XR --connection local -m iosxr_command -a "commands='show route summ'"
 
 > - Do this section if you are ahead of schedule, else skip and come back later.
 > - This lab will be available to you for a few days after Cisco Live.
-> - It is possible to use ad-hoc commands with more parameters, as below:
+> - It is possible to use ad-hoc commands with more arguments, as below:
 > ```
 > $ ansible IOS -c local -m ios_command -a "authorize=true commands='show run int gig1'"
 > $ ansible IOS -c local -m ios_command -a "username=cisco password=cisco auth_pass=cisco authorize=true commands='show run int gig1'"
@@ -404,7 +404,7 @@ $ ansible-playbook p3-raw.yml
 
 ### Conclusion
 
-- We used raw module in a playbook.
+- In this section you used the raw module to collect and display command output from devices that are in the group, named ALL.
 - Review the section and discuss if you have any questions.
 
 
@@ -471,14 +471,14 @@ PLAY RECAP *********************************************************************
 
 ## 1.4 IOS command module
 ### Lab exercise
-- Let us use ios_command module to execute some exec commands on the remote devices
-- In this playbook, we will be using ios_command module in the tasks (instead of raw module)
+- Use the ios_command to execute some exec level commands on IOS devices.
 - Create a playbook, p4-ioscmd.yml, with the below contents
 
 ```
 ---
 - name: collect ip route summary from all IOS devices
   hosts: IOS
+  connection: local
 
   tasks:
     - name: execute route summary command
@@ -494,20 +494,26 @@ PLAY RECAP *********************************************************************
 ```
 - Predict the outcome of this playbook.
 - Execute the playbook
+- After reviewing the playbook output, try run the playbook in verbose mode: with -v, -vv, or -vvv
 
 ```
 $ ansible-playbook p4-ioscmd.yml --syntax-check
 $ ansible-playbook p4-ioscmd.yml
+$ ansible-playbook p4-ioscmd.yml -v
 ```
 
-> Reference:
-	> - this is for future reference only (don't spend time on this now).
-	> - Pay attention to sections: parameters and return values.
-	> - http://docs.ansible.com/ansible/latest/modules/ios_command_module.html
-	> - http://docs.ansible.com/ansible/latest/modules/modules_by_category.html
-
 ### Conclusion
+- In this section you used the ios_command module to collect and display command output from an IOS device.
 - Review the section and discuss if you have any questions
+
+### Reference
+
+> Reference:
+> - this is for future reference only (don't spend time on this now).
+> - Pay attention to sections: parameters and return values.
+> - http://docs.ansible.com/ansible/latest/modules/ios_command_module.html
+> - http://docs.ansible.com/ansible/latest/modules/modules_by_category.html
+
 
 ### Example output
 
@@ -548,14 +554,14 @@ PLAY RECAP *********************************************************************
 
 ## 1.5 XR command module
 ### Lab exercise
-- Let us use iosxr_command module to execute some exec commands on the remote devices
-- In this playbook, we will be using iosxr_command module in the tasks
+- Use the iosxr_command to execute some exec level commands on XR devices.
 - Create a playbook, p5-xrcmd.yml, with the below contents
 
 ```
 ---
 - name: collect ip route summary from all XR devices
   hosts: XR
+  connection: local
 
   tasks:
     - name: execute route summary command
@@ -574,14 +580,15 @@ PLAY RECAP *********************************************************************
 
 ```
 $ ansible-playbook p5-xrcmd.yml --syntax-check
-$ ansible-playbook p5-xrcmd.yml
+$ ansible-playbook p5-xrcmd.yml -v
 ```
 
 ### Conclusion
+- In this section you used the xr_command module to collect and display command output from an XR router.
 - Review the section and discuss if you have any questions.
 
 ### Optional exercise
-> - This section is given as a filler if you are ahead of schedule. Do not attempt this if you are on par or slower.
+> - Do this section if you are ahead of schedule, else skip and come back later.
 > - This lab will be available for you to work for a few days after Cisco Live. You have the option of doing this later as well.
 > - Write a playbook to meet the below requirements:
 >   - Collect output of route summary from both IOS and XR routers
@@ -624,8 +631,8 @@ PLAY RECAP *********************************************************************
 
 ## 1.6 IOS config module
 ### Lab exercise
-- Let us use ios_config module to config IOS devices
-- Create a playbook, p6-iosconfig.yml, with the below contents
+- Use ios_config module to configure a loopback interface on an IOS router.
+- Create a playbook, p6-iosconfig.yml, with the below contents:
 
 ```
 ---
@@ -643,20 +650,19 @@ PLAY RECAP *********************************************************************
           - shutdown
 ```
 
-- Check if loopback101 interface was already configured
-- If needed, edit the playbook to use an available loopback interface
 - Execute the playbook
 - Check if loopback101 interface is created by p6-iosconfig.yml playbook
 
 ```
 $ ansible IOS -m raw -a "show run int loop101"
 
-$ ansible-playbook p6-iosconfig.yml
+$ ansible-playbook p6-iosconfig.yml -v
 
 $ ansible IOS -m raw -a "show run int loop101"
 ```
 
 ### Conclusion
+-  In this section you used the ios_config module to configure a loopback interface on an IOS router.
 - Review the section and discuss if you have any questions
 
 ### Example output
@@ -696,8 +702,8 @@ Connection to 172.16.101.91 closed by remote host.
 
 ## 1.7 XR config module
 ### Lab exercise
-- Let us use iosxr_config module to config XR devices
-- Create a playbook, p7-xrconfig.yml, with the below contents"
+- Use xr_config module to configure an access-list on a XR router.
+- Create a playbook, p7-xrconfig.yml, with the below contents.
 
 ```
 ---
@@ -708,11 +714,11 @@ Connection to 172.16.101.91 closed by remote host.
   tasks:
     - name: configure acl test7
       iosxr_config:
+        parents: ipv4 access-list test7
         lines:
           - 10 permit ipv4 host 1.1.1.1 any
           - 20 permit ipv4 host 2.2.2.2 any
           - 30 permit ipv4 host 3.3.3.3 any
-        parents: ipv4 access-list test7
 ```
 
 - Predict the outcome of executing the above playbook
@@ -723,12 +729,13 @@ Connection to 172.16.101.91 closed by remote host.
 ```
 $ ansible XR -m raw -a "sho run ipv4 access-list"
 
-$ ansible-playbook p7-xrconfig.yml
+$ ansible-playbook p7-xrconfig.yml -v
 
 $ ansible XR -m raw -a "sho run ipv4 access-list"
 ```
 
 ### Conclusion
+- In this section you used the xr_config module to configure an access-list on an XR router.
 - Review the section and discuss if you have any questions
 
 ### Example output
@@ -777,11 +784,11 @@ Connection to 172.16.101.92 closed by remote host.
 ---
 
 ## 1.8 Variables
+- Ansible uses variables to enable more flexibility in playbooks.
 - Variables are used to store information. This information can be used in a playbook by calling the specific variable.
-- Let us use custom variables in a playbook. Note that custom variables defined in a playbook are valid only within that playbook.
 
 ### Lab exercise
-
+- Create custom variables inside a playbook to store an interface name and call the variable to complete the show command execution.
 - Create a playbook, p8-vars.yml, with the below contents
 
 ```
@@ -820,25 +827,22 @@ Connection to 172.16.101.92 closed by remote host.
 ```
 $ ansible-playbook p8-vars.yml --syntax-check
 
-$ ansible-playbook p8-vars.yml
+$ ansible-playbook p8-vars.yml -v
 ```
 
+
+### Optional exercise
+> - Create a playbook to print messages, "This is <IOS router hostname>" and "This is <XR router hostname>".
+> - Use default variable, "inventory_hostname". The messages will look like: "This is R1" and "This is R2"
+> - Solution playbook (op8-vars.yml) is given in the Appendix section
+>
+
 ### Conclusion
+- In this section you created variables inside a playbook and recalled the variables to complete a task execution.
 - When multiple commands are there, "register" keeps track of each command output output. We used BLAH.stdout_lines[n] to print them out separately.
 - Do not distract yourself too much on print formatting, now. Stay focused on playbooks.
 - Review the section and discuss if you have any questions
 
-### Optional exercise
-> - Create a playbook to print a message, "This is R1" and "This is R2". In place of R1 and R2 use default variable "inventory_hostname".
-> - Solution playbook (op8-vars.yml) is given in the Appendix section
->
-
-
-### Reference
-> Reference: http://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html
-> - Here, we are covering a small part of variables at basic level. After completing this lab, we recommend to read the above page.
-> - https://gist.github.com/andreicristianpetcu/b892338de279af9dac067891579cad7d
->
 
 ### Example output
 ```
@@ -900,15 +904,23 @@ PLAY RECAP *********************************************************************
 172.16.101.91              : ok=2    changed=0    unreachable=0    failed=0
 ```
 
+
+### Reference
+> - This is a simple exercise on variables; recommend to read below pages for more advanced use cases.
+> - http://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html
+> - https://gist.github.com/andreicristianpetcu/b892338de279af9dac067891579cad7d
+>
+
 ---
 
 ## 1.9 Loops
 - Loops are used to perform a task repeatedly with a set of different items.
+
+### Lab exercise
+- Utilize Ansible loops to simplify execution of multiple show commands.
 - Create a playbook, p9-loops.yml, with the below contents
 
 ```
-cisco@ansible-controller:~$ cat p9-loops.yml
-
 ---
 - name: get config of gig1 and gig2 from IOS devices
   hosts: IOS
@@ -937,9 +949,10 @@ cisco@ansible-controller:~$ cat p9-loops.yml
 ```
 $ ansible-playbook p9-loops.yml --syntax-check
 
-$ ansible-playbook p9-loops.yml
+$ ansible-playbook p9-loops.yml -v
 ```
 ### Conclusion
+- In this section you created a loop to iterate the execution of multiple show commands.
 - Review the section and discuss if you have any questions
 
 ### Example output
@@ -1143,16 +1156,18 @@ cisco@ansible-controller:~$
 
 ## 1.10 Conditionals
 
-- Conditionals are used to decide whether to run a task or not. In this section, we will be working on "when" condition.
+- Conditionals are used to decide whether to run a task or not.
+- In this section, you will be working on "when" condition.
 
 ### Lab exercise
-
+- Collect route summary data by using appropriate command based on the router’s OS
 - Create a playbook, p10-conditionals.yml, with the below contents
 
 ```
 ---
 - name: get route summary from IOS and XR routers
   hosts: ALL
+	connection: local
 
   tasks:
     - name: collect version info
@@ -1183,22 +1198,19 @@ cisco@ansible-controller:~$
 ```
 $ ansible-playbook p10-conditionals.yml --syntax-check
 
-$ ansible-playbook p10-conditionals.yml
+$ ansible-playbook p10-conditionals.yml -v
 ```
 
 ### Conclusion
-
+- In this section you created a conditional statement to use a show command based on the Router OS.
 - Review the section and discuss if you have any questions
 
 ### Optional exercise
 > - Create a playbook, which will:
 >   - Detect router OS
->   - If a router has IOS, say "'hostname' is a IOS router" and if a router has > XR, print, "'hostname' is a XR router"
+>   - If a router has IOS, print message, "'hostname' is a IOS router" and if a router has XR, print, "'hostname' is a XR router"
 >   - Playbook need to find the router names dynamically from the invenotry file.
 > - Solution playbook, op10-conditionals.yml is included in the Appendix section.
-
-### Reference
-> Reference: http://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#the-when-statement
 
 ### Example output
 ```
@@ -1270,10 +1282,15 @@ R2                         : ok=4    changed=2    unreachable=0    failed=0
 
 cisco@ansible-controller:~$
 ```
+
+
+### Reference
+> Reference: http://docs.ansible.com/ansible/latest/user_guide/playbooks_conditionals.html#the-when-statement
+
 ---
 
 ## 1.11 Importing playbooks
-- We can call a playbook from another playbook
+- Ansible allows for one playbook to import and execute another playbook using the import_playbook module.
 - We will be calling (or importing) using import_playbook module.
 
 ### Lab exercise
@@ -1306,7 +1323,7 @@ $ ansible-playbook p11-import.yml
 ```
 
 ### Conclusion
-
+- In this section you created a playbook to import and execute two other playbooks, rather than recreating the same playbook content again.
 - Review the section and discuss if you have any questions.
 
 ### Example output
@@ -1369,21 +1386,20 @@ cisco@ansible-controller:~$
 ---
 
 ## 1.12 Ansible Vault
-- This topic can be skipped. Automation exercises do not depend on Vault.
-- Do this if you are on time. You can do this later if you run out of time.
+- This section is **optional** and can be skipped. Automation exercises in this lab guide do not depend on Vault.
+- Do this session if you are on time. You can do this later if you run out of time.
+- Ansible vault has many security features but this section will cover only the basics of encrypting and decrypting a file.
 
 ### Objective
-- Encrypt inventory file using Ansible Vault feature.
-- Ansible vault has many other security features. Here we are limiting to just one.
+- Encrypt the inventory (/etc/hosts) file using Ansible Vault, so router login data is not stored in plain text.
 
-### Lab Excercise
-- Ansible files can be encrypted using Vault.
-- Let us use vault to encrypt the inventory file and later decrypt.
+### Lab exercise
+- Use Ansible vault to encrypt and decrypt the inventory file.
 
 #### Pre-check
 
-- Pay attention the owner and file privilages (`-rw-r--r--`). Quick view.
-- Make sure the playbook runs without any errors (ok=2)
+- Pay attention the owner and file privileges (`-rw-r--r--`).
+- Make sure the playbook runs without any errors
 
 ```
 $ ls -l /etc/ansible/hosts
@@ -1394,15 +1410,16 @@ $ ansible-playbook p4-ioscmd.yml
 ```
 #### Encrypt inventory file and execute a playbook
 
-- Encrypt the inventory file using `ansible-vault` command.
-	- sudo password: `cisco`
-	- New vault password: `cisco123`
-- Read the encrypted file
-- Playbook execution without vault key must fail.
-	- Read the message about inventory file
-- Execute the playbook with vault key
-	- supply sudo and vault passwords as prompted.
-	- The playbook should run fine now.
+- Steps summary
+  - Encrypt the inventory file using `ansible-vault` command.
+    - sudo password: `cisco`
+    - New vault password: `cisco123`
+  - Read the encrypted file
+  - Playbook execution without vault-key will fail.
+  - Read the failure error message about inventory file
+  - Execute the playbook with vault-key
+  - supply sudo and vault passwords as prompted.
+  - The playbook should run fine now.
 
 ```
 $ ansible-vault --help
@@ -1419,15 +1436,11 @@ $ sudo ansible-playbook p4-ioscmd.yml --ask-vault-pass
 ```
 #### Decrypt and restore
 
-- Now decrypt the inventory file
-- Pay attention the owner and file privilages
-	- Notice that the file permissions are not changed back to the original values.
-- Change the file permissions to the previous settings.
-
-	- Make sure that the file permissions are: `-rw-r--r--`
-- Verify
-
-	- Ensure the playbook runs successfully before proceeding to next section.
+- Steps summary
+  - Pay attention the owner and file privileges. Notice that the file permissions are not changed back to the original values.
+  - Change the file permissions to the previous settings.
+  - Make sure that the file permissions are: `-rw-r--r--`
+  - Ensure the playbook runs successfully before proceeding to next section.
 
 ```
 $ sudo ansible-vault decrypt /etc/ansible/hosts
@@ -1443,10 +1456,9 @@ $ cat /etc/ansible/hosts
 $ ansible-playbook p4-ioscmd.yml
 ```
 ### Conclusion
-- Ansible files can be encrypted using Vault.
+- Ansible files can be encrypted and decrypted using Vault.
 - It is possible to use the encrypted files in playbooks using the option --ask-vault-pass
-- When vault encrypt files, in addition to encrypting the file, it changes the file permissions. When decrypting the file, earlier permissions won't be restored.
-- There are other features of vault that are to be explored.
+-Note: When vault encrypted the file it changed the file permissions; but when it decrypted the file it did not restore the old permissions.
 - Review the section and discuss if you have any questions.
 
 ### Example output
@@ -1705,28 +1717,28 @@ cisco@ansible-controller:~$
 ---
 
 # 2 Automating common tasks
-- We will go over the following exercises:
+- The following exercises will use Ansible to automate certain network operations tasks:
   - Router configuration backup
   - Proactive heath monitoring
   - Method of procedure
-  - Introduction to Ansible Roles
+  - Generate iBGP config using roles
   - Generating bulk configuration
 
 ---
 ## 2.1 Router config backup
 ### Objective
-- In this exercise, let us create a playbook to take routers config backup.
+- Create a playbook to capture and backup a router’s running config.
 
 ### Approach
-- We can use one play with two tasks.
-- Task-1 to collect the config and save in a variable. We will be using "raw" module for this.
-- Task-2 to save the contents of the variable into a file. We will be using "copy" module for this.
+- We can one play with two tasks.
+- Task-1 will collect the config and save it to a variable. (use raw module)
+- Task-2 will save the contents of the variable into a file. (use copy module)
 
 ### Lab exercise
 - Review the contents in the playbook below.
 - Task-1 collects and saves running-config in a variable named as RUNCFG
 - Task-2 saves the contents of RUNCFG in a file in the home directory.
-- Task-2 contains a wellknown variable (aka default variable) called, inventory_hostname. It means, "current inventory device", the router on which the tasks are run.
+- Task-2 contains a well known variable (aka default variable) called, inventory_hostname. It means, "current inventory device", the router on which the tasks are run.
 - Create the playbook with file name, p21-confback.yml, with the contents below.
 
 ```
@@ -1750,19 +1762,25 @@ cisco@ansible-controller:~$
 ```
 - Predict the outcome of running this playbook
 - Run the playbook
-	- `$ ansible-playbook p21-confback.yml --syntax-check`
-	- `$ ansible-playbook p21-confback.yml`
 - Look for config files in `/home/cisco` directory
 
+```
+$ ansible-playbook p21-confback.yml --syntax-check
+
+$ ansible-playbook p21-confback.yml
+
+$ ls -l R*.txt
+```
+
 ### Conclusion
-- We applied two modules, raw and copy, to get the router config.
+- You applied two modules, raw and copy, to get the router config.
 - Note that the file names may be overwritten when you rerun the playbook. And, you need to manually run the playbook.
 - The optional exercise at the end of this section addresses the above tow problems and enhance this playbook. Feel free to follow the optional playbook if you want to review the other playbook.
 - Review the section and discuss if you have any questions.
 
 
 ### Optional exercise
-> - If you are interested, do this after completing all the execercises.
+> - If you are interested, do this after completing all the exercises.
 > - Create a playbook to backup routers' config, with the below requirements:
 >   - Filename of the config files should include current timestamp to maintain uniqueness in filenames.
 >   - Config backup should be taken daily at 03:00 hrs UTC. Use linux cronjob for this task.
@@ -1850,9 +1868,7 @@ hostname R2-XRv
 ```
 
 ---
-## Proactive heath monitoring
-
-- Proactive health monitoring helps to identify, and resolve issues before they cause problems in network.
+## Device health monitoring
 
 ### Objective
 
@@ -1860,82 +1876,28 @@ hostname R2-XRv
 
 ### Approach
 
-- In this exercise, you will collect critical data by using iosxr_command modules.
-- Leveraging conditions function, process the collected data, and report for any issues.
-
+- Collect critical data by using iosxr_command module
+- Use conditional functions to process the collected data and report any issues.
 - Note: The playbook shown here is only applicable for XR devices. It can be modified for any other device by using the appropriate Ansible module.
 
-### Lab Exercise
+### Lab exercise
 
-Step 1: Create a playbook xr_healthvalidation.yml with following contents:
-
-- Tasks under "Health Monitoring Commands" data will do the data capture by leverging the iosxr_command module
-- Tasks under copy module, stores the collected data into {{inventory_hostname }}_health_check.txt"
-- Tasks under debug module, checks the data captured against abnormalities using conditionals.
+- The first task will use the xr_command module to capture show command outputs from R2-XRv router.
+- The second task will use the copy module to write the captured data into a file on the server. The inventory_hostname variable used here is a global variable, which means current device (out of the devices referred in "hosts"), that the tasks are run. Output of inventory_hostname will be R2; the hostname of the router defined in the inventory file.
+- The tasks under the debug module use a conditional statement to check the captured data for abnormalities.
 
 ```
----
-- name: XR Router Health Monitoring
-  hosts: XR
-  gather_facts: false
-  connection: local
-
-  tasks:
-    - name: Router Health Monitoring Commands
-      iosxr_command:
-        commands:
-          - show platform
-          - show redundancy
-          - show install active sum
-          - show context
-          - show proc cpu | ex "0%      0%       0%"
-          - show memory sum location all | in "node|Pyhsical|available"
-          - show ipv4 vrf all int bri
-          - show route sum
-          - show ospf neighbor
-          - show mpls ldp neighbor | in "Id|Up"
-          - show bgp all all sum | in "Address|^[0-9]+"
-
-      register: iosxr_mon
-
-    - name: save output to a file
-      copy:
-          content="\n\n ===show platform=== \n\n {{ iosxr_mon.stdout[0] }} \n\n ===show redundancy=== \n\n {{ iosxr_mon.stdout[1] }} \n\n ===show install active sum=== \n\n {{ iosxr_mon.stdout[2] }} \n\n ===show context=== \n\n {{ iosxr_mon.stdout[3] }} \n\n ===show proc cpu=== \n\n {{ iosxr_mon.stdout[4] }} \n\n ===show memory summary=== \n\n {{ iosxr_mon.stdout[5] }} \n\n ===show ipv4 vrf all int bri=== \n\n {{ iosxr_mon.stdout[6] }} \n\n ===show route sum=== {{ iosxr_mon.stdout[7] }} \n\n ===show ospf nei=== \n\n {{ iosxr_mon.stdout[8] }} \n\n ===show mpls ldp neighbor=== \n\n {{ iosxr_mon.stdout[9] }} \n\n ===show bgp sum=== {{iosxr_mon.stdout[10] }}"
-           dest="./{{ inventory_hostname }}_health_check.txt"
-
-    - debug:
-        msg: " {{ inventory_hostname }} show_platform indicates card is down"
-      when: iosxr_mon.stdout[0] | join('') | search('Down')
-
-    - debug:
-        msg: " {{ inventory_hostname }} show_redundancy indicates card is not present"
-      when: iosxr_mon.stdout[1] | join('') | search('NSR not ready since Standby is not Present')
-
-#    - debug:
-#        msg: " {{ inventory_hostname }} active packages list: {{iosxr_data[2] }}"
-#      when: iosxr_mon.stdout[2] | join('') | search('Active Packages')
-
-    - debug:
-        msg: " {{ inventory_hostname }} Process Crashed: {{iosxr_mon.stdout[3] }}"
-      when: iosxr_mon.stdout[3] | join('') | search('Crash')
-
-    - debug:
-         msg: "{{ inventory_hostname }} CPU Utilization {{ iosxr_mon.stdout[4] }}"
-
-    - debug:
-        msg: " {{ inventory_hostname }} Memory Available: {{ iosxr_mon.stdout[5] }}"
-
-    - debug:
-        msg: " {{ inventory_hostname }} Interface is Down"
-      when: iosxr_mon.stdout[6] | join('') | search('Down')
-
-    - debug:
-        msg: " {{ inventory_hostname }} Route Summary: {{iosxr_mon.stdout[7]}}"
+# PUT PLAYBOOK HERE
 ```
 
-Step 5: Execute the playbook and validate the exercise
+- Predict the outcome of running this playbook
+- Run the playbook
 
-cisco@ansible-controller:~$ ansible-playbook xr_healthvalidation.yml
+```
+$ ansible-playbook p32-xr-health-monitoring.yml --syntax-check
+
+$ ansible-playbook p32-xr-health-monitoring.yml
+```
 
 ### Conclusion
 
@@ -1947,49 +1909,7 @@ cisco@ansible-controller:~$ ansible-playbook xr_healthvalidation.yml
 #### Example output
 
 ```
-cisco@ansible-controller:~$ ansible-playbook xr_healthvalidation.yml
-
-PLAY [XR Router Health Monitoring] ***********************************************************************************************************************************************************************
-
-TASK [Collection Monitoring Commands] ********************************************************************************************************************************************************************
-ok: [172.16.101.99]
-
-TASK [save output to a file] *****************************************************************************************************************************************************************************
-changed: [172.16.101.99]
-
-TASK [debug] *********************************************************************************************************************************************************************************************
-skipping: [172.16.101.99]
-
-TASK [debug] *********************************************************************************************************************************************************************************************
-ok: [172.16.101.99] => {
-    "msg": " 172.16.101.99 show_redundancy indicates card is not present"
-}
-
-TASK [debug] *********************************************************************************************************************************************************************************************
-skipping: [172.16.101.99]
-
-TASK [debug] *********************************************************************************************************************************************************************************************
-ok: [172.16.101.99] => {
-    "msg": "172.16.101.99 CPU Utilization CPU utilization for one minute: 1%; five minutes: 1%; fifteen minutes: 1%\n \nPID    1Min    5Min    15Min Process"
-}
-
-TASK [debug] *********************************************************************************************************************************************************************************************
-ok: [172.16.101.99] => {
-    "msg": " 172.16.101.99 Memory Available: node:      node0_0_CPU0\n\fPhysical Memory: 3071M total (1382M available)\n Application Memory : 2868M (1382M available)"
-}
-
-TASK [debug] *********************************************************************************************************************************************************************************************
-skipping: [172.16.101.99]
-
-TASK [debug] *********************************************************************************************************************************************************************************************
-ok: [172.16.101.99] => {
-    "msg": " 172.16.101.99 Route Summary: Route Source                     Routes     Backup     Deleted     Memory(bytes)\nconnected                        1          1          0           320          \nlocal                            2          0          0           320          \ndagr                             0          0          0           0            \nbgp 1                            0          0          0           0            \nTotal                            3          1          0           640"
-}
-
-PLAY RECAP ***********************************************************************************************************************************************************************************************
-172.16.101.99              : ok=6    changed=1    unreachable=0    failed=0
-
-cisco@ansible-controller:~$
+# PUT OUTPUT
 ```
 
 ---
@@ -2012,7 +1932,7 @@ cisco@ansible-controller:~$
 
 #### Step-1: Pre-config data capture
 - Let us capture relavent data before configuring ospf on the routers
-- Create a playbook, p22-preconfig.yml, with the below contents
+- Create a playbook, p22-precheck.yml, with the below contents
 - This playbook has two plays: first captures data from IOS devices and the second play will capture data from XR devices.
 
 ```
@@ -2060,10 +1980,15 @@ cisco@ansible-controller:~$
 ```
 - Predict the outcome of this playbook.
 - Run the playbook:
-  - `$ ansible-playbook p22-precheck.yml --syntax-check`
-  - `$ ansible-playbook p22-precheck.yml`
 - Ensure that the playbook runs successfully and verify the existence of the postcheck files in the home dir, /home/cisco
-  - `$ ls -l p22-precheck*.txt`
+
+```
+$ ansible-playbook p22-precheck.yml --syntax-check
+
+$ ansible-playbook p22-precheck.yml
+
+$ ls -l p22-precheck*.txt
+```
 
 #### Step-2: Configure OSPF
 - Let us make a playbook with two plays
@@ -2129,15 +2054,31 @@ cisco@ansible-controller:~$
 - Predict the outcome of this playbook.
 - Note that the playbook execution may be inconsistent if OSPF is already configured on the router
 - Make sure that OSPF config doesnt exist on the routers
-	- `$ ansible IOS -m raw -a "sho run | sec ospf"`
-	- `$ ansible XR -m raw -a "sho run router ospf"`
-- Important: If there is ospf config, **delete** it for this exercise.
-- Run the playbook"
-	- `$ ansible-playbook p22-config.yml --syntax-check`
-	- `$ ansible-playbook p22-config.yml`
-- Verify (OSPF route should be there)
-	- `$ ansible IOS -m raw -a "show ip route ospf"`
 
+```
+$ ansible IOS -m raw -a "sho run | sec ospf"
+
+$ ansible XR -m raw -a "sho run router ospf"
+```
+
+- Important: If there is ospf config, **delete** it for this exercise.
+- Run the playbook
+- Verify that OSPF route exist on the routers.
+
+
+```
+$ ansible-playbook p22-config.yml --syntax-check
+
+$ ansible-playbook p22-config.yml
+
+$ ansible IOS -m raw -a "show ip ospf neigh"
+
+$ ansible IOS -m raw -a "show ip route ospf"
+
+$ ansible XR -m raw -a "show ospf neigh"
+
+$ ansible XR -m raw -a "show route ospf"
+```
 
 #### Step-3: Post-config data capture
 
@@ -2192,10 +2133,15 @@ cisco@ansible-controller:~$
 ```
 - Predict the outcome of this playbook.
 - Run the playbook:
-	- `$ ansible-playbook p22-postcheck.yml --syntax-check`
-	- `$ ansible-playbook p22-postcheck.yml`
-- Ensure that the playbook runs successfully and verify the existence of the postcheck files in the home dir, /home/cisco
-	- `$ ls -l p22-postcheck*.txt`
+- Ensure that the playbook runs successfully and verify the existence of the post-check files in the home dir, /home/cisco
+
+```
+$ ansible-playbook p22-postcheck.yml --syntax-check
+
+$ ansible-playbook p22-postcheck.yml
+
+$ ls -l p22-postcheck*.txt
+```
 
 #### Step-4: Include first 3 steps in a playbook
 - Create a parent playbook and call the first 3 steps
@@ -2214,8 +2160,12 @@ cisco@ansible-controller:~$
 ```
 - Predict the outcome of this playbook
 - Run the playbook:
-	- `$ ansible-playbook p22-mop.yml --syntax-check`
-	- `$ ansible-playbook p22-mop.yml`
+
+```
+$ ansible-playbook p22-mop.yml --syntax-check
+
+$ansible-playbook p22-mop.yml
+```
 
 ### Conclusion
 - Review the section and discuss if you have any questions.
@@ -2731,14 +2681,26 @@ Streach Exercise: Use Ansible ad-hoc command or create a simple playbook to chec
 - Installation steps are straight forward. Depending on your OS flavor, pick the steps from the installation guide.
 - Ansible installation guide: http://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
 - Just for example, installtion steps for CentOS:
-	- `$ sudo yum update`
-	- `$ sudo yum install ansible`
+
+```
+$ sudo yum update
+
+$ sudo yum install ansible
+```
+
 - Installation steps for Ubuntu:
-	- `$ sudo apt-get update`
-	- `$ sudo apt-get install software-properties-common`
-	- `$ sudo apt-add-repository ppa:ansible/ansible`
-	- `$ sudo apt-get update`
-	- `$ sudo apt-get install ansible`
+
+```
+$ sudo apt-get update
+
+$ sudo apt-get install software-properties-common
+
+$ sudo apt-add-repository ppa:ansible/ansible
+
+$ sudo apt-get update
+
+$ sudo apt-get install ansible
+```
 
 ---
 
