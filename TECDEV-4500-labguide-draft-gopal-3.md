@@ -14,193 +14,23 @@
 
 # Table of Contents
 
-<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
-
-- [**<p align="center">CISCO LIVE 2018</p>**](#p-aligncentercisco-live-2018p)
-- [**<p align="center">ORLANDO, FL</p>**](#p-aligncenterorlando-flp)
-- [**<p align="center">Network Automation with Ansible</p>**](#p-aligncenternetwork-automation-with-ansiblep)
-- [**<p align="center">TECDEV-4500</p>**](#p-aligncentertecdev-4500p)
-- [**<p align="center">Lab Guide</p>**](#p-aligncenterlab-guidep)
-- [Table of Contents](#table-of-contents)
-- [1 Ansible introduction](#1-ansible-introduction)
-	- [1.1 Objective](#11-objective)
-	- [1.2 Lab exercises](#12-lab-exercises)
-	- [1.3 Configuration file](#13-configuration-file)
-		- [Example output](#example-output)
-		- [Reference](#reference)
-	- [1.4 Inventory file](#14-inventory-file)
-			- [Example output](#example-output)
-		- [Reference](#reference)
-	- [1.5 Ansible modules](#15-ansible-modules)
-		- [Example output](#example-output)
-		- [Reference](#reference)
-	- [1.6 Ad-hoc commands](#16-ad-hoc-commands)
-		- [Optional exercises](#optional-exercises)
-		- [Conclusion](#conclusion)
-		- [Example output](#example-output)
-- [Part-2: Playbook primer](#part-2-playbook-primer)
-	- [2.1 Raw module](#21-raw-module)
-		- [Lab exercise](#lab-exercise)
-		- [Conclusion](#conclusion)
-		- [Example output](#example-output)
-	- [2.2 IOS command module](#22-ios-command-module)
-		- [Lab exercise](#lab-exercise)
-		- [Conclusion](#conclusion)
-		- [Reference](#reference)
-		- [Example output](#example-output)
-	- [2.3 XR command module](#23-xr-command-module)
-		- [Lab exercise](#lab-exercise)
-		- [Conclusion](#conclusion)
-		- [Optional exercise](#optional-exercise)
-		- [Example output](#example-output)
-	- [2.4 IOS config module](#24-ios-config-module)
-		- [Lab exercise](#lab-exercise)
-		- [Conclusion](#conclusion)
-		- [Example output](#example-output)
-	- [2.5 XR config module](#25-xr-config-module)
-		- [Lab exercise](#lab-exercise)
-		- [Conclusion](#conclusion)
-		- [Example output](#example-output)
-	- [2.6 Variables](#26-variables)
-		- [Lab exercise](#lab-exercise)
-		- [Optional exercise](#optional-exercise)
-		- [Conclusion](#conclusion)
-		- [Example output](#example-output)
-		- [Reference](#reference)
-	- [2.7 Loops](#27-loops)
-		- [Lab exercise](#lab-exercise)
-		- [Conclusion](#conclusion)
-		- [Example output](#example-output)
-		- [Reference](#reference)
-	- [2.8 Conditionals](#28-conditionals)
-		- [Lab exercise](#lab-exercise)
-		- [Conclusion](#conclusion)
-		- [Optional exercise](#optional-exercise)
-		- [Example output](#example-output)
-		- [Reference](#reference)
-	- [2.9 Importing playbooks](#29-importing-playbooks)
-		- [Lab exercise](#lab-exercise)
-		- [Conclusion](#conclusion)
-		- [Example output](#example-output)
-	- [2.10 Ansible Vault](#210-ansible-vault)
-		- [Objective](#objective)
-		- [Lab exercise](#lab-exercise)
-			- [Pre-check](#pre-check)
-			- [Encrypt inventory file and execute a playbook](#encrypt-inventory-file-and-execute-a-playbook)
-			- [Decrypt and restore](#decrypt-and-restore)
-		- [Conclusion](#conclusion)
-		- [Example output](#example-output)
-- [This is the default ansible 'hosts' file.](#this-is-the-default-ansible-hosts-file)
-- [](#)
-- [It should live in /etc/ansible/hosts](#it-should-live-in-etcansiblehosts)
-- [](#)
-- [- Comments begin with the '#' character](#-comments-begin-with-the-character)
-- [- Blank lines are ignored](#-blank-lines-are-ignored)
-- [- Groups of hosts are delimited by [header] elements](#-groups-of-hosts-are-delimited-by-header-elements)
-- [- You can enter hostnames or ip addresses](#-you-can-enter-hostnames-or-ip-addresses)
-- [- A hostname/ip can be a member of multiple groups](#-a-hostnameip-can-be-a-member-of-multiple-groups)
-- [This is the default ansible 'hosts' file.](#this-is-the-default-ansible-hosts-file)
-- [](#)
-- [It should live in /etc/ansible/hosts](#it-should-live-in-etcansiblehosts)
-- [](#)
-- [- Comments begin with the '#' character](#-comments-begin-with-the-character)
-- [- Blank lines are ignored](#-blank-lines-are-ignored)
-- [- Groups of hosts are delimited by [header] elements](#-groups-of-hosts-are-delimited-by-header-elements)
-- [- You can enter hostnames or ip addresses](#-you-can-enter-hostnames-or-ip-addresses)
-- [- A hostname/ip can be a member of multiple groups](#-a-hostnameip-can-be-a-member-of-multiple-groups)
-- [This is the default ansible 'hosts' file.](#this-is-the-default-ansible-hosts-file)
-- [](#)
-- [It should live in /etc/ansible/hosts](#it-should-live-in-etcansiblehosts)
-- [](#)
-- [- Comments begin with the '#' character](#-comments-begin-with-the-character)
-- [- Blank lines are ignored](#-blank-lines-are-ignored)
-- [- Groups of hosts are delimited by [header] elements](#-groups-of-hosts-are-delimited-by-header-elements)
-- [- You can enter hostnames or ip addresses](#-you-can-enter-hostnames-or-ip-addresses)
-- [- A hostname/ip can be a member of multiple groups](#-a-hostnameip-can-be-a-member-of-multiple-groups)
-- [3. Automating common tasks](#3-automating-common-tasks)
-	- [3.1 Router config backup](#31-router-config-backup)
-		- [Objective](#objective)
-		- [Approach](#approach)
-		- [Lab exercise](#lab-exercise)
-		- [Conclusion](#conclusion)
-		- [Optional exercise](#optional-exercise)
-		- [Reference](#reference)
-		- [Example output](#example-output)
-	- [3.2 Device health monitoring](#32-device-health-monitoring)
-		- [Objective](#objective)
-		- [Approach](#approach)
-		- [Lab exercise](#lab-exercise)
-- [PUT PLAYBOOK HERE](#put-playbook-here)
-		- [Conclusion](#conclusion)
-			- [Example output](#example-output)
-- [PUT OUTPUT](#put-output)
-	- [3.3 Method of Procedure (MOP)](#33-method-of-procedure-mop)
-		- [Objective](#objective)
-		- [Approach](#approach)
-		- [Lab exercise](#lab-exercise)
-			- [Step-1: Pre-config data capture](#step-1-pre-config-data-capture)
-			- [Step-2: Configure OSPF](#step-2-configure-ospf)
-			- [Step-3: Post-config data capture](#step-3-post-config-data-capture)
-			- [Step-4: Include first 3 steps in a playbook](#step-4-include-first-3-steps-in-a-playbook)
-		- [Conclusion](#conclusion)
-		- [Optional exercise](#optional-exercise)
-		- [Reference](#reference)
-		- [Example output](#example-output)
-	- [3.4 Generate IBGP config](#34-generate-ibgp-config)
-		- [objectives](#objectives)
-		- [Approach](#approach)
-		- [Lab Exercise](#lab-exercise)
-		- [Conclusion](#conclusion)
-		- [Example output:](#example-output)
-- [4. Appendix](#4-appendix)
-	- [4.1 Reference](#41-reference)
-	- [4.2 Ansible installation](#42-ansible-installation)
-	- [Optional exercise op5-cmd.yml](#optional-exercise-op5-cmdyml)
-		- [Lab exercise](#lab-exercise)
-		- [Example output](#example-output)
-	- [Optional exercise op8-vars.yml](#optional-exercise-op8-varsyml)
-		- [Example output](#example-output)
-	- [Optional exercise op10-conditionals.yml](#optional-exercise-op10-conditionalsyml)
-		- [Example output](#example-output)
-	- [Optional exercise op21-confback.yml](#optional-exercise-op21-confbackyml)
-		- [Step-1: Playbook, op21-confback.yml](#step-1-playbook-op21-confbackyml)
-		- [Step-2: Cronjob](#step-2-cronjob)
-- [Run Ansible Playbook rtr-cfg-bkup everyday at 3:00 am UTC to backup router configs](#run-ansible-playbook-rtr-cfg-bkup-everyday-at-300-am-utc-to-backup-router-configs)
-		- [Reference](#reference)
-		- [Example output](#example-output)
-- [/etc/crontab: system-wide crontab](#etccrontab-system-wide-crontab)
-- [Unlike any other crontab you don't have to run the `crontab'](#unlike-any-other-crontab-you-dont-have-to-run-the-crontab)
-- [command to install the new version when you edit this file](#command-to-install-the-new-version-when-you-edit-this-file)
-- [and files in /etc/cron.d. These files also have username fields,](#and-files-in-etccrond-these-files-also-have-username-fields)
-- [that none of the other crontabs do.](#that-none-of-the-other-crontabs-do)
-- [m h dom mon dow user	command](#m-h-dom-mon-dow-user-command)
-- [Run Ansible Playbook rtr-cfg-bkup everyday at 3:00 am UTC to backup router configs](#run-ansible-playbook-rtr-cfg-bkup-everyday-at-300-am-utc-to-backup-router-configs)
-	- [Optional exercise op-22 (MOP)](#optional-exercise-op-22-mop)
-		- [Approach](#approach)
-		- [Add delay](#add-delay)
-		- [Diff file](#diff-file)
-		- [MOP playbook](#mop-playbook)
-		- [Example output](#example-output)
-
-<!-- /TOC -->
-
 
 ---
 
 # 1 Ansible introduction
 
-## 1.1 Objective
+### Objective
 - Review Ansible customization in your pod
 - Run Ansible ad-hoc commands
 
-## 1.2 Lab exercises
+### Lab exercises
 - The following topics are covered:
  - Configuration file
  - Inventory file
  - Ansible modules
  - Ad-hoc commands
 
-## 1.3 Configuration file
+## 1.1 Configuration file
 - Ansible configuration file is preconfigured for you.
 - We uncommented the following config lines, under [default] section:
 	- inventory --> use default inventory file, /etc/ansible/hosts
@@ -259,7 +89,7 @@ cisco@ansible-controller:~$
 
 ---
 
-## 1.4 Inventory file
+## 1.2 Inventory file
 - Inventory file is preconfigured for you. We added your router IP addresses in two groups: IOS and XR.
 - Review the inventory file:
 
@@ -276,7 +106,7 @@ $ ansible --list-hosts XR
 $ ansible --list-hosts ALL
 $ ansible --list-hosts all
 ```
-#### Example output
+### Example output
 - Reference purpose only. Feel free to skip it.
 
 ```
@@ -301,7 +131,7 @@ XR
 
 ---
 
-## 1.5 Ansible modules
+## 1.3 Ansible modules
 - Ansible ships with several modules.
 - Try the below commands for a **quick review**
 
@@ -381,7 +211,7 @@ cisco@ansible-controller:~$
 
 ---
 
-## 1.6 Ad-hoc commands
+## 1.4 Ad-hoc commands
 - Let us use a few modules in this section: `raw`, `ios_command`, and `iosxr_command`
 - Note that not all modules are suitable for use in ad-hoc command.
 - Syntax: `ansible <devices> -m <module> -a <command>`
@@ -2825,6 +2655,8 @@ localhost                  : ok=2    changed=2    unreachable=0    failed=0
 
 cisco@ansible-controller:~$
 ```
+---
+
 
 
 ---
@@ -3350,6 +3182,443 @@ localhost                  : ok=5    changed=4    unreachable=0    failed=0
 cisco@ansible-controller:~$ ls -l op22-xr*
 -rw-rw-r-- 1 cisco cisco 191 Jun  5 22:07 op22-xr_diff_2018-06-05-22-07.txt
 ```
+
+---
+
+## Bulk config generation
+
+- By Leveraging Ansible Roles and templates, Users can build bulk (many) configuration for deployment @ scale.
+
+### Objective
+
+- Build configuration for 2 different cisco network operating systems - IOS and XR.
+
+### Approach
+
+- Initialize the roles directory and file structure by using ansible-galaxy cli
+- Build the playbook, template and variables for bulk config generation
+
+### Lab Exercise
+
+Step 1: Create a new role for config generation leveraging utility "ansible-galaxy"
+
+- Note: Ansible-Galaxy is open source that allows building Roles file structure
+
+```
+cisco@ansible-controller:~$ ansible-galaxy init config-gen
+- config-gen was created successfully
+```
+Step 2: Review the tree structure that has been created by galaxy. For this lab, we will be using templates/vars and task folder for buld config generation.
+```
+cisco@ansible-controller:~$ tree config-gen/
+config-gen/
+├── defaults
+│   └── main.yml
+├── files
+├── handlers
+│   └── main.yml
+├── meta
+│   └── main.yml
+├── README.md
+├── tasks
+│   └── main.yml
+├── templates
+├── tests
+│   ├── inventory
+│   └── test.yml
+└── vars
+    └── main.yml
+		8 directories, 8 files
+		cisco@ansible-controller:~$
+```
+step 3: Create a playbook main.yml with the following contents.
+
+Note: If done through vi editor, the file main.yml is to be created under config-gen/tasks folder. If done through ATOM editor, it is a 2 step process - copy to home directory and them move to tasks folder
+
+```
+---
+- name: Generate the configuration for xr-routers
+  template:
+     src=xr-config-template.j2
+     dest=/home/cisco/{{item.hostname}}.txt
+  with_items:
+     - "{{ xr_hostnames }}"
+
+- name: Generate the configuration for iosxe-router3
+  template:
+     src=ios-config-template.j2
+     dest=/home/cisco/project1/{{item.hostname}}.txt
+  with_items:
+     - "{{ ios_hostnames }}"
+...
+# tasks file for config-gen
+
+```
+- copy from home directory and move under config-gen/tasks folder
+
+```
+cisco@ansible-controller:~$
+cisco@ansible-controller:~$ mv main.yml config-gen/tasks/main.yml
+cisco@ansible-controller:~$
+```
+Step 4: Create the platform specific configuration and save them under the config-gen/templates folder.
+
+- 4a. Create the following file "xr-config-template.j2" template
+```
+hostname {{item.hostname}}
+service timestamps log datetime msec
+service timestamps debug datetime msec
+clock timezone {{item.timezone}} {{item.timezone_offset}}
+clock summer-time {{item.timezone_dst}} recurring
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+domain name virl.info
+ssh server v2
+ssh server vrf Mgmt-intf
+!
+line template vty
+timestamp
+exec-timeout 720 0
+!
+line console
+exec-timeout 0 0
+!
+line default
+exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+!
+cdp
+!
+!
+interface Loopback0
+  description Loopback
+  ipv4 address {{item.loopback0_ip}} {{item.loopback0_mask}}
+!
+interface GigabitEthernet0/0/0/0
+  description to R1-CSR1kv
+  ipv4 address {{item.gig0000_ip}} {{item.gig0000_mask}}
+  cdp
+  no shutdown
+!
+interface GigabitEthernet0/0/0/1
+  description to R3-NXOS
+  ipv4 address {{item.gig0001_ip}} {{item.gig0001_mask}}
+  cdp
+  no shutdown
+!
+interface mgmteth0/0/CPU0/0
+  description OOB Management
+  ! Configured on launch
+  vrf Mgmt-intf
+ ipv4 address 172.16.101.99 255.255.255.0
+  cdp
+  no shutdown
+!
+!
+router ospf 16509
+  log adjacency changes
+  router-id {{item.loopback0_ip}}
+  address-family ipv4
+  area 0
+    !
+    interface Loopback0
+      passive enable
+    !
+{% for interface in xr_interfaces %}
+interface {{interface}}
+cost 1
+!
+{% endfor %}
+  !
+!
+!
+```
+- 4b. Create the following "ios-config-template.j2" file with following content
+
+```
+
+clock timezone {{item.timezone}} {{item.timezone_offset}}
+clock summer-time {{item.timezone_dst}} recurring
+
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname {{item.hostname}}
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+!
+!
+!
+!
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-35466579
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-35466579
+ revocation-check none
+ rsakeypair TP-self-signed-35466579
+!
+!
+crypto pki certificate chain TP-self-signed-35466579
+ certificate self-signed 01
+  3082032C 30820214 A0030201 02020101 300D0609 2A864886 F70D0101 05050030
+  2F312D30 2B060355 04031324 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 33353436 36353739 301E170D 31383033 32383136 33343532
+  5A170D32 30303130 31303030 3030305A 302F312D 302B0603 55040313 24494F53
+  2D53656C 662D5369 676E6564 2D436572 74696669 63617465 2D333534 36363537
+  39308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201 0A028201
+  0100C122 3C95D116 714EE581 53539DCE 33BBE636 20BCAB70 B12ECDE8 832DB71C
+  F223B066 E3779F87 0BF81EE6 CE6E60EE F471B22F 5ECE57FD 50C7D706 17F3F62D
+  4573882F B9B6351F ECDC6192 167D768A DC8B4613 8A2AEB70 1906E49D 0A2734A8
+  64C0C7A3 4B6951D2 573AFF96 5682BE7D 305F4351 A5E6A667 DB787283 724AF55F
+  3A049F98 57A1C34F CC9B9C24 3056B3DF 11A04AB4 3F051C0D 14D5AACE B7B0D991
+  611FE0D6 6B2CC9D2 3F410224 52701D25 135C7BF2 FEDC0BCD F9BD7C10 4B437143
+  E38A10E8 F5423F0E BB71A593 AFDBC814 D6DD4ED6 0709FCC5 33F480F0 6389C2AF
+  F0C36163 54164A20 541AAA30 EAFDFD2B 35361640 82331C9B F0D97302 B1429508
+  87DB0203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 301F0603
+  551D2304 18301680 14B0C21C 0050185E 5D0751E6 6A90DD48 D9157E6B 0E301D06
+  03551D0E 04160414 B0C21C00 50185E5D 0751E66A 90DD48D9 157E6B0E 300D0609
+  2A864886 F70D0101 05050003 82010100 4E89908F 13A8518B 33D0DC0E 71548510
+  7E3285F7 71E4B8A4 2E25FA83 3FD571F5 17D190EA DFC4F076 AF1C3494 17DC54B4
+  93A61630 C2D321BE F3D1B9D1 72AA7BE9 D5755FD5 C2330B82 F9DA1B4B 590BBA8A
+  0A36758E 22061021 86D03C8B D5877680 954F22E6 3A4F807E 79CA5DB5 F63ECF74
+  CA45C80D A8052A3A 48CD69B5 027D66D5 08020FA6 94FCE404 07D12573 590C0D60
+  5999C40B FECA7B2D A11FC2B8 21D7A110 E4814E8E 2ED74D9D B22A66DF B9BF8932
+  424A5807 AF9A59B5 FB6A7FCE B73E25B8 F937695D 9E15768D 614AA387 0B26B6FA
+  C54DF6E2 34E5E803 1123AB24 9CC8F3CF FDBB6B7E CC3FF86C B83C858A 34646F0B
+  0C79ED3D 814ACA2F 3F565B5C BB84FCAA
+  	quit
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9N7CZX65NJ3
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+!
+spanning-tree extend system-id
+!
+!
+username cisco privilege 15 secret 5 $1$F6GC$L/.gqoiPm0AcItLajjXXJ/
+!
+redundancy
+!
+!
+cdp run
+!
+
+!
+interface Loopback0
+ description Loopback
+ ip address {{item.loopback0_ip}} {{item.loopback0_mask}}
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address {{item.Mgmt_ip}} {{item.Mgmt_mask}}
+ negotiation auto
+ cdp enable
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet2
+ description to R2-XRv
+ ip address {{item.gigaethernet2_ip}} {{item.gigaethernet2_mask}}
+ ip ospf cost 1
+ negotiation auto
+ cdp enable
+ no mop enabled
+ no mop sysid
+!
+!
+router ospf 16509
+  network {{item.ospf_network1}} {{item.ospf_network_mask1}} area {{item.areaid}}
+  log-adjacency-changes
+  passive-interface Loopback0
+  network {{item.ospf_network2}} {{item.ospf_network_mask1}} area {{item.areaid}}
+  network {{item.ospf_network3}} {{item.ospf_network_mask1}} area {{item.areaid}}
+!
+!
+
+
+threat-visibility
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+control-plane
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+end
+```
+Step 4c: Move the templates *.j2 from the home directory to core-gen/templates directory
+```
+cisco@ansible-controller:~$ mv *.j2 config-gen/templates/
+```
+
+step 5: Define the variables needed to generate the template in the main.yml file. Each host will need to contain values for all the variables highlighted in the template file.
+
+```
+---
+xr_hostnames:
+   - { hostname: xr-router-rtr1, timezone: EST, timezone_dst: EDT, timezone_offset: -5, loopback0_ip: 192.168.0.1, loopback0_mask: 255.255.255.255, mgnt_ip: 172.16.101.99, mgnt_mask: 255.255.255.0, gig0000_ip: 10.0.0.5, gig0000_mask: 255.255.255.0, gig0001_ip: 10.1.0.5 , gig0001_mask: 255.255.255.0,}
+
+xr_interfaces:
+  - GigabitEthernet0/0/0/0
+  - GigabitEthernet0/0/0/1
+
+
+ios_hostnames:
+   - { hostname: ios-router-rtr1, timezone: EST, timezone_dst: EDT, timezone_offset: -5, loopback0_ip: 192.168.0.2, loopback0_mask: 255.255.255.255, mgnt_ip: 172.16.101.98, mgnt_mask: 255.255.255.0, gigaethernet2_ip: 10.0.0.6, gigaethernet2_mask: 255.255.255.0, gigaethernet3_ip: 10.1.0.6 , gigaethernet3_mask: 255.255.255.0, ospf_network1: 192.168.0.2, ospf_network_mask1: 0.0.0.0, ospf_network2: 10.0.0.0, ospf_network_mask2: 0.0.0.255, ospf_network3: 10.1.0.0, ospf_network_mask3: 0.0.0.255, areaid: 0 }
+
+ios_interfaces:
+  - GigabitEthernet0/0/0/0
+  - GigabitEthernet0/0/0/1
+
+...
+# vars file for config-gen
+```
+
+Step 6: Move the file main.yml from the home directory to core-gen/vars directory
+
+```
+cisco@ansible-controller:~$ mv main.yml config-gen/tasks/main.yml
+```
+
+Step 7: Create a playbook config-gen.yml to invoke the role of Bulk config generation
+
+```
+---
+  - name: Playbook to generate configuration based on role "config-gen"
+    hosts: localhost
+
+    roles:
+       - config-gen
+```
+
+Step 8: Execute the playbook config-gen.yml. You will see the config files are generated in target location.
+
+```
+cisco@ansible-controller:~$ ansible-playbook config-gen.yml
+
+```
+Step 9: Validate the files are created
+```
+cisco@ansible-controller:~$ ls -ltr *BGP.txt
+-rw-r--r-- 1 cisco cisco 168 Jun  5 02:40 R2-XRv-BGP.txt
+-rw-r--r-- 1 cisco cisco 148 Jun  5 02:41 R1-CSR1K-BGP.txt
+cisco@ansible-controller:~$
+```
+
+#### Exercise captures:
+
+```
+
+PLAY [Playbook to generate configuration based on role "config-gen"] **************************************************************************
+
+TASK [config-gen : Generate the configuration for xr-routers] *********************************************************************************
+changed: [localhost] => (item={u'timezone_dst': u'EDT', u'gig0000_mask': u'255.255.255.0', u'mgmt_ip': u'172.16.101.99', u'timezone_offset': -5, u'hostname': u'xr-router-rtr1', u'loopback0_ip': u'192.168.0.1', u'mgmt_mask': u'255.255.255.0', u'timezone': u'EST', u'gig0000_ip': u'10.0.0.5', u'gig0001_ip': u'10.1.0.5', u'gig0001_mask': u'255.255.255.0', u'loopback0_mask': u'255.255.255.255'})
+
+TASK [config-gen : Generate the configuration for iosxe-router3] ******************************************************************************
+changed: [localhost] => (item={u'timezone_dst': u'EDT', u'areaid': 0, u'ospf_network3': u'10.1.0.0', u'mgmt_ip': u'172.16.101.98', u'gigaethernet2_mask': u'255.255.255.0', u'gigaethernet3_mask': u'255.255.255.0', u'ospf_network1': u'192.168.0.2', u'timezone_offset': -5, u'hostname': u'ios-router-rtr1', u'ospf_network_mask1': u'0.0.0.0', u'ospf_network_mask2': u'0.0.0.255', u'loopback0_ip': u'192.168.0.2', u'gigaethernet3_ip': u'10.1.0.6', u'mgmt_mask': u'255.255.255.0', u'timezone': u'EST', u'ospf_network_mask3': u'0.0.0.255', u'gigaethernet2_ip': u'10.0.0.6', u'ospf_network2': u'10.0.0.0', u'loopback0_mask': u'255.255.255.255'})
+
+PLAY RECAP ************************************************************************************************************************************
+localhost                  : ok=2    changed=2    unreachable=0    failed=0
+
+```
+### Conclusion
+
+- You can utilize the concept of roles - predetermined order of directories and files to automate generating bulk tasks.
+
+
 ---
 
 **<p align="center">End of Lab Guide</p>**
