@@ -22,67 +22,67 @@
 - [**<p align="center">TECDEV-4500</p>**](#p-aligncentertecdev-4500p)
 - [**<p align="center">Lab Guide</p>**](#p-aligncenterlab-guidep)
 - [Table of Contents](#table-of-contents)
-- [Part-1: Ansible introduction](#part-1-ansible-introduction)
+- [1 Ansible introduction](#1-ansible-introduction)
 	- [1.1 Objective](#11-objective)
 	- [1.2 Lab exercises](#12-lab-exercises)
-		- [1.2.3 Configuration file](#123-configuration-file)
+	- [1.3 Configuration file](#13-configuration-file)
+		- [Example output](#example-output)
+		- [Reference](#reference)
+	- [1.4 Inventory file](#14-inventory-file)
 			- [Example output](#example-output)
 		- [Reference](#reference)
-		- [1.2.4 Inventory file](#124-inventory-file)
-			- [Example output](#example-output)
+	- [1.5 Ansible modules](#15-ansible-modules)
+		- [Example output](#example-output)
 		- [Reference](#reference)
-		- [1.2.5 Ansible modules](#125-ansible-modules)
-			- [Example output](#example-output)
-		- [Reference](#reference)
-		- [1.2.6 Ad-hoc commands](#126-ad-hoc-commands)
+	- [1.6 Ad-hoc commands](#16-ad-hoc-commands)
 		- [Optional exercises](#optional-exercises)
 		- [Conclusion](#conclusion)
-			- [Example output](#example-output)
+		- [Example output](#example-output)
 - [Part-2: Playbook primer](#part-2-playbook-primer)
 	- [2.1 Raw module](#21-raw-module)
 		- [Lab exercise](#lab-exercise)
 		- [Conclusion](#conclusion)
 		- [Example output](#example-output)
-	- [1.4 IOS command module](#14-ios-command-module)
+	- [2.2 IOS command module](#22-ios-command-module)
 		- [Lab exercise](#lab-exercise)
 		- [Conclusion](#conclusion)
 		- [Reference](#reference)
 		- [Example output](#example-output)
-	- [1.5 XR command module](#15-xr-command-module)
+	- [2.3 XR command module](#23-xr-command-module)
 		- [Lab exercise](#lab-exercise)
 		- [Conclusion](#conclusion)
 		- [Optional exercise](#optional-exercise)
 		- [Example output](#example-output)
-	- [1.6 IOS config module](#16-ios-config-module)
+	- [2.4 IOS config module](#24-ios-config-module)
 		- [Lab exercise](#lab-exercise)
 		- [Conclusion](#conclusion)
 		- [Example output](#example-output)
-	- [1.7 XR config module](#17-xr-config-module)
+	- [2.5 XR config module](#25-xr-config-module)
 		- [Lab exercise](#lab-exercise)
 		- [Conclusion](#conclusion)
 		- [Example output](#example-output)
-	- [1.8 Variables](#18-variables)
+	- [2.6 Variables](#26-variables)
 		- [Lab exercise](#lab-exercise)
 		- [Optional exercise](#optional-exercise)
 		- [Conclusion](#conclusion)
 		- [Example output](#example-output)
 		- [Reference](#reference)
-	- [1.9 Loops](#19-loops)
+	- [2.7 Loops](#27-loops)
 		- [Lab exercise](#lab-exercise)
 		- [Conclusion](#conclusion)
 		- [Example output](#example-output)
 		- [Reference](#reference)
-	- [1.10 Conditionals](#110-conditionals)
+	- [2.8 Conditionals](#28-conditionals)
 		- [Lab exercise](#lab-exercise)
 		- [Conclusion](#conclusion)
 		- [Optional exercise](#optional-exercise)
 		- [Example output](#example-output)
 		- [Reference](#reference)
-	- [1.11 Importing playbooks](#111-importing-playbooks)
+	- [2.9 Importing playbooks](#29-importing-playbooks)
 		- [Lab exercise](#lab-exercise)
 		- [Conclusion](#conclusion)
 		- [Example output](#example-output)
-	- [1.12 Ansible Vault](#112-ansible-vault)
+	- [2.10 Ansible Vault](#210-ansible-vault)
 		- [Objective](#objective)
 		- [Lab exercise](#lab-exercise)
 			- [Pre-check](#pre-check)
@@ -117,8 +117,8 @@
 - [- Groups of hosts are delimited by [header] elements](#-groups-of-hosts-are-delimited-by-header-elements)
 - [- You can enter hostnames or ip addresses](#-you-can-enter-hostnames-or-ip-addresses)
 - [- A hostname/ip can be a member of multiple groups](#-a-hostnameip-can-be-a-member-of-multiple-groups)
-- [2 Automating common tasks](#2-automating-common-tasks)
-	- [2.1 Router config backup](#21-router-config-backup)
+- [3. Automating common tasks](#3-automating-common-tasks)
+	- [3.1 Router config backup](#31-router-config-backup)
 		- [Objective](#objective)
 		- [Approach](#approach)
 		- [Lab exercise](#lab-exercise)
@@ -126,7 +126,7 @@
 		- [Optional exercise](#optional-exercise)
 		- [Reference](#reference)
 		- [Example output](#example-output)
-	- [Device health monitoring](#device-health-monitoring)
+	- [3.2 Device health monitoring](#32-device-health-monitoring)
 		- [Objective](#objective)
 		- [Approach](#approach)
 		- [Lab exercise](#lab-exercise)
@@ -134,7 +134,7 @@
 		- [Conclusion](#conclusion)
 			- [Example output](#example-output)
 - [PUT OUTPUT](#put-output)
-	- [2.2 Method of Procedure (MOP)](#22-method-of-procedure-mop)
+	- [3.3 Method of Procedure (MOP)](#33-method-of-procedure-mop)
 		- [Objective](#objective)
 		- [Approach](#approach)
 		- [Lab exercise](#lab-exercise)
@@ -146,15 +146,15 @@
 		- [Optional exercise](#optional-exercise)
 		- [Reference](#reference)
 		- [Example output](#example-output)
-	- [Generate iBGP config using roles and upload to routers](#generate-ibgp-config-using-roles-and-upload-to-routers)
+	- [3.4 Generate IBGP config](#34-generate-ibgp-config)
 		- [objectives](#objectives)
 		- [Approach](#approach)
-			- [Lab Exercise](#lab-exercise)
+		- [Lab Exercise](#lab-exercise)
 		- [Conclusion](#conclusion)
-			- [Example output:](#example-output)
-- [Appendix](#appendix)
-	- [Reference](#reference)
-	- [Ansible installation](#ansible-installation)
+		- [Example output:](#example-output)
+- [4. Appendix](#4-appendix)
+	- [4.1 Reference](#41-reference)
+	- [4.2 Ansible installation](#42-ansible-installation)
 	- [Optional exercise op5-cmd.yml](#optional-exercise-op5-cmdyml)
 		- [Lab exercise](#lab-exercise)
 		- [Example output](#example-output)
@@ -187,20 +187,20 @@
 
 ---
 
-# Part-1: Ansible introduction
+# 1 Ansible introduction
 
 ## 1.1 Objective
 - Review Ansible customization in your pod
 - Run Ansible ad-hoc commands
 
 ## 1.2 Lab exercises
-- Configuration file
-- Inventory file
-- Ansible modules
-- Ad-hoc commands
+- The following topics are covered:
+ - Configuration file
+ - Inventory file
+ - Ansible modules
+ - Ad-hoc commands
 
-
-### 1.2.3 Configuration file
+## 1.3 Configuration file
 - Ansible configuration file is preconfigured for you.
 - We uncommented the following config lines, under [default] section:
 	- inventory --> use default inventory file, /etc/ansible/hosts
@@ -218,7 +218,7 @@ $ cat /etc/ansible/ansible.cfg
 $ cat /etc/ansible/ansible.cfg | grep -v "#" | grep -v ^$
 ```
 
-#### Example output
+### Example output
 - Just for reference, if you need to compare your lab output to someone else's.
 - You don't need to refer this if your steps go smooth.
 
@@ -259,7 +259,7 @@ cisco@ansible-controller:~$
 
 ---
 
-### 1.2.4 Inventory file
+## 1.4 Inventory file
 - Inventory file is preconfigured for you. We added your router IP addresses in two groups: IOS and XR.
 - Review the inventory file:
 
@@ -301,7 +301,7 @@ XR
 
 ---
 
-### 1.2.5 Ansible modules
+## 1.5 Ansible modules
 - Ansible ships with several modules.
 - Try the below commands for a **quick review**
 
@@ -313,7 +313,7 @@ $ ansible-doc -l
 $ ansible-doc ios_command
 ```
 
-#### Example output
+### Example output
 
 ```
 cisco@ansible-controller:~$ ansible-doc --help
@@ -381,7 +381,7 @@ cisco@ansible-controller:~$
 
 ---
 
-### 1.2.6 Ad-hoc commands
+## 1.6 Ad-hoc commands
 - Let us use a few modules in this section: `raw`, `ios_command`, and `iosxr_command`
 - Note that not all modules are suitable for use in ad-hoc command.
 - Syntax: `ansible <devices> -m <module> -a <command>`
@@ -413,7 +413,7 @@ $ ansible XR --connection local -m iosxr_command -a "commands='show route summ'"
 - Review the section and discuss if you have any questions.
 
 
-#### Example output
+### Example output
 
 ```
 cisco@ansible-controller:~$ ansible --list-hosts IOS
@@ -637,7 +637,7 @@ PLAY RECAP *********************************************************************
 
 ---
 
-## 1.4 IOS command module
+## 2.2 IOS command module
 ### Lab exercise
 - Use the ios_command to execute some exec level commands on IOS devices.
 - Create a playbook, p4-ioscmd.yml, with the below contents
@@ -720,7 +720,7 @@ PLAY RECAP *********************************************************************
 
 ---
 
-## 1.5 XR command module
+## 2.3 XR command module
 ### Lab exercise
 - Use the iosxr_command to execute some exec level commands on XR devices.
 - Create a playbook, p5-xrcmd.yml, with the below contents
@@ -797,7 +797,7 @@ PLAY RECAP *********************************************************************
 
 ---
 
-## 1.6 IOS config module
+## 2.4 IOS config module
 ### Lab exercise
 - Use ios_config module to configure a loopback interface on an IOS router.
 - Create a playbook, p6-iosconfig.yml, with the below contents:
@@ -868,7 +868,7 @@ Connection to 172.16.101.91 closed by remote host.
 ```
 ---
 
-## 1.7 XR config module
+## 2.5 XR config module
 ### Lab exercise
 - Use xr_config module to configure an access-list on a XR router.
 - Create a playbook, p7-xrconfig.yml, with the below contents.
@@ -951,7 +951,7 @@ Connection to 172.16.101.92 closed by remote host.
 
 ---
 
-## 1.8 Variables
+## 2.6 Variables
 - Ansible uses variables to enable more flexibility in playbooks.
 - Variables are used to store information. This information can be used in a playbook by calling the specific variable.
 
@@ -1081,7 +1081,7 @@ PLAY RECAP *********************************************************************
 
 ---
 
-## 1.9 Loops
+## 2.7 Loops
 - Loops are used to perform a task repeatedly with a set of different items.
 
 ### Lab exercise
@@ -1322,7 +1322,7 @@ cisco@ansible-controller:~$
 
 ---
 
-## 1.10 Conditionals
+## 2.8 Conditionals
 
 - Conditionals are used to decide whether to run a task or not.
 - In this section, you will be working on "when" condition.
@@ -1457,7 +1457,7 @@ cisco@ansible-controller:~$
 
 ---
 
-## 1.11 Importing playbooks
+## 2.9 Importing playbooks
 - Ansible allows for one playbook to import and execute another playbook using the import_playbook module.
 - We will be calling (or importing) using import_playbook module.
 
@@ -1553,7 +1553,7 @@ cisco@ansible-controller:~$
 ```
 ---
 
-## 1.12 Ansible Vault
+## 2.10 Ansible Vault
 - This section is **optional** and can be skipped. Automation exercises in this lab guide do not depend on Vault.
 - Do this session if you are on time. You can do this later if you run out of time.
 - Ansible vault has many security features but this section will cover only the basics of encrypting and decrypting a file.
@@ -1884,16 +1884,16 @@ cisco@ansible-controller:~$
 
 ---
 
-# 2 Automating common tasks
+# 3. Automating common tasks
 - The following exercises will use Ansible to automate certain network operations tasks:
   - Router configuration backup
-  - Proactive heath monitoring
+  - Device health monitoring
   - Method of procedure
   - Generate iBGP config using roles
   - Generating bulk configuration
 
 ---
-## 2.1 Router config backup
+## 3.1 Router config backup
 ### Objective
 - Create a playbook to capture and backup a router’s running config.
 
@@ -2036,7 +2036,7 @@ hostname R2-XRv
 ```
 
 ---
-## Device health monitoring
+## 3.2 Device health monitoring
 
 ### Objective
 
@@ -2082,7 +2082,7 @@ $ ansible-playbook p32-xr-health-monitoring.yml
 
 ---
 
-## 2.2 Method of Procedure (MOP)
+## 3.3 Method of Procedure (MOP)
 
 - MOP is a documented step-by-step sequence of tasks executed on network devices to achieve a planned objective. In this case, that objective is provisioning of OSPF.
 
@@ -2541,7 +2541,7 @@ R2                         : ok=5    changed=2    unreachable=0    failed=0
 
 ---
 
-## Generate iBGP config using roles and upload to routers
+## 3.4 Generate IBGP config
 
 - For operators, network configuration and rollout are critical part of daily operations.
 - This exercise will simulate a network config generation via roles and rollout of configs to network elements through automation.
@@ -2557,7 +2557,7 @@ R2                         : ok=5    changed=2    unreachable=0    failed=0
 - Show how Ansible modules can be used to upload the configuration to the routers
 - Playbook will be run on “localhost” to generate the needed configurations and then will use a play to upload the config to the routers.
 
-#### Lab Exercise
+### Lab Exercise
 
 Step 1.Create two sub-folders by the name “csr-bgp”  and “xr-bgp” using mkdir command
 
@@ -2796,8 +2796,8 @@ router bgp 1
 - Ansible Roles can be utilized to generate config small or big
 - Leverage module to load configuration onto to devices
 
-#### Example output:
-
+### Example output:
+```
 cisco@ansible-controller:~$ansible-playbook roles-bgp.yml
 
 PLAY [Generate router bgp configuration files using Roles and Jinja2 Templates] ***************************************************************
@@ -2824,14 +2824,14 @@ PLAY RECAP *********************************************************************
 localhost                  : ok=2    changed=2    unreachable=0    failed=0
 
 cisco@ansible-controller:~$
+```
 
-Streach Exercise: Use Ansible ad-hoc command or create a simple playbook to check if the iBGP configuration has been added and the iBGP session between R1 and R2 is established.
 
 ---
 
-# Appendix
+# 4. Appendix
 
-## Reference
+## 4.1 Reference
 - Ansible Documentation: http://docs.ansible.com/ansible/latest/index.html
 - YAML Version 1.2 Specs: http://www.yaml.org/spec/1.2/spec.html
 - Jinjia2 Templating: http://jinja.pocoo.org/docs/dev/templates/
@@ -2843,7 +2843,7 @@ Streach Exercise: Use Ansible ad-hoc command or create a simple playbook to chec
 
 ---
 
-## Ansible installation
+## 4.2 Ansible installation
 - Ansible control machine is on Linux based systems with Python 2 (versions 2.6 or higher) or Python 3 (versions 3.5 or higher).
 - Red Hat, Debian, CentOS, OS X (MAC OS), Ubuntu, BSDs etc. are supported. MS Windows OS is not supported.
 - Installation steps are straight forward. Depending on your OS flavor, pick the steps from the installation guide.
