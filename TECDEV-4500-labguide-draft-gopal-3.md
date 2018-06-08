@@ -3213,195 +3213,131 @@ cisco@ansible-controller:~$ ls -ltr R*
 ```
 ---
 
-## Optional exercise op-22 (MOP)
+## Optional exercise op33-mop.yml (MOP)
 - We have two additional requirements on top of the MOP playbook that we already did.
   - Insert a delay of 30 seconds before collecting post-config data
   - Create a file with the differences between pre-config and post-config data
 
 ### Approach
-- We can reuse the pre-config captures playbook, p22-preconfig.yml, without any changes.
-- p33-ospf-config.yml doesn't need any changes as well; we can reuse it.
-- We need to add 30 sec. pause in post-config captures playbook, p22-postconfig.yml
-- To create diff file, we need a new playbook
+- For delay, "pause" module can be used.
+- For diff, we can diff module.
 
-### Add delay
-- Use "pause" module
-- Create a playbook, op22-postconfig.yml
+### Lab exercise
+- Create playbook, op-33.yml, with the contents below:
 
 ```
 ---
-- name: post-config captures from IOS routers
-  hosts: IOS
-  connection: local
+- name: pre-config captures - play-1
+  hosts: localhost
+
+  tasks:
+    - name: run precheck playbook
+      command: ansible-playbook p33-ospf-capture.yml --tags precheck
+
+- name: configure OSPF on both routers - play-2
+  import_playbook: p33-ospf-config.yml
+
+- name: post-config captures - play-3
+  hosts: localhost
 
   tasks:
     - pause: seconds=30
 
-    - name: collect postcheck commands
-      ios_command:
-        authorize: yes
-        commands:
-           - show run | section ospf
-           - show ip ospf interface brief
-           - show ip ospf neighbor
-           - show ip route ospf
+    - name: run postcheck playbook
+      command: ansible-playbook p33-ospf-capture.yml --tags postcheck
 
-      register: IOSPOST
-
-    - name: save output to a file
-      copy:
-        content=" \n\n {{ IOSPOST.stdout[0] }} \n\n {{ IOSPOST.stdout[1] }} \n\n {{ IOSPOST.stdout[2] }} \n\n {{ IOSPOST.stdout[3] \n\n }} "
-        dest="/home/cisco/p22-o-postcheck-ios.txt"
-
-- name: post-config captures from XR routers
-  hosts: XR
-  connection: local
-
-  tasks:
-    - pause: seconds=30
-
-    - name: collect postcheck commands
-      iosxr_command:
-        commands:
-           - show run router ospf
-           - show ospf interface brief
-           - show ospf neighbor
-           - show route ospf
-
-      register: XRPOST
-
-    - name: save output to a file
-      copy:
-        content=" \n\n {{ XRPOST.stdout[0] }} \n\n {{ XRPOST.stdout[1] }} \n\n {{ XRPOST.stdout[2] }} \n\n {{ XRPOST.stdout[3] \n\n }} "
-        dest="/home/cisco/p22-o-postcheck-xr.txt"
-
-```
-
-### Diff file
-- Create playbook, op22-diff.yml, with the contents below
-
-```
----
-- name: Compare pre and post files and create a diff file
+- name: Compare pre and post files and create a diff file - play-4
   hosts: localhost
   connection: local
 
   tasks:
-    - name: diff pre and post files
-      command: diff /home/cisco/p22-precheck-ios.txt /home/cisco/p22-o-postcheck-ios.txt
+    - set_fact: TIMESTAMP="{{lookup('pipe','date \"+%Y-%m-%d-%H-%M\"')}}"
+
+    - name: diff pre and post IOS files
+      command: diff /home/cisco/p33-precheck-ios-ospf.txt /home/cisco/p33-postcheck-ios-ospf.txt
 
       register: IOS_DIFF
 
       failed_when: "IOS_DIFF.rc > 1"
 
-    - set_fact: TIMESTAMP="{{lookup('pipe','date \"+%Y-%m-%d-%H-%M\"')}}"
-
     - name: create diff file with timestamp included in the name
       copy:
         content: "{{ IOS_DIFF.stdout }}"
-        dest: "/home/cisco/ios_diff_{{ TIMESTAMP }}.txt"
+        dest: "/home/cisco/op33-ios_diff_{{ TIMESTAMP }}.txt"
 
-```
+    - name: diff pre and post XR files
+      command: diff /home/cisco/p33-precheck-xr-ospf.txt /home/cisco/p33-postcheck-xr-ospf.txt
 
-### MOP playbook
-- Create MOP playbook, op22-mop.yml, importing all the playbooks
+      register: XR_DIFF
 
-```
----
-- name: pre-config captures
-  import_playbook: p33-ospf-capture.yml
+      failed_when: "XR_DIFF.rc > 1"
 
-- name: config OSPF
-  import_playbook: p33-ospf-config.yml
+    - name: create diff file with timestamp included in the name
+      copy:
+        content: "{{ XR_DIFF.stdout }}"
+        dest: "/home/cisco/op33-xr_diff_{{ TIMESTAMP }}.txt"
 
-- name: post-config captures
-  import_playbook: op22-postcheck.yml
-
-- name: create diff file from pre and post
-  import_playbook: op22-diff.yml
 ```
 
 ### Example output
 
 ```
-cisco@ansible-controller:~$ ansible-playbook op22-mop.yml
+cisco@ansible-controller:~$ ansible-playbook op33-mop.yml --syntax-check
 
-PLAY [pre-config captures from IOS routers] ****************************************************************************************************
+playbook: op33-mop.yml
+cisco@ansible-controller:~$ ansible-playbook op33-mop.yml
 
-TASK [collect precheck IOS output] *************************************************************************************************************
+PLAY [pre-config captures, play-1] ***************************************************************************************
+
+TASK [run precheck playbook] *********************************************************************************************
+changed: [localhost]
+
+PLAY [configure ospf on IOS routers - play-1] ****************************************************************************
+
+TASK [pre-check for ospf config] *****************************************************************************************
 ok: [R1]
 
-TASK [save output to a file] *******************************************************************************************************************
-changed: [R1]
+PLAY [configure ospf on XR routers - play-2] *****************************************************************************
 
-PLAY [pre-config captures from XR routers] *****************************************************************************************************
-
-TASK [collect precheck XR output] **************************************************************************************************************
+TASK [pre-check for ospf config] *****************************************************************************************
 ok: [R2]
 
-TASK [save output to a file] *******************************************************************************************************************
-changed: [R2]
+PLAY [post-config captures, play-3] **************************************************************************************
 
-PLAY [configure ospf on IOS routers - play-1] **************************************************************************************************
-
-TASK [pre-check for ospf config] ***************************************************************************************************************
-ok: [R1]
-
-PLAY [configure ospf on XR routers - play-2] ***************************************************************************************************
-
-TASK [pre-check for ospf config] ***************************************************************************************************************
-ok: [R2]
-
-PLAY [post-config captures from IOS routers] ***************************************************************************************************
-
-TASK [pause] ***********************************************************************************************************************************
+TASK [pause] *************************************************************************************************************
 Pausing for 30 seconds
 (ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)
-ok: [R1]
-
-TASK [collect postcheck commands] **************************************************************************************************************
-ok: [R1]
-
-TASK [save output to a file] *******************************************************************************************************************
-changed: [R1]
-
-PLAY [post-config captures from XR routers] ****************************************************************************************************
-
-TASK [pause] ***********************************************************************************************************************************
-Pausing for 30 seconds
-(ctrl+C then 'C' = continue early, ctrl+C then 'A' = abort)
-ok: [R2]
-
-TASK [collect postcheck commands] **************************************************************************************************************
-ok: [R2]
-
-TASK [save output to a file] *******************************************************************************************************************
-changed: [R2]
-
-PLAY [Compare pre and post files and create a diff file] ***************************************************************************************
-
-TASK [set_fact] ********************************************************************************************************************************
 ok: [localhost]
 
-TASK [diff pre and post IOS files] *************************************************************************************************************
+TASK [run postcheck playbook] ********************************************************************************************
 changed: [localhost]
 
-TASK [create IOS diff file with timestamp included in the name] ********************************************************************************
+PLAY [Compare pre and post files and create a diff file, play-4] *********************************************************
+
+TASK [set_fact] **********************************************************************************************************
+ok: [localhost]
+
+TASK [diff pre and post IOS files] ***************************************************************************************
 changed: [localhost]
 
-TASK [diff pre and post XR files] **************************************************************************************************************
+TASK [create diff file with timestamp included in the name] **************************************************************
 changed: [localhost]
 
-TASK [create XR diff file with timestamp included in the name] *********************************************************************************
+TASK [diff pre and post XR files] ****************************************************************************************
 changed: [localhost]
 
-PLAY RECAP *************************************************************************************************************************************
-R1                         : ok=6    changed=2    unreachable=0    failed=0
-R2                         : ok=6    changed=2    unreachable=0    failed=0
-localhost                  : ok=5    changed=4    unreachable=0    failed=0
+TASK [create diff file with timestamp included in the name] **************************************************************
+changed: [localhost]
 
-cisco@ansible-controller:~$ ls -l op22-xr*
--rw-rw-r-- 1 cisco cisco 191 Jun  5 22:07 op22-xr_diff_2018-06-05-22-07.txt
+PLAY RECAP ***************************************************************************************************************
+R1                         : ok=1    changed=0    unreachable=0    failed=0
+R2                         : ok=1    changed=0    unreachable=0    failed=0
+localhost                  : ok=8    changed=6    unreachable=0    failed=0
+
+cisco@ansible-controller:~$ ls -ltr op33*.txt
+-rw-rw-r-- 1 cisco cisco 393 Jun  8 00:46 op33-ios_diff_2018-06-08-00-46.txt
+-rw-rw-r-- 1 cisco cisco 489 Jun  8 00:46 op33-xr_diff_2018-06-08-00-46.txt
+cisco@ansible-controller:~$
 ```
 
 ---
