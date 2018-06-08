@@ -3220,7 +3220,7 @@ cisco@ansible-controller:~$ ls -ltr R*
 
 ### Approach
 - For delay, "pause" module can be used.
-- For diff, we can diff module.
+- For diff, we can command module with diff argument.
 
 ### Lab exercise
 - Create playbook, op-33.yml, with the contents below:
