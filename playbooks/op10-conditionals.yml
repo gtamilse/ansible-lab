@@ -1,0 +1,19 @@
+---
+- name: print each host and its OS
+  hosts: ALL
+
+  tasks:
+    - name: collect OS
+      raw: show ver
+      
+      register: OS
+
+    - name: print IOS host
+      debug:
+        msg: "{{ inventory_hostname }} is an IOS Router."
+      when: OS.stdout | join('') | search('IOS XE')
+
+    - name: print XR host
+      debug:
+        msg: "{{ inventory_hostname }} is an XR Router."
+      when: OS.stdout | join('') | search('IOS XR')

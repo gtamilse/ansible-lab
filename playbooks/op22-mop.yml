@@ -1,0 +1,12 @@
+---
+- name: pre-config captures
+  import_playbook: p22-precheck.yml
+
+- name: config OSPF
+  import_playbook: p22-config.yml
+
+- name: post-config captures
+  import_playbook: op22-postcheck.yml
+
+- name: create diff file from pre and post
+  import_playbook: op22-diff.yml

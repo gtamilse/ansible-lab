@@ -1,0 +1,9 @@
+---
+- name: print hostnames of all devices
+  hosts: ALL
+  connection: local
+
+  tasks:
+    - name: print hostname
+      debug:
+        msg: "This is {{ inventory_hostname }}"

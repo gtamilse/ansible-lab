@@ -1,0 +1,45 @@
+---
+- name: post-config captures from IOS routers
+  hosts: IOS
+  connection: local
+
+  tasks:
+    - pause: seconds=30
+
+    - name: collect postcheck commands
+      ios_command:
+        authorize: yes
+        commands:
+           - show run | section ospf
+           - show ip ospf interface brief
+           - show ip ospf neighbor
+           - show ip route ospf
+
+      register: IOSPOST
+
+    - name: save output to a file
+      copy:
+        content=" \n\n {{ IOSPOST.stdout[0] }} \n\n {{ IOSPOST.stdout[1] }} \n\n {{ IOSPOST.stdout[2] }} \n\n {{ IOSPOST.stdout[3] \n\n }} "
+        dest="/home/cisco/p22-o-postcheck-ios.txt"
+
+- name: post-config captures from XR routers
+  hosts: XR
+  connection: local
+
+  tasks:
+    - pause: seconds=30
+
+    - name: collect postcheck commands
+      iosxr_command:
+        commands:
+           - show run router ospf
+           - show ospf interface brief
+           - show ospf neighbor
+           - show route ospf
+
+      register: XRPOST
+
+    - name: save output to a file
+      copy:
+        content=" \n\n {{ XRPOST.stdout[0] }} \n\n {{ XRPOST.stdout[1] }} \n\n {{ XRPOST.stdout[2] }} \n\n {{ XRPOST.stdout[3] \n\n }} "
+        dest="/home/cisco/p22-o-postcheck-xr.txt"
