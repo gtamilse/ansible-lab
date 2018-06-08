@@ -2390,6 +2390,8 @@ cisco@ansible-controller:~$ vi csr-bgp/templates/ CSR-BGP.j2
 cisco@ansible-controller:~$ mv CSR-BGP.j2 csr-bgp/templates/CSR-BGP.j2
 ```
 -  Paste the following inside the templates CSR-BGP.j2 file.
+
+
 ```
 router bgp {{item.LCL_ASN}}
  bgp router-id {{item.RID}}
@@ -2751,7 +2753,9 @@ cost 1
   !
 !
 !
+
 ```
+
 - 4b. Create the following template “ios-config-template.j2” under the templates directory.
 
   - Note vi users do the following to create the file.
@@ -3039,7 +3043,7 @@ PLAY RECAP *********************************************************************
 localhost                  : ok=2    changed=0    unreachable=0    failed=0
 ```
 
---- 
+---
 
 # 4. Appendix
 
