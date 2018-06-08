@@ -2970,7 +2970,7 @@ $ vi config-gen/vars/main.yml
 
 - Note ATOM users do the following once the file has been created on the home directory.
 
-````
+```
 $ mv main.yml config-gen/vars/main.yml
 ```
 
