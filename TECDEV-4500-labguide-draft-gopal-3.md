@@ -594,11 +594,11 @@ $ ansible-playbook p3-xrcmd.yml
 ### Optional exercise
 > - Do this section if you are ahead of schedule, else skip and come back later.
 > - This lab will be available for you to work for a few days after Cisco Live. You have the option of doing this later as well.
-> - Write a playbook to meet the below requirements:
+> - Write a playbook, op3-cmd.yml, to meet the below requirements:
 >   - Collect output of route summary from both IOS and XR routers
 >   - Use the modules, ios_command and iosxr_command
 >   - Write 2 plays within one playbook.
-> - Playbook answer is in the appendix section.
+> - Playbook solution is in the appendix section (op3-cmd.yml).
 
 ### Example output
 ```
@@ -793,7 +793,7 @@ Connection to 172.16.101.92 closed by remote host.
 
 ### Lab exercise
 - Create custom variables inside a playbook to store an interface name and call the variable to complete the show command execution.
-- Create a playbook, p6-vars.yml, with the below contents
+- Create a playbook, p6-vars.yml, with the below contents:
 
 ```
 ---
@@ -2925,7 +2925,7 @@ cisco@ansible-controller:~$
 
 ---
 
-## Optional exercise op5-cmd.yml
+## Optional exercise op3-cmd.yml
 
 ### Lab exercise
 - playbook op5-cmd.xml
@@ -2968,7 +2968,7 @@ cisco@ansible-controller:~$
 
 ### Example output
 ```
-cisco@ansible-controller:~$ ansible-playbook op5-cmd.yml
+cisco@ansible-controller:~$ ansible-playbook op3-cmd.yml
 
 PLAY [play-1:get route summary from IOS routers] *******************************************************************
 
