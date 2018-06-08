@@ -428,10 +428,10 @@ PLAY RECAP *********************************************************************
 172.16.101.92              : ok=1    changed=1    unreachable=0    failed=0
 
 cisco@ansible-controller:~$
-cisco@ansible-controller:~$ ansible-playbook p3-raw.yml --syntax-check
+cisco@ansible-controller:~$ ansible-playbook p1a-raw --syntax-check
 
-playbook: p3-raw.yml
-cisco@ansible-controller:~$ ansible-playbook p3-raw.yml
+playbook: p1a-raw
+cisco@ansible-controller:~$ ansible-playbook p1a-raw
 
 PLAY [get interface info from all hosts] *************************************************************
 
@@ -476,7 +476,7 @@ PLAY RECAP *********************************************************************
 ## 2.2 IOS command module
 ### Lab exercise
 - Use the ios_command to execute some exec level commands on IOS devices.
-- Create a playbook, p4-ioscmd.yml, with the below contents
+- Create a playbook, p2-ioscmd.yml, with the below contents
 
 ```
 ---
@@ -490,20 +490,20 @@ PLAY RECAP *********************************************************************
         commands:
           show ip route summary
 
-      register: P4_OUTPUT
+      register: P2_OUTPUT
 
     - name: print output
       debug:
-        var: P4_OUTPUT.stdout_lines
+        var: P2_OUTPUT.stdout_lines
 ```
 - Predict the outcome of this playbook.
 - Execute the playbook
 - After reviewing the playbook output, try run the playbook in verbose mode: with -v, -vv, or -vvv
 
 ```
-$ ansible-playbook p4-ioscmd.yml --syntax-check
+$ ansible-playbook p2-ioscmd.yml --syntax-check
 
-$ ansible-playbook p4-ioscmd.yml
+$ ansible-playbook p2-ioscmd.yml
 ```
 
 ### Conclusion
@@ -522,7 +522,7 @@ $ ansible-playbook p4-ioscmd.yml
 ### Example output
 
 ```
-cisco@ansible-controller:~$ ansible-playbook p4-ioscmd.yml
+cisco@ansible-controller:~$ ansible-playbook p2-ioscmd.yml
 
 PLAY [collect ip route summary from all IOS devices] **************************************************************
 
@@ -531,7 +531,7 @@ ok: [172.16.101.91]
 
 TASK [print output] ***********************************************************************************************
 ok: [172.16.101.91] => {
-    "P4_OUTPUT.stdout_lines": [
+    "P2_OUTPUT.stdout_lines": [
         [
             "IP routing table name is default (0x0)",
             "IP routing table maximum-paths is 32",
@@ -559,7 +559,7 @@ PLAY RECAP *********************************************************************
 ## 2.3 XR command module
 ### Lab exercise
 - Use the iosxr_command to execute some exec level commands on XR devices.
-- Create a playbook, p5-xrcmd.yml, with the below contents
+- Create a playbook, p3-xrcmd.yml, with the below contents
 
 ```
 ---
@@ -573,18 +573,18 @@ PLAY RECAP *********************************************************************
         commands:
           show route summary
 
-      register: P5_OUTPUT
+      register: P3_OUTPUT
 
     - name: print output
       debug:
-        var: P5_OUTPUT.stdout_lines
+        var: P3_OUTPUT.stdout_lines
 ```
 - Predict the outcome of this playbook.
 - Execute the playbook
 
 ```
-$ ansible-playbook p5-xrcmd.yml --syntax-check
-$ ansible-playbook p5-xrcmd.yml
+$ ansible-playbook p3-xrcmd.yml --syntax-check
+$ ansible-playbook p3-xrcmd.yml
 ```
 
 ### Conclusion
@@ -602,10 +602,10 @@ $ ansible-playbook p5-xrcmd.yml
 
 ### Example output
 ```
-cisco@ansible-controller:~$ ansible-playbook p5-xrcmd.yml --syntax-check
+cisco@ansible-controller:~$ ansible-playbook p3-xrcmd.yml --syntax-check
 
-playbook: p5-xrcmd.yml
-cisco@ansible-controller:~$ ansible-playbook p5-xrcmd.yml
+playbook: p3-xrcmd.yml
+cisco@ansible-controller:~$ ansible-playbook p3-xrcmd.yml
 
 PLAY [collect ip route summary from all XR devices] ***************************************************************
 
@@ -614,7 +614,7 @@ ok: [172.16.101.92]
 
 TASK [print output] ***********************************************************************************************
 ok: [172.16.101.92] => {
-    "P5_OUTPUT.stdout_lines": [
+    "P3_OUTPUT.stdout_lines": [
         [
             "Route Source                     Routes     Backup     Deleted     Memory(bytes)",
             "local                            4          0          0           640          ",
@@ -636,7 +636,7 @@ PLAY RECAP *********************************************************************
 ## 2.4 IOS config module
 ### Lab exercise
 - Use ios_config module to configure a loopback interface on an IOS router.
-- Create a playbook, p6-iosconfig.yml, with the below contents:
+- Create a playbook, p4-iosconfig.yml, with the below contents:
 
 ```
 ---
@@ -649,18 +649,18 @@ PLAY RECAP *********************************************************************
       ios_config:
         parents: interface loopback101
         lines:
-          - description test config by p6
+          - description test config by p4
           - ip address 1.1.1.101 255.255.255.255
           - shutdown
 ```
 
 - Execute the playbook
-- Check if loopback101 interface is created by p6-iosconfig.yml playbook
+- Check if loopback101 interface is created by p4-iosconfig.yml playbook
 
 ```
 $ ansible IOS -m raw -a "show run int loop101"
 
-$ ansible-playbook p6-iosconfig.yml
+$ ansible-playbook p4-iosconfig.yml
 
 $ ansible IOS -m raw -a "show run int loop101"
 ```
@@ -678,7 +678,7 @@ Line has invalid autocommand "show run int loop101"Shared connection to 172.16.1
 Connection to 172.16.101.91 closed by remote host.
 
 
-cisco@ansible-controller:~$ ansible-playbook p6-iosconfig.yml
+cisco@ansible-controller:~$ ansible-playbook p4-iosconfig.yml
 
 PLAY [configure loopback1 interface on IOS devices] **********************************************************************************************
 
@@ -696,7 +696,7 @@ Building configuration...
 Current configuration : 98 bytes
 !
 interface Loopback101
- description test config by p6
+ description test config by p4
  ip address 1.1.1.101 255.255.255.255
 end
 Shared connection to 172.16.101.91 closed.
@@ -707,7 +707,7 @@ Connection to 172.16.101.91 closed by remote host.
 ## 2.5 XR config module
 ### Lab exercise
 - Use xr_config module to configure an access-list on a XR router.
-- Create a playbook, p7-xrconfig.yml, with the below contents.
+- Create a playbook, p5-xrconfig.yml, with the below contents.
 
 ```
 ---
@@ -733,7 +733,7 @@ Connection to 172.16.101.91 closed by remote host.
 ```
 $ ansible XR -m raw -a "sho run ipv4 access-list"
 
-$ ansible-playbook p7-xrconfig.yml
+$ ansible-playbook p5-xrconfig.yml
 
 $ ansible XR -m raw -a "sho run ipv4 access-list"
 ```
@@ -758,7 +758,7 @@ Shared connection to 172.16.101.92 closed.
 Connection to 172.16.101.92 closed by remote host.
 
 
-cisco@ansible-controller:~$ ansible-playbook p7-xrconfig.yml
+cisco@ansible-controller:~$ ansible-playbook p5-xrconfig.yml
 
 PLAY [configure ACL test7 on all XR devices] *********************************************************
 
@@ -793,7 +793,7 @@ Connection to 172.16.101.92 closed by remote host.
 
 ### Lab exercise
 - Create custom variables inside a playbook to store an interface name and call the variable to complete the show command execution.
-- Create a playbook, p8-vars.yml, with the below contents
+- Create a playbook, p6-vars.yml, with the below contents
 
 ```
 ---
@@ -829,9 +829,9 @@ Connection to 172.16.101.92 closed by remote host.
 - Run the playbook
 
 ```
-$ ansible-playbook p8-vars.yml --syntax-check
+$ ansible-playbook p6-vars.yml --syntax-check
 
-$ ansible-playbook p8-vars.yml
+$ ansible-playbook p6-vars.yml
 ```
 
 
@@ -845,7 +845,7 @@ $ ansible-playbook p8-vars.yml
 ### Optional exercise
 > - Create a playbook to print messages, "This is <IOS router hostname>" and "This is <XR router hostname>".
 > - Use default variable, "inventory_hostname". The messages will look like: "This is R1" and "This is R2"
-> - Solution playbook (op8-vars.yml) is given in the Appendix section
+> - Solution playbook (op6-vars.yml) is given in the Appendix section
 >
 
 
@@ -859,10 +859,10 @@ $ ansible-playbook p8-vars.yml
 
 ### Example output
 ```
-cisco@ansible-controller:~$ ansible-playbook p8-vars.yml --syntax-check
+cisco@ansible-controller:~$ ansible-playbook p6-vars.yml --syntax-check
 
-playbook: p8-vars.yml
-cisco@ansible-controller:~$ ansible-playbook p8-vars.yml
+playbook: p6-vars.yml
+cisco@ansible-controller:~$ ansible-playbook p6-vars.yml
 
 PLAY [get config of gig1 and gig2] *******************************************************************
 
@@ -924,7 +924,7 @@ PLAY RECAP *********************************************************************
 
 ### Lab exercise
 - Utilize Ansible loops to simplify execution of multiple show commands.
-- Create a playbook, p9-loops.yml, with the below contents
+- Create a playbook, p7-loops.yml, with the below contents
 
 ```
 ---
@@ -943,19 +943,19 @@ PLAY RECAP *********************************************************************
            - show run int gig2
            - show clock
 
-      register: STUFF
+      register: P7_OUT
 
     - name: print stuff
       debug:
-        var: STUFF
+        var: P7_OUT
 ```
 - Predict the outcome of executing the above playbook
 - Run the playbook
 
 ```
-$ ansible-playbook p9-loops.yml --syntax-check
+$ ansible-playbook p7-loops.yml --syntax-check
 
-$ ansible-playbook p9-loops.yml -v
+$ ansible-playbook p7-loops.yml -v
 ```
 ### Conclusion
 - In this section you created a loop to iterate the execution of multiple show commands.
@@ -969,10 +969,10 @@ $ ansible-playbook p9-loops.yml -v
 
 ### Example output
 ```
-cisco@ansible-controller:~$ ansible-playbook p9-loops.yml --syntax-check
+cisco@ansible-controller:~$ ansible-playbook p7-loops.yml --syntax-check
 
-playbook: p9-loops.yml
-cisco@ansible-controller:~$ ansible-playbook p9-loops.yml
+playbook: p7-loops.yml
+cisco@ansible-controller:~$ ansible-playbook p7-loops.yml
 
 PLAY [get config of gig1 and gig2 from IOS devices] **************************************************
 
@@ -983,7 +983,7 @@ ok: [172.16.101.91] => (item=show clock)
 
 TASK [print stuff] ***********************************************************************************
 ok: [172.16.101.91] => {
-    "STUFF": {
+    "P7_OUT": {
         "changed": false,
         "msg": "All items completed",
         "results": [
@@ -1168,7 +1168,7 @@ cisco@ansible-controller:~$
 
 ### Lab exercise
 - Collect route summary data by using appropriate command based on the router’s OS
-- Create a playbook, p10-conditionals.yml, with the below contents
+- Create a playbook, p8-conditionals.yml, with the below contents
 
 ```
 ---
@@ -1203,9 +1203,9 @@ cisco@ansible-controller:~$
 - Run the playbook:
 
 ```
-$ ansible-playbook p10-conditionals.yml --syntax-check
+$ ansible-playbook p8-conditionals.yml --syntax-check
 
-$ ansible-playbook p10-conditionals.yml -v
+$ ansible-playbook p8-conditionals.yml -v
 ```
 
 ### Conclusion
@@ -1217,7 +1217,7 @@ $ ansible-playbook p10-conditionals.yml -v
 >   - Detect router OS
 >   - If a router has IOS, print message, "'hostname' is a IOS router" and if a router has XR, print, "'hostname' is a XR router"
 >   - Playbook need to find the router names dynamically from the invenotry file.
-> - Solution playbook, op10-conditionals.yml is included in the Appendix section.
+> - Solution playbook, op8-conditionals.yml is included in the Appendix section.
 
 
 ### Reference
@@ -1226,10 +1226,10 @@ $ ansible-playbook p10-conditionals.yml -v
 
 ### Example output
 ```
-cisco@ansible-controller:~$ ansible-playbook p10-conditionals.yml --syntax-check
+cisco@ansible-controller:~$ ansible-playbook p8-conditionals.yml --syntax-check
 
-playbook: p10-conditionals.yml
-cisco@ansible-controller:~$ ansible-playbook p10-conditionals.yml
+playbook: p8-conditionals.yml
+cisco@ansible-controller:~$ ansible-playbook p8-conditionals.yml
 
 PLAY [get route summary from IOS and XR routers] *************************************************************************************************
 
@@ -1302,32 +1302,32 @@ cisco@ansible-controller:~$
 - We will be calling (or importing) using import_playbook module.
 
 ### Lab exercise
-- Create a playbook, p11-import.yml, with the below contents
+- Create a playbook, p9-import.yml, with the below contents
 
 ```
-cisco@ansible-controller:~$ cat p11-import.yml
+cisco@ansible-controller:~$ cat p9-import.yml
 
 ---
 - name: route summary from IOS routers
-  import_playbook: p4-ioscmd.yml
+  import_playbook: p2-ioscmd.yml
 
 - name: route summary from XR routers
-  import_playbook: p5-xrcmd.yml
+  import_playbook: p3-xrcmd.yml
 ```
-- Read the playbooks p4-ioscmd.yml and p5-xrcmd.yml
-- Predict the outcome of executing the playbook, p11-import.yml
+- Read the playbooks p2-ioscmd.yml and p3-xrcmd.yml
+- Predict the outcome of executing the playbook, p9-import.yml
 - Run the playbook
 
 
 
 ```
-$ cat p4-ioscmd.yml
+$ cat p2-ioscmd.yml
 
-$ cat p5-xrcmd.yml
+$ cat p3-xrcmd.yml
 
-$ ansible-playbook p11-import.yml --syntax-check
+$ ansible-playbook p9-import.yml --syntax-check
 
-$ ansible-playbook p11-import.yml
+$ ansible-playbook p9-import.yml
 ```
 
 ### Conclusion
@@ -1342,7 +1342,7 @@ $ ansible-playbook p11-import.yml
 ### Example output
 
 ```
-cisco@ansible-controller:~$ ansible-playbook p11-import.yml
+cisco@ansible-controller:~$ ansible-playbook p9-import.yml
 
 PLAY [collect ip route summary from all IOS devices] *********************************************************************************************
 
@@ -1351,7 +1351,7 @@ ok: [R1]
 
 TASK [print output] ******************************************************************************************************************************
 ok: [R1] => {
-    "P4_OUTPUT.stdout_lines": [
+    "P2_OUTPUT.stdout_lines": [
         [
             "IP routing table name is default (0x0)",
             "IP routing table maximum-paths is 32",
@@ -1377,7 +1377,7 @@ ok: [R2]
 
 TASK [print output] ******************************************************************************************************************************
 ok: [R2] => {
-    "P5_OUTPUT.stdout_lines": [
+    "P3_OUTPUT.stdout_lines": [
         [
             "Route Source                     Routes     Backup     Deleted     Memory(bytes)",
             "local                            5          0          0           800          ",
@@ -1422,7 +1422,7 @@ cisco@ansible-controller:~$
 - Task-1 collects and saves running-config in a variable named as RUNCFG
 - Task-2 saves the contents of RUNCFG in a file in the home directory.
 - Task-2 contains a well known variable (aka default variable) called, inventory_hostname. It means, "current inventory device", the router on which the tasks are run.
-- Create the playbook with file name, p21-confback.yml, with the contents below.
+- Create the playbook with file name, p31-runcfg-bkup.yml, with the contents below.
 
 ```
 ---
@@ -1448,9 +1448,9 @@ cisco@ansible-controller:~$
 - Look for config files in `/home/cisco` directory
 
 ```
-$ ansible-playbook p21-confback.yml --syntax-check
+$ ansible-playbook p31-runcfg-bkup.yml --syntax-check
 
-$ ansible-playbook p21-confback.yml
+$ ansible-playbook p31-runcfg-bkup.yml
 
 $ ls -l R*.txt
 ```
@@ -1468,7 +1468,7 @@ $ ls -l R*.txt
 >   - Filename of the config files should include current timestamp to maintain uniqueness in filenames.
 >   - Config backup should be taken daily at 03:00 hrs UTC. Use linux cronjob for this task.
 > - Execute your playbook and verify if the results meet the requirements.
-> - Fyi, a solution playbook file, op21-confback.yml is given in the appendix section for your reference.
+> - Fyi, a solution playbook file, op31-runcfg-bkup.yml is given in the appendix section for your reference.
 
 
 ### Reference
@@ -1479,7 +1479,7 @@ $ ls -l R*.txt
 ### Example output
 
 ```
-cisco@ansible-controller:~$ cat p21-confback.yml
+cisco@ansible-controller:~$ cat p31-runcfg-bkup.yml
 ---
 - name: backup all routers config
   hosts: all
@@ -1498,11 +1498,11 @@ cisco@ansible-controller:~$ cat p21-confback.yml
         content: "{{ RUNCFG.stdout }}"
         dest: "/home/cisco/{{ inventory_hostname }}.txt"
 
-cisco@ansible-controller:~$ ansible-playbook p21-confback.yml --syntax-check
+cisco@ansible-controller:~$ ansible-playbook p31-runcfg-bkup.yml --syntax-check
 
-playbook: p21-confback.yml
+playbook: p31-runcfg-bkup.yml
 
-cisco@ansible-controller:~$ ansible-playbook p21-confback.yml
+cisco@ansible-controller:~$ ansible-playbook p31-runcfg-bkup.yml
 
 PLAY [backup all routers config] *********************************************************************
 
@@ -2614,7 +2614,7 @@ $ ls -l /etc/ansible/hosts
 
 $ cat /etc/ansible/hosts
 
-$ ansible-playbook p4-ioscmd.yml
+$ ansible-playbook p2-ioscmd.yml
 ```
 #### Encrypt inventory file and execute a playbook
 
@@ -2638,9 +2638,9 @@ $ sudo cat /etc/ansible/hosts
 
 $ sudo ansible-vault view /etc/ansible/hosts
 
-$ sudo ansible-playbook p4-ioscmd.yml
+$ sudo ansible-playbook p2-ioscmd.yml
 
-$ sudo ansible-playbook p4-ioscmd.yml --ask-vault-pass
+$ sudo ansible-playbook p2-ioscmd.yml --ask-vault-pass
 ```
 #### Decrypt and restore
 
@@ -2661,7 +2661,7 @@ $ ls -l /etc/ansible/hosts
 
 $ cat /etc/ansible/hosts
 
-$ ansible-playbook p4-ioscmd.yml
+$ ansible-playbook p2-ioscmd.yml
 ```
 ### Conclusion
 - Ansible files can be encrypted and decrypted using Vault.
@@ -2700,7 +2700,7 @@ XR
 ansible_user=cisco
 ansible_ssh_pass=cisco
 :
-cisco@ansible-controller:~$ ansible-playbook p4-ioscmd.yml
+cisco@ansible-controller:~$ ansible-playbook p2-ioscmd.yml
 
 PLAY [collect ip route summary from all IOS devices] *************************************************
 
@@ -2709,7 +2709,7 @@ ok: [172.16.101.91]
 
 TASK [print output] **********************************************************************************
 ok: [172.16.101.91] => {
-    "P4_OUTPUT.stdout_lines": [
+    "P2_OUTPUT.stdout_lines": [
         [
             "IP routing table name is default (0x0)",
             "IP routing table maximum-paths is 32",
@@ -2775,7 +2775,7 @@ XR
 ansible_user=cisco
 ansible_ssh_pass=cisco
 :
-cisco@ansible-controller:~$ sudo ansible-playbook p4-ioscmd.yml
+cisco@ansible-controller:~$ sudo ansible-playbook p2-ioscmd.yml
 [sudo] password for cisco:
  [WARNING]:  * Failed to parse /etc/ansible/hosts with yaml plugin: Attempting to decrypt but no
 vault secrets found
@@ -2799,7 +2799,7 @@ skipping: no hosts matched
 PLAY RECAP *******************************************************************************************
 
 cisco@ansible-controller:~$
-cisco@ansible-controller:~$ sudo ansible-playbook p4-ioscmd.yml --ask-vault-pass
+cisco@ansible-controller:~$ sudo ansible-playbook p2-ioscmd.yml --ask-vault-pass
 Vault password:
 
 PLAY [collect ip route summary from all IOS devices] *************************************************
@@ -2809,7 +2809,7 @@ ok: [172.16.101.91]
 
 TASK [print output] **********************************************************************************
 ok: [172.16.101.91] => {
-    "P4_OUTPUT.stdout_lines": [
+    "P2_OUTPUT.stdout_lines": [
         [
             "IP routing table name is default (0x0)",
             "IP routing table maximum-paths is 32",
@@ -2832,7 +2832,7 @@ PLAY RECAP *********************************************************************
 172.16.101.91              : ok=2    changed=0    unreachable=0    failed=0
 
 cisco@ansible-controller:~$
-cisco@ansible-controller:~$ sudo ansible-playbook p4-ioscmd.yml
+cisco@ansible-controller:~$ sudo ansible-playbook p2-ioscmd.yml
 [sudo] password for cisco:
  [WARNING]:  * Failed to parse /etc/ansible/hosts with yaml plugin: Attempting to decrypt but no
 vault secrets found
@@ -2887,7 +2887,7 @@ XR
 ansible_user=cisco
 ansible_ssh_pass=cisco
 :
-cisco@ansible-controller:~$ ansible-playbook p4-ioscmd.yml
+cisco@ansible-controller:~$ ansible-playbook p2-ioscmd.yml
 
 
 PLAY [collect ip route summary from all IOS devices] *************************************************
@@ -2897,7 +2897,7 @@ ok: [172.16.101.91]
 
 TASK [print output] **********************************************************************************
 ok: [172.16.101.91] => {
-    "P4_OUTPUT.stdout_lines": [
+    "P2_OUTPUT.stdout_lines": [
         [
             "IP routing table name is default (0x0)",
             "IP routing table maximum-paths is 32",
@@ -3023,8 +3023,8 @@ R2                         : ok=2    changed=0    unreachable=0    failed=0
 ```
 
 ---
-## Optional exercise op8-vars.yml
-- playbook, op8-vars.yml
+## Optional exercise op6-vars.yml
+- playbook, op6-vars.yml
 
 ```
 ---
@@ -3040,10 +3040,10 @@ R2                         : ok=2    changed=0    unreachable=0    failed=0
 
 ### Example output
 ```
-cisco@ansible-controller:~$ ansible-playbook op8-vars.yml --syntax-check
+cisco@ansible-controller:~$ ansible-playbook op6-vars.yml --syntax-check
 
-playbook: op8-vars.yml
-cisco@ansible-controller:~$ ansible-playbook op8-vars.yml
+playbook: op6-vars.yml
+cisco@ansible-controller:~$ ansible-playbook op6-vars.yml
 
 PLAY [print hostnames of all devices] ******************************************************************************
 
@@ -3062,8 +3062,8 @@ R2                         : ok=1    changed=0    unreachable=0    failed=0
 cisco@ansible-controller:~$
 ```
 ---
-## Optional exercise op10-conditionals.yml
-- playbook, op10-conditionals.yml
+## Optional exercise op8-conditionals.yml
+- playbook, op8-conditionals.yml
 
 ```
 ---
@@ -3090,10 +3090,10 @@ cisco@ansible-controller:~$
 ### Example output
 
 ```
-cisco@ansible-controller:~$ ansible-playbook op10-conditionals.yml --syntax-check
+cisco@ansible-controller:~$ ansible-playbook op8-conditionals.yml --syntax-check
 
-playbook: op10-conditionals.yml
-cisco@ansible-controller:~$ ansible-playbook op10-conditionals.yml
+playbook: op8-conditionals.yml
+cisco@ansible-controller:~$ ansible-playbook op8-conditionals.yml
 
 PLAY [print each host and its OS] **********************************************************************************
 
@@ -3121,8 +3121,8 @@ cisco@ansible-controller:~$
 ```
 
 ---
-## Optional exercise op21-confback.yml
-### Step-1: Playbook, op21-confback.yml
+## Optional exercise op31-runcfg-bkup.yml
+### Step-1: Playbook, op31-runcfg-bkup.yml
 
 ```
 ---
@@ -3152,7 +3152,7 @@ cisco@ansible-controller:~$
 ```
 #Run Ansible Playbook rtr-cfg-bkup everyday at 3:00 am UTC to backup router configs
 
-0 3 * * * cisco /usr/bin/ansible-playbook /home/cisco/op21-confback.yml
+0 3 * * * cisco /usr/bin/ansible-playbook /home/cisco/op31-runcfg-bkup.yml
 
 ```
 
@@ -3180,12 +3180,12 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 #Run Ansible Playbook rtr-cfg-bkup everyday at 3:00 am UTC to backup router configs
 
-0 3 * * * cisco /usr/bin/ansible-playbook /home/cisco/op21-confback.yml
+0 3 * * * cisco /usr/bin/ansible-playbook /home/cisco/op31-runcfg-bkup.yml
 
-cisco@ansible-controller:~$ ansible-playbook op21-confback.yml --syntax-check
+cisco@ansible-controller:~$ ansible-playbook op31-runcfg-bkup.yml --syntax-check
 
-playbook: op21-confback.yml
-cisco@ansible-controller:~$ ansible-playbook op21-confback.yml
+playbook: op31-runcfg-bkup.yml
+cisco@ansible-controller:~$ ansible-playbook op31-runcfg-bkup.yml
 
 PLAY [backup all routers config] ***********************************************************************************
 
