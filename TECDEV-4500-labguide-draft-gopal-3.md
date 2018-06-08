@@ -2258,45 +2258,45 @@ localhost                  : ok=2    changed=2    unreachable=0    failed=0
 
 ```
 
----
+## 3.4 Generate iBGP Config
 
-## 3.4 Generate iBGP config
-
-- For operators, network configuration and rollout are critical part of daily operations.
+- Network configuration and rollouts are critical part of daily network operations.
 - This exercise will simulate a network config generation via roles and rollout of configs to network elements through automation.
 
-### objectives
+### Objectives
 
-- Create a playbook to generate configuration based on role file structures.
-- Understand the functioning of roles and its file structures
+- Create a playbook to generate configuration based on Roles directory structures.
+- You will gain an understanding of how Ansible Roles and Jinja2 Templates can be used to generate router configurations.
 
 ### Approach
 
-- Show configurations can be generated for routers with different Network Operating Systems (NOS like IOS and XR) using Ansible roles and templates
-- Show how Ansible modules can be used to upload the configuration to the routers
-- Playbook will be run on “localhost” to generate the needed configurations and then will use a play to upload the config to the routers.
+- Step-1: Manually create the roles directory structure for the 2 router types (IOS & XR).
+- Step-2: Create a playbook roles-bgy.yml to call the two roles (csr-bgp & xr-bgp) to generate the iBGP config and to upload the generated config to the routers.
+- Step-3: Create main.yml files under the tasks and vars folders to setup the tasks to be executed when the roles are called.
+- Step-4: Create the iBGP configuration template for csr and xr router using Jinja2 templating format.
+- Step-5: Execute the playbook roles-bgp.yml to generate the iBGP config and apply it to both routers.
 
 ### Lab Exercise
 
-Step 1.Create two sub-folders by the name “csr-bgp”  and “xr-bgp” using mkdir command
+Step-1: Create two sub-folders by the name “csr-bgp”  and “xr-bgp” using mkdir command
 
 ```
-cisco@ansible-controller:~$
 cisco@ansible-controller:~$ mkdir csr-bgp xr-bgp
-cisco@ansible-controller:~$
 ```
 
-Step 2.Create tasks,templates and vars under both csr-bgp and xr-bgp folder.
+Step-2: Create tasks, vars, and templates directories under both csr-bgp and xr-bgp folder.
 
 ```
-cisco@ansible-controller:~$
 cisco@ansible-controller:~$ mkdir csr-bgp/tasks csr-bgp/vars csr-bgp/templates
-cisco@ansible-controller:~$
+
 cisco@ansible-controller:~$ mkdir xr-bgp/tasks xr-bgp/vars xr-bgp/templates
-cisco@ansible-controller:~$
 
 ```
-Step 3. Create a playbook - roles-bgp.yml with the following Contents
+Step-3: Create a playbook called roles-bgp.yml.
+
+- This playbook contains 3 plays:
+  - First play will run on the localhost (ansible-controller) and call on the roles to generate IOS and XR iBGP configs.
+  - The second and third plays are used to upload the BGP configs to the routers.
 
 ```
 ---
@@ -2327,30 +2327,44 @@ Step 3. Create a playbook - roles-bgp.yml with the following Contents
       src: "/home/cisco/R2-XRv-BGP.txt"
 
 ```
--  As can be seen above, this playbook has multiple plays. The first play will run “locally” on the host to generate configuration using “roles” options for both CSR1k/IOS and XRv routers.
 
-- Next two plays will be used to upload the IOS BGP configuration to the R1/CSR1K router and XR BGP configuration to the R2/XRv router.
+Step-4: Create a main.yml file inside the csr-bgp/tasks folder.
 
-Step 4: Create main.yml fle with below contents.
+- The main.yml file in the tasks sub-folder identifies the Jinja2 Template that contains the iBGP configuration template, specified under the template folder, for this role.
 
-Note: If done through vi editor, the file is to be created under csr-bgp/tasks folder. If done through ATOM editor, it is a 2 step process - copy to home directory and them move to tasks folder.
+- Note vi users do the following to create the file.
+
+```
+cisco@ansible-controller:~$ vi csr-bgp/tasks/main.yml
+```
+- Note ATOM users do the following once the file has been created on the home directory.
+
+```
+cisco@ansible-controller:~$ mv main.yml csr-bgp/tasks/main.yml
+```
+- Paste the following inside the tasks main.yml file.
+
 ```
 ---
 - name: Generate R1 CSR router iBGP config file
-  template: src=CSR-BGP.j2 dest=/home/cisco/{{item.hostname}}-BGP.txt
+  template: src=CSR-BGP.j2 dest=./{{item.hostname}}-BGP.txt
   with_items: "{{router_list}}"
 ```
-- The “main.yml” file in the tasks sub-folder identifies the Jinja2 template that contains “configuration template” for this play book specified using “template” src option.
-- Output of the task will be written to the location given in the “dest” parameter.
 
-Note: You will move the file from home directory to csr-bgp/tasks/mail.yml
-```
-cisco@ansible-controller:~$ mv main.yml csr-bgp/tasks/main.yml
-cisco@ansible-controller:~$
-```
-Step 5: Create a file main.yml with following contents for defining the variables.
+Step-5: Create a main.yml file inside the csr-bgp/vars folder.
 
-Note: If done through vi editor, the file is to be created under csr-bgp/vars folder. If done through ATOM editor, it is a 2 step process - copy to home directory and them move to vars folder.
+- Vars file contains all the values for parameters given in the Jinj2 template file.
+- Note vi users do the following to create the file.
+
+```
+cisco@ansible-controller:~$ vi csr-bgp/vars/main.yml
+```
+- Note ATOM users do the following once the file has been created on the home directory.
+
+```
+cisco@ansible-controller:~$ mv main.yml csr-bgp/vars/main.yml
+```
+- Paste the following inside the vars main.yml file.
 
 ```
 ---
@@ -2362,20 +2376,20 @@ router_list:
      LCL_ASN: 1
      RMT_ASN: 1
 ```
-- Vars file contains all values for parameters given in the Jinja2 template.
 
-Note this “main.yml” has a single list “dictionary” which contains mapped key:value pairs to populate the iBGP configurations for the jinja2 template.
-Note: Move the file to csr-bgp/vars/main.yml file.
+Step-6: Create a CSR-BGP.j2 template file inside the csr-bgp/templates folder.
+
+- Note vi users do the following to create the file.
 
 ```
-cisco@ansible-controller:~$
-cisco@ansible-controller:~$ mv main.yml csr-bgp/vars/main.yml
-cisco@ansible-controller:~$
+cisco@ansible-controller:~$ vi csr-bgp/templates/ CSR-BGP.j2
 ```
-Step 6: Create the template CSR-BGP.J2 with following contents.
+- Note ATOM users do the following once the file has been created on the home directory.
 
-Note: If done through vi editor, the file is to be created under csr-bgp/templates folder. If done through ATOM editor, it is a 2 step process - copy to home directory and them move to temlates folder.
-
+```
+cisco@ansible-controller:~$ mv CSR-BGP.j2 csr-bgp/templates/CSR-BGP.j2
+```
+-  Paste the following inside the templates CSR-BGP.j2 file.
 ```
 router bgp {{item.LCL_ASN}}
  bgp router-id {{item.RID}}
@@ -2384,31 +2398,65 @@ router bgp {{item.LCL_ASN}}
  neighbor {{item.PEER_IP}} update-source Loopback0
 !
 ```
-Note: You will move the file from home directory to csr-bgp/template/CSR-BGP.j2
 
-cisco@ansible-controller:~$
-cisco@ansible-controller:~$ mv CSR-BGP.J2 csr-bgp/templates/.
-cisco@ansible-controller:~$
+Step-7: Same steps will need to be repeated for the xr-bgp role. Create a main.yml file inside the xr-bgp/tasks folder.
 
-Step 7: Repeat the following for XR-BGP device. Create an playbook main.yml with following Contents
+- Note vi users do the following to create the file.
 
-Note: If done through vi editor, the file is to be created under xr-bgp/tasks folder. If done through ATOM editor, it is a 2 step process - copy to home directory and them move to tasks folder.
+```
+cisco@ansible-controller:~$ vi xr-bgp/tasks/main.yml
+```
+- Note ATOM users do the following once the file has been created on the home directory.
+
+```
+cisco@ansible-controller:~$ mv main.yml xr-bgp/tasks/main.yml
+```
+- Paste the following inside the tasks main.yml file.
 
 ```
 ---
 - name: Generate R2 XRV router iBGP config file
-  template: src=XR-BGP.j2 dest=/home/cisco/{{item.hostname}}-BGP.txt
+  template: src=XR-BGP.j2 dest=./{{item.hostname}}-BGP.txt
   with_items: "{{router_list}}"
 ```
- - and move to the xr-bgp/tasks folder
 
-cisco@ansible-controller:~$
-cisco@ansible-controller:~$ mv main.yml xr-bgp/tasks/main.yml
-cisco@ansible-controller:~$
+Step-8: Create a main.yml file inside the xr-bgp/vars folder.
 
-Step 8: Create an template file - XR-BGP.J2 with following contents and copy to xr-bgp/templates folders
+- Note vi users do the following to create the file.
 
-Note: If done through vi editor, the file is to be created under xr-bgp/templates folder. If done through ATOM editor, it is a 2 step process - copy to home directory and them move to templates folder
+```
+cisco@ansible-controller:~$ vi xr-bgp/vars/main.yml
+```
+- Note ATOM users do the following once the file has been created on the home directory.
+
+```
+cisco@ansible-controller:~$ mv main.yml xr-bgp/vars/main.yml
+```
+- Paste the following inside the vars main.yml file.
+
+```
+router_list:
+  -  hostname: R2-XRv
+     profile: IOS-XR
+     RID: 192.168.0.2
+     PEER_IP: 192.168.0.1
+     LCL_ASN: 1
+     RMT_ASN: 1
+```
+
+Step-9: Create a XR-BGP.j2 file inside the xr-bgp/templates folder.
+
+- Note vi users do the following to create the file.
+
+```
+$ vi csr-bgp/templates/XR-BGP.j2
+```
+- Note ATOM users do the following once the file has been created on the home directory.
+
+```
+$ mv XR-BGP.j2 csr-bgp/templates/XR-BGP.j2
+```
+- Paste the following inside the templates XR-BGP.j2 file.
 
 ```
 router bgp {{item.LCL_ASN}}
@@ -2424,38 +2472,7 @@ router bgp {{item.LCL_ASN}}
 !
 ```
 
-Note: You will move the file from home directory to csr-bgp/template/XR-BGP.j2
-```
-cisco@ansible-controller:~$
-cisco@ansible-controller:~$ mv XR-BGP.J2 xr-bgp/templates/.
-cisco@ansible-controller:~$
-```
-Step 9: Create a main.yml with below contents.
-
-Note: If done through vi editor, the file is to be created under xr-bgp/vars folder. If done through ATOM editor, it is a 2 step process - copy to home directory and them move to vars folder
-
-```
-router_list:
-  -  hostname: R2-XRv
-     profile: IOS-XR
-     RID: 192.168.0.2
-     PEER_IP: 192.168.0.1
-     LCL_ASN: 1
-     RMT_ASN: 1
-```
-
-- Vars file contains all values for parameters given in the Jinja2 template. Note this “main.yml” has a  single list “dictionary” which contains mapped key:value pairs to populate the iBGP configurations for the jinja2 template.
-
-
-- move the file main.yml to xr-bgp
-
-```
-cisco@ansible-controller:~$
-cisco@ansible-controller:~$ mv main.yml xr-bgp/vars/main.yml
-cisco@ansible-controller:~$
-```
-
-Step 10: Run the tree command and validate that following files structure is created
+Step-10: Run the tree command and validate that following files structure is created
 ```
 cisco@ansible-controller:~$ tree csr-bgp
 csr-bgp
@@ -2478,13 +2495,13 @@ xr-bgp
     └── main.yml
 ```
 
-Step 11: Execute the playbook - roles-bgp.yml.
+Step-11: Execute the roles-bgp.yml playbook.
 
 ```
 cisco@ansible-controller:~/roles-templates$ ansible-playbook roles-bgp.yml
 ```
 
-Step 9: Confirm that playbook runs with no errors and check that there are two files ending with name “\*-BGP.txt” has been created in the home directory
+Step-12: After the playbook is run, there should be 2 files generated on the current working directory (R1-CSR1K-BGP.txt & R2-XRv-BGP.txt).
 
 ```
 cisco@ansible-controller:more cfg/R1-CSR1K-BGP.txt
@@ -2508,47 +2525,521 @@ router bgp 1
  !
 !
 ```
+
+- Make sure iBGP was configure on both routers.
+
+```
+cisco@ansible-controller:~$ ansible all -m raw -a "show bgp sum"
+```
+
 ### Conclusion
 
-- Necessary files and file structure for roles needs to be created.
-- Irrespective of roles, the file structure is the same
-- Ansible Roles can be utilized to generate config small or big
-- Leverage module to load configuration onto to devices
+- Ansible roles can be utilized to organize large playbooks.
+- Roles creates a separation of functions: variables, tasks, and templates in unique directories.
+- Ansible roles expect a main.yml file under the sub-directory.
 
 ### Example output:
 ```
-cisco@ansible-controller:~$ansible-playbook roles-bgp.yml
+cisco@ansible-controller:~/CLUS18-Lab$ ansible-playbook roles-bgp.yml
 
-PLAY [Generate router bgp configuration files using Roles and Jinja2 Templates] ***************************************************************
+PLAY [Generate router bgp configuration files using Roles and Jinja2 Templates] ******************************************************************
 
-TASK [xr-bgp : Generate R2 XRV router iBGP config file] ***************************************************************************************
-changed: [localhost] => (item={u'profile': u'IOS-XR', u'LCL_ASN': 1, u'RMT_ASN': 1, u'hostname': u'R2-XRv', u'PEER_IP': u'192.168.0.1', u'RID': u'192.168.0.2'})
+TASK [xr-bgp : Generate R2 XRV router iBGP config file] ******************************************************************************************
+ok: [localhost] => (item={u'profile': u'IOS-XR', u'LCL_ASN': 1, u'RMT_ASN': 1, u'hostname': u'R2-XRv', u'PEER_IP': u'192.168.0.1', u'RID': u'192.168.0.2'})
 
-TASK [csr-bgp : Generate R1 CSR router iBGP config file] **************************************************************************************
-changed: [localhost] => (item={u'profile': u'IOS-XE', u'LCL_ASN': 1, u'RMT_ASN': 1, u'hostname': u'R1-CSR1K', u'PEER_IP': u'192.168.0.2', u'RID': u'192.168.0.1'})
+TASK [csr-bgp : Generate R1 CSR router iBGP config file] *****************************************************************************************
+ok: [localhost] => (item={u'profile': u'IOS-XE', u'LCL_ASN': 1, u'RMT_ASN': 1, u'hostname': u'R1-CSR1K', u'PEER_IP': u'192.168.0.2', u'RID': u'192.168.0.1'})
 
-PLAY [Task to upload config to CSR] ***********************************************************************************************************
+PLAY [Task to upload config to CSR] **************************************************************************************************************
 
-TASK [Load iBGP configs for CSR1kv router using SRC option using IOS_CONFIG Module] ***********************************************************
-changed: [172.16.101.98]
+TASK [Load iBGP configs for CSR1kv router using SRC option using IOS_CONFIG Module] **************************************************************
+ok: [R1]
 
-PLAY [Task to upload config to R2-XRV] ********************************************************************************************************
+PLAY [Task to upload config to R2-XRV] ***********************************************************************************************************
 
-TASK [Load iBGP configs for xr router using SRC option of IOSXR_CONFIG Module] ****************************************************************
-changed: [172.16.101.99]
+TASK [Load iBGP configs for xr router using SRC option of IOSXR_CONFIG Module] *******************************************************************
+ok: [R2]
 
-PLAY RECAP ************************************************************************************************************************************
-172.16.101.98              : ok=1    changed=1    unreachable=0    failed=0
-172.16.101.99              : ok=1    changed=1    unreachable=0    failed=0
-localhost                  : ok=2    changed=2    unreachable=0    failed=0
+PLAY RECAP ***************************************************************************************************************************************
+R1                         : ok=1    changed=0    unreachable=0    failed=0
+R2                         : ok=1    changed=0    unreachable=0    failed=0
+localhost                  : ok=2    changed=0    unreachable=0    failed=0
 
-cisco@ansible-controller:~$
 ```
 ---
 
+## 3.5 Bulk Config Generation
 
+- By Leveraging Ansible Roles and templates, users can build bulk configurations for deployment at scale.
 
+### Objective
+
+- Build configurations for 2 different type of router OS – IOS and XR.
+
+### Approach
+
+- Initialize the roles directory and file structure by using ansible-galaxy cli
+- Build the playbook, template and variables for bulk config generation
+
+### Lab Exercise
+
+Step-1: Create a new role called config-gen by using the ansible-galaxy utility.
+
+- Note: Ansible-Galaxy command is built into Ansible and allows for an automated way to create the Roles directory structure.
+
+```
+cisco@ansible-controller:~$ ansible-galaxy init config-gen
+- config-gen was created successfully
+```
+Step-2: Review the tree structure that has been created by galaxy. For this lab, you will be using the templates, vars, and tasks sub-directories to generate a bulk configuration.
+```
+cisco@ansible-controller:~$ tree config-gen/
+config-gen/
+├── defaults
+│   └── main.yml
+├── files
+├── handlers
+│   └── main.yml
+├── meta
+│   └── main.yml
+├── README.md
+├── tasks
+│   └── main.yml
+├── templates
+├── tests
+│   ├── inventory
+│   └── test.yml
+└── vars
+    └── main.yml
+		8 directories, 8 files
+		cisco@ansible-controller:~$
+```
+Step-3: Edit the main.yml file under the config-gen/tasks sub-directory.
+
+- Note vi users do the following to create the file.
+
+```
+$ vi config-gen/tasks/main.yml
+```
+- Note ATOM users do the following once the file has been created on the home directory.
+
+```
+$ mv main.yml config-gen/tasks/main.yml
+```
+
+- Paste the following inside the tasks main.yml file.
+
+```
 ---
+- name: Generate the configuration for xr-routers
+  template:
+     src=xr-config-template.j2
+     dest=./{{item.hostname}}.txt
+  with_items:
+     - "{{ xr_hostnames }}"
+
+- name: Generate the configuration for iosxe-routers
+  template:
+     src=ios-config-template.j2
+     dest=./{{item.hostname}}.txt
+  with_items:
+     - "{{ ios_hostnames }}"
+...
+# tasks file for config-gen
+```
+
+Step-4: Create the platform specific configuration and save them under the config-gen/templates folder.
+
+- 4a. Create the following template “xr-config-template.j2” under the templates directory.
+
+  - Note vi users do the following to create the file.
+
+```
+$ vi config-gen/templates/xr-config-template.j2
+```
+
+  - Note ATOM users do the following once the file has been created on the home directory.
+
+```
+$ mv xr-config-template.j2 config-gen/templates/xr-config-template.j2
+```
+
+- Paste the following inside the templates xr-config-template.j2 file.
+
+```
+hostname {{item.hostname}}
+service timestamps log datetime msec
+service timestamps debug datetime msec
+clock timezone {{item.timezone}} {{item.timezone_offset}}
+clock summer-time {{item.timezone_dst}} recurring
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+domain name virl.info
+ssh server v2
+ssh server vrf Mgmt-intf
+!
+line template vty
+timestamp
+exec-timeout 720 0
+!
+line console
+exec-timeout 0 0
+!
+line default
+exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+!
+cdp
+!
+!
+interface Loopback0
+  description Loopback
+  ipv4 address {{item.loopback0_ip}} {{item.loopback0_mask}}
+!
+interface GigabitEthernet0/0/0/0
+  description to R1-CSR1kv
+  ipv4 address {{item.gig0000_ip}} {{item.gig0000_mask}}
+  cdp
+  no shutdown
+!
+interface GigabitEthernet0/0/0/1
+  description to R3-NXOS
+  ipv4 address {{item.gig0001_ip}} {{item.gig0001_mask}}
+  cdp
+  no shutdown
+!
+interface mgmteth0/0/CPU0/0
+  description OOB Management
+  ! Configured on launch
+  vrf Mgmt-intf
+ ipv4 address 172.16.101.99 255.255.255.0
+  cdp
+  no shutdown
+!
+!
+router ospf 16509
+  log adjacency changes
+  router-id {{item.loopback0_ip}}
+  address-family ipv4
+  area 0
+    !
+    interface Loopback0
+      passive enable
+    !
+{% for interface in xr_interfaces %}
+interface {{interface}}
+cost 1
+!
+{% endfor %}
+  !
+!
+!
+```
+- 4b. Create the following template “ios-config-template.j2” under the templates directory.
+
+  - Note vi users do the following to create the file.
+
+```
+$ vi config-gen/templates/ios-config-template.j2
+```
+
+  - Note ATOM users do the following once the file has been created on the home directory.
+
+```
+$ mv ios-config-template.j2 config-gen/templates/ios-config-template.j2
+```
+
+  - Paste the following inside the templates ios-config-template.j2 file.
+
+```
+
+clock timezone {{item.timezone}} {{item.timezone_offset}}
+clock summer-time {{item.timezone_dst}} recurring
+
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname {{item.hostname}}
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+!
+!
+!
+!
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-35466579
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-35466579
+ revocation-check none
+ rsakeypair TP-self-signed-35466579
+!
+!
+crypto pki certificate chain TP-self-signed-35466579
+ certificate self-signed 01
+  3082032C 30820214 A0030201 02020101 300D0609 2A864886 F70D0101 05050030
+  2F312D30 2B060355 04031324 494F532D 53656C66 2D536967 6E65642D 43657274
+  69666963 6174652D 33353436 36353739 301E170D 31383033 32383136 33343532
+  5A170D32 30303130 31303030 3030305A 302F312D 302B0603 55040313 24494F53
+  2D53656C 662D5369 676E6564 2D436572 74696669 63617465 2D333534 36363537
+  39308201 22300D06 092A8648 86F70D01 01010500 0382010F 00308201 0A028201
+  0100C122 3C95D116 714EE581 53539DCE 33BBE636 20BCAB70 B12ECDE8 832DB71C
+  F223B066 E3779F87 0BF81EE6 CE6E60EE F471B22F 5ECE57FD 50C7D706 17F3F62D
+  4573882F B9B6351F ECDC6192 167D768A DC8B4613 8A2AEB70 1906E49D 0A2734A8
+  64C0C7A3 4B6951D2 573AFF96 5682BE7D 305F4351 A5E6A667 DB787283 724AF55F
+  3A049F98 57A1C34F CC9B9C24 3056B3DF 11A04AB4 3F051C0D 14D5AACE B7B0D991
+  611FE0D6 6B2CC9D2 3F410224 52701D25 135C7BF2 FEDC0BCD F9BD7C10 4B437143
+  E38A10E8 F5423F0E BB71A593 AFDBC814 D6DD4ED6 0709FCC5 33F480F0 6389C2AF
+  F0C36163 54164A20 541AAA30 EAFDFD2B 35361640 82331C9B F0D97302 B1429508
+  87DB0203 010001A3 53305130 0F060355 1D130101 FF040530 030101FF 301F0603
+  551D2304 18301680 14B0C21C 0050185E 5D0751E6 6A90DD48 D9157E6B 0E301D06
+  03551D0E 04160414 B0C21C00 50185E5D 0751E66A 90DD48D9 157E6B0E 300D0609
+  2A864886 F70D0101 05050003 82010100 4E89908F 13A8518B 33D0DC0E 71548510
+  7E3285F7 71E4B8A4 2E25FA83 3FD571F5 17D190EA DFC4F076 AF1C3494 17DC54B4
+  93A61630 C2D321BE F3D1B9D1 72AA7BE9 D5755FD5 C2330B82 F9DA1B4B 590BBA8A
+  0A36758E 22061021 86D03C8B D5877680 954F22E6 3A4F807E 79CA5DB5 F63ECF74
+  CA45C80D A8052A3A 48CD69B5 027D66D5 08020FA6 94FCE404 07D12573 590C0D60
+  5999C40B FECA7B2D A11FC2B8 21D7A110 E4814E8E 2ED74D9D B22A66DF B9BF8932
+  424A5807 AF9A59B5 FB6A7FCE B73E25B8 F937695D 9E15768D 614AA387 0B26B6FA
+  C54DF6E2 34E5E803 1123AB24 9CC8F3CF FDBB6B7E CC3FF86C B83C858A 34646F0B
+  0C79ED3D 814ACA2F 3F565B5C BB84FCAA
+  	quit
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9N7CZX65NJ3
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+!
+spanning-tree extend system-id
+!
+!
+username cisco privilege 15 secret 5 $1$F6GC$L/.gqoiPm0AcItLajjXXJ/
+!
+redundancy
+!
+!
+cdp run
+!
+
+!
+interface Loopback0
+ description Loopback
+ ip address {{item.loopback0_ip}} {{item.loopback0_mask}}
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address {{item.Mgmt_ip}} {{item.Mgmt_mask}}
+ negotiation auto
+ cdp enable
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet2
+ description to R2-XRv
+ ip address {{item.gigaethernet2_ip}} {{item.gigaethernet2_mask}}
+ ip ospf cost 1
+ negotiation auto
+ cdp enable
+ no mop enabled
+ no mop sysid
+!
+!
+router ospf 16509
+  network {{item.ospf_network1}} {{item.ospf_network_mask1}} area {{item.areaid}}
+  log-adjacency-changes
+  passive-interface Loopback0
+  network {{item.ospf_network2}} {{item.ospf_network_mask1}} area {{item.areaid}}
+  network {{item.ospf_network3}} {{item.ospf_network_mask1}} area {{item.areaid}}
+!
+!
+
+
+threat-visibility
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+control-plane
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+end
+```
+
+Step-5: Define the variable needed to generate the config in the main.yml file under the config-gen/vars sub-directory.
+
+- Note vi users do the following to create the file.
+
+```
+$ vi config-gen/vars/main.yml
+```
+
+- Note ATOM users do the following once the file has been created on the home directory.
+
+````
+$ mv main.yml config-gen/vars/main.yml
+```
+
+- Paste the following inside the vars main.yml file.
+
+```
+---
+xr_hostnames:
+   - { hostname: xr-router-rtr1, timezone: EST, timezone_dst: EDT, timezone_offset: -5, loopback0_ip: 192.168.0.1, loopback0_mask: 255.255.255.255
+, gig0000_ip: 10.0.0.5, gig0000_mask: 255.255.255.0, gig0001_ip: 10.1.0.5 , gig0001_mask: 255.255.255.0,}
+
+xr_interfaces:
+  - GigabitEthernet0/0/0/0
+  - GigabitEthernet0/0/0/1
+
+
+ios_hostnames:
+   - { hostname: ios-router-rtr1, timezone: EST, timezone_dst: EDT, timezone_offset: -5, loopback0_ip: 192.168.0.2, loopback0_mask: 255.255.255.25
+5, Mgmt_ip: 172.16.101.98, Mgmt_mask: 255.255.255.0, gigaethernet2_ip: 10.0.0.6, gigaethernet2_mask: 255.255.255.0, ospf_network1: 192.168.0.2, os
+pf_network_mask1: 0.0.0.0, ospf_network2: 10.0.0.0, ospf_network_mask2: 0.0.0.255, ospf_network3: 10.1.0.0, ospf_network_mask3: 0.0.0.255, areaid:
+ 0 }
+
+...
+# vars file for config-gen
+```
+
+Step-6: Create a playbook config-gen.yml to invoke the role of Bulk config generation. The config-gen.yml playbook has to be in the same directory as the config-gen role.
+
+```
+---
+  - name: Playbook to generate configuration based on role "config-gen"
+    hosts: localhost
+
+    roles:
+       - config-gen
+```
+
+Step-7: Execute the playbook config-gen.yml. You will see the config files are generated in target location.
+
+```
+cisco@ansible-controller:~$ ansible-playbook config-gen.yml
+
+```
+Step-8: Validate the files are created
+```
+cisco@ansible-controller:~$ ls -ltr *BGP.txt
+-rw-r--r-- 1 cisco cisco 168 Jun  5 02:40 R2-XRv-BGP.txt
+-rw-r--r-- 1 cisco cisco 148 Jun  5 02:41 R1-CSR1K-BGP.txt
+cisco@ansible-controller:~$
+```
+### Conclusion
+
+- You can utilize the concept of roles - predetermined order of directories and files to automate generating bulk tasks.
+
+### Example Output
+
+```
+
+cisco@ansible-controller:~/CLUS18-Lab$ ansible-playbook config-gen.yml
+
+PLAY [Playbook to generate configuration based on role "config-gen"] *****************************************************************************
+
+TASK [config-gen : Generate the configuration for xr-routers] ************************************************************************************
+ok: [localhost] => (item={u'timezone_dst': u'EDT', u'gig0000_mask': u'255.255.255.0', u'timezone_offset': -5, u'hostname': u'xr-router-rtr1', u'loopback0_ip': u'192.168.0.1', u'timezone': u'EST', u'gig0001_mask': u'255.255.255.0', u'gig0000_ip': u'10.0.0.5', u'gig0001_ip': u'10.1.0.5', u'loopback0_mask': u'255.255.255.255'})
+
+TASK [config-gen : Generate the configuration for iosxe-routers] *********************************************************************************
+ok: [localhost] => (item={u'timezone_dst': u'EDT', u'areaid': 0, u'ospf_network3': u'10.1.0.0', u'Mgmt_ip': u'172.16.101.98', u'gigaethernet2_mask': u'255.255.255.0', u'ospf_network1': u'192.168.0.2', u'timezone_offset': -5, u'hostname': u'ios-router-rtr1', u'ospf_network_mask1': u'0.0.0.0', u'ospf_network_mask2': u'0.0.0.255', u'loopback0_ip': u'192.168.0.2', u'Mgmt_mask': u'255.255.255.0', u'timezone': u'EST', u'ospf_network_mask3': u'0.0.0.255', u'gigaethernet2_ip': u'10.0.0.6', u'ospf_network2': u'10.0.0.0', u'loopback0_mask': u'255.255.255.255'})
+
+PLAY RECAP ***************************************************************************************************************************************
+localhost                  : ok=2    changed=0    unreachable=0    failed=0
+```
+
+--- 
 
 # 4. Appendix
 
